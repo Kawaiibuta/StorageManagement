@@ -1,5 +1,25 @@
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.SideMenu {
+  height: 100%;
+
+  text-align: left;
+}
+
+.SideMenuVertical {
+  height: 100%;
+}
+
+.SideMenuAndPageContent {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .App-logo {
