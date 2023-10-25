@@ -1,0 +1,21 @@
+.one {
+  width: 100px;
+  background-color: white;
+  border-radius: 10px;
+}
+.two-one {
+  width: 100px;
+  background-color: white;
+  border-right: none;
+  border-radius: 10px 0px 0px 10px;
+}
+.two-two {
+  width: 100px;
+  background-color: white;
+  border-left: none;
+  border-radius: 0px 10px 10px 0px;
+}
+.icon {
+  margin-right: 5px;
+  vertical-align: -1px;
+}
