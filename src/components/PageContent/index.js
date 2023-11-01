@@ -2,7 +2,7 @@ import AppRoutes from "../Routes";
 
 function PageContent() {
   return (
-    <div>
+    <div className="PageContent">
       <AppRoutes />
     </div>
   );

@@ -22,6 +22,29 @@
   align-items: flex-start;
 }
 
+.AppTab {
+  background-color: red;
+  color: red;
+}
+
+.PageContent {
+  padding: 100px;
+  margin: 200px;
+}
+
+.AppHeader {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #a4acd6;
+  align-items: center;
+  padding: 4px 20px 4px 12px;
+}
+
+.ant-menu-vertical .ant-menu-submenu-title {
+  padding: 30px;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

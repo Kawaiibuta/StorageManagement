@@ -1,10 +1,15 @@
 import React from "react";
+import { UploadOutlined } from "@ant-design/icons";
 import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
-import { Menu } from "antd";
+  MdSpeakerNotes,
+  MdRvHookup,
+  MdShopTwo,
+  MdAssignmentInd,
+  MdSettings,
+  MdAutoGraph,
+  MdOutlineMultilineChart,
+} from "react-icons/md";
+import { ConfigProvider, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const dividerItem = {
@@ -14,29 +19,30 @@ const dividerItem = {
 const items = [
   {
     key: "/dashboard",
-    icon: <UserOutlined />,
+    icon: <MdAutoGraph />,
     label: "Dashboard",
   },
   dividerItem,
   {
     key: "/inbound",
-    icon: <VideoCameraOutlined />,
+    icon: <MdSpeakerNotes />,
     label: "Inbound",
   },
   {
     key: "/outbound",
-    icon: <UploadOutlined />,
+    icon: <MdRvHookup />,
     label: "Outbound",
   },
   dividerItem,
   {
     key: "/inventory",
-    icon: <UploadOutlined />,
+    icon: <MdOutlineMultilineChart />,
     label: "Inventory",
   },
   {
     key: "/goods-list",
-    icon: <UploadOutlined />,
+    icon: <MdShopTwo />,
+
     label: "Goods List",
   },
   {
@@ -47,14 +53,13 @@ const items = [
   dividerItem,
   {
     key: "/staff",
-    icon: <UploadOutlined />,
+    icon: <MdAssignmentInd />,
     label: "Staff",
   },
   {
     key: "/warehouse-interconnection",
-    icon: <UploadOutlined />,
-    label: <span>Warehouse {"\n"}interconnection</span>,
-    style: {},
+    icon: <MdSettings />,
+    label: <span>Warehouse interconnection</span>,
   },
 ];
 
@@ -62,16 +67,29 @@ export default function SideMenu() {
   const navigate = useNavigate();
   return (
     <div className="SideMenu">
-      <Menu
-        className="SideMenuVertical"
-        theme="light"
-        defaultSelectedKeys={["1"]}
-        style={{ fontWeight: 500, width: 200 }}
-        items={items}
-        onClick={(item) => {
-          navigate(item.key);
+      <ConfigProvider
+        theme={{
+          components: {
+            Menu: {
+              iconSize: 18,
+              fontSize: 18,
+              itemHeight: 50,
+              iconMarginInlineEnd: 20,
+            },
+          },
         }}
-      ></Menu>
+      >
+        <Menu
+          className="SideMenuVertical"
+          theme="light"
+          defaultSelectedKeys={["1"]}
+          style={{ fontWeight: 500, width: 200 }}
+          items={items}
+          onClick={(item) => {
+            navigate(item.key);
+          }}
+        ></Menu>
+      </ConfigProvider>
     </div>
   );
 }
