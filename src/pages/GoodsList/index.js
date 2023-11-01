@@ -114,18 +114,21 @@ function GoodsList() {
   return (
     <div>
       <h1>GoodsList</h1>
-      <ToolBar type={1}></ToolBar>
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        pagination={{
-          showQuickJumper: true,
-          total: dataSource.length,
-        }}
-        scroll={{
-          x: 1300,
-        }}
-      />
+      <div style={{ marginLeft: "50px" }}>
+        <ToolBar type={1}></ToolBar>
+        <Table
+          style={{ marginTop: "10px" }}
+          columns={columns}
+          dataSource={dataSource}
+          pagination={{
+            showQuickJumper: true,
+            total: dataSource.length,
+          }}
+          scroll={{
+            x: 1300,
+          }}
+        />
+      </div>
     </div>
   );
 }

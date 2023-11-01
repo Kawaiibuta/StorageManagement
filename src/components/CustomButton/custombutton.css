@@ -1,16 +1,28 @@
 .one {
-  width: 100px;
+  width: 120px;
+  height: 45px;
   background-color: white;
   border-radius: 10px;
 }
 .two-one {
-  width: 100px;
+  width: 120px;
+  height: 45px;
   background-color: white;
   border-right: none;
   border-radius: 10px 0px 0px 10px;
 }
+.two-one:hover,
+.two-two:hover,
+.one {
+  border-style: solid;
+  border-radius: 10px;
+  border-width: 1px;
+  transition: 0.2s;
+}
+
 .two-two {
-  width: 100px;
+  width: 120px;
+  height: 45px;
   background-color: white;
   border-left: none;
   border-radius: 0px 10px 10px 0px;

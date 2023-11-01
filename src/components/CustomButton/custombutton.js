@@ -33,7 +33,12 @@ const CustomButton = (props) => {
       break;
 
     default:
-      buttons.push(<Button>New</Button>);
+      buttons.push(
+        <Button className="one">
+          <GrAdd className="icon" />
+          NEW
+        </Button>
+      );
       break;
   }
   return <div style={{ display: "inline" }}>{buttons}</div>;
