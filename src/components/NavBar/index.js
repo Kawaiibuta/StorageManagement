@@ -8,6 +8,7 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Button, theme } from "antd";
+import Outbound from "../../routes/Outbound";
 const { Header, Sider, Content } = Layout;
 
 const dividerItem = {
@@ -117,7 +118,7 @@ export default function NavBar() {
             background: colorBgContainer,
           }}
         >
-          Content
+          <Outbound></Outbound>
         </Content>
       </Layout>
     </Layout>
