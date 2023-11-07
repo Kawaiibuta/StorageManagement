@@ -1,9 +1,16 @@
 import React from "react";
+import TabView from "../../components/Button Header/TabView";
 
 function Dashboard() {
   return (
     <div>
-      <h1>DashBoard</h1>
+      <TabView
+            title={""}
+            tabs={[
+              { name: "Inbound", content: 1 },
+              { name: "Outbound", content: 2 },
+            ]}
+          />
     </div>
   );
 }
