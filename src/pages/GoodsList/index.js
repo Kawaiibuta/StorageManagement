@@ -113,7 +113,6 @@ const columns = [
 function GoodsList() {
   return (
     <div>
-      <h1>GoodsList</h1>
       <div style={{ marginLeft: "50px" }}>
         <ToolBar type={1}></ToolBar>
         <Table

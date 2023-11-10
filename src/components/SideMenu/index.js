@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import {
   MdSpeakerNotes,
@@ -10,7 +10,7 @@ import {
   MdOutlineMultilineChart,
 } from "react-icons/md";
 import { ConfigProvider, Menu } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const dividerItem = {
   type: "divider",
@@ -64,7 +64,15 @@ const items = [
 ];
 
 export default function SideMenu() {
+  const location = useLocation();
+  const [selectedKeys, setSelectedKeys] = useState("/");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const pathName = location.pathname;
+    setSelectedKeys(pathName);
+  }, [location.pathname]);
+
   return (
     <div className="SideMenu">
       <ConfigProvider
@@ -82,6 +90,7 @@ export default function SideMenu() {
         <Menu
           className="SideMenuVertical"
           theme="light"
+          selectedKeys={[selectedKeys]}
           defaultSelectedKeys={["1"]}
           style={{ fontWeight: 500, width: 200 }}
           items={items}
