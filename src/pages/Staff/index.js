@@ -1,9 +1,24 @@
 import React from "react";
+import TabView from "../../components/Button Header/TabView";
+
+
+const employee = (
+  1
+)
+
+const user = (
+  2
+)
 
 function Staff() {
   return (
     <div>
-      <h1>Staff</h1>
+       <TabView
+            tabs={[
+              { name: "Employee", content: employee},
+              { name: "User", content: user },
+            ]}
+          />
     </div>
   );
 }

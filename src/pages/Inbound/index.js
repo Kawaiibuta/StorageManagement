@@ -1,9 +1,28 @@
 import React from "react";
+import TabView from "../../components/Button Header/TabView";
+
+
+const all = (
+  1
+)
+
+const order = (
+  2
+)
+const delivery = (
+  3
+)
 
 function InBound() {
   return (
     <div>
-      <h1>InBoundahihi</h1>
+       <TabView
+            tabs={[
+              { name: "ALL", content: all },
+              { name: "Order", content: order },
+              { name: "Delivery", content: delivery },
+            ]}
+          />
     </div>
   );
 }
