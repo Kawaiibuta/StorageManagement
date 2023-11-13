@@ -1,143 +1,147 @@
 import React from "react";
+import TabView from "../../components/Button Header/TabView";
 import { Table } from "antd";
-import { ColumnsType } from "antd/es/table";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
-import { AudioOutlined } from "@ant-design/icons";
-import TabView from "../../components/Button Header/TabView";
+import { PiEyeBold } from "react-icons/pi";
 
-
-const suffix = (
-  <AudioOutlined
-    style={{
-      fontSize: 16,
-      color: "#1677ff",
-    }}
-  />
-);
-function good(
+function good_item(
   id,
   name,
   sku_code,
-  description,
+  supplier_name,
   price,
   unit,
   image,
-  specification
+  specification,
+  warehouse_name
 ) {
   this.id = id;
   this.name = name;
   this.sku_code = sku_code;
-  this.description = description;
+  this.supplier_name = supplier_name;
   this.price = price;
   this.unit = unit;
   this.image = image;
   this.specification = specification;
+  this.warehouse_name = warehouse_name;
 }
-const dataSource = [];
+const good_dataSource = [];
 for (let i = 1; i < 100; i++) {
-  dataSource.push(
-    new good(
+  good_dataSource.push(
+    new good_item(
       i,
-      "Name_" + i.toString(),
+      "Product Name " + i.toString(),
       "A00000" + i.toString(),
-      "A small yellow box",
+      "Supplier" + i.toString(),
       "300.000",
       "Box",
       "image link",
-      "x:30cm y:20cm z:10cm"
+      "x:30cm y:20cm z:10cm",
+      "Warehouse" + i.toString()
     )
   );
 }
 
-const columns = [
+const good_columns = [
   {
     title: "ID",
-    width: 100,
+    fixed: "left",
     dataIndex: "id",
     key: "id",
-    fixed: "left",
+    width: 60,
   },
   {
     title: "Full Name",
-    width: 200,
+    width: 250,
     dataIndex: "name",
     key: "name",
     fixed: "left",
   },
   {
     title: "SKU",
-    width: 100,
+    width: 200,
     dataIndex: "sku_code",
-    key: "1",
+    key: "sku_code",
   },
   {
-    title: "Description",
-    width: 400,
-    dataIndex: "description",
-    key: "2",
+    title: "Supplier",
+    dataIndex: "supplier_name",
+    key: "supplier_name",
+    width: 200,
+    sorter: true,
   },
   {
     title: "Price",
     dataIndex: "price",
-    key: "3",
-    width: 100,
+    key: "price",
+    width: 200,
     sorter: true,
   },
   {
     title: "Unit",
     dataIndex: "unit",
-    key: "4",
-    width: 100,
+    key: "unit",
+    width: 200,
   },
   {
     title: "Image",
     dataIndex: "image",
-    key: "5",
-    width: 100,
+    key: "image",
+    width: 200,
+    render: () => (
+      <div>
+        <a>{<PiEyeBold />}</a>
+      </div>
+    ),
   },
   {
     title: "Specification",
     dataIndex: "specification",
-    fixed: "left",
-    key: "6",
-    width: 300,
+    key: "specification",
+  },
+  {
+    title: "Warehouse",
+    dataIndex: "warehouse_name",
+    key: "warehouse_name",
+    width: 200,
   },
   {
     title: "Action",
     key: "operation",
     fixed: "right",
-    width: 250,
-    render: () => <ActionBar numActions={5} />,
+    width: 120,
+    render: () => <ActionBar numActions={"edt_del"} />,
   },
 ];
 
 const goodslist = (
-  <div style={{ marginLeft: "50px" }}>
-  <ToolBar type={1}></ToolBar>
-  <Table
-    style={{ marginTop: "10px" }}
-    columns={columns}
-    dataSource={dataSource}
-    pagination={{
-      showQuickJumper: true,
-      total: dataSource.length,
+  <div
+    style={{
+      maxWidth: "1800px",
+      width: "100%",
+      minWidth: "90%",
     }}
-    scroll={{
-      x: 1300,
-    }}
-  />
-</div>
-)
+  >
+    <ToolBar type={2}></ToolBar>
+    <Table
+      style={{ marginTop: "10px", maxWidth: "100%" }}
+      columns={good_columns}
+      dataSource={good_dataSource}
+      pagination={{
+        showQuickJumper: true,
+        total: good_dataSource.length,
+      }}
+      scroll={{
+        x: 2000,
+      }}
+    />
+  </div>
+);
 function GoodsList() {
   return (
-    <div>
-      <TabView
-            tabs={[
-              { name: "Goods List", content: goodslist },
-            ]}
-          />
-     
+    <div style={{ width: "100%" }}>
+      <TabView tabs={[{ name: "Goods List", content: goodslist }]} />
     </div>
   );
 }
