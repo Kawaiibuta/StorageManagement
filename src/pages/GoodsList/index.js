@@ -4,6 +4,8 @@ import { ColumnsType } from "antd/es/table";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import { AudioOutlined } from "@ant-design/icons";
+import TabView from "../../components/Button Header/TabView";
+
 
 const suffix = (
   <AudioOutlined
@@ -110,24 +112,32 @@ const columns = [
   },
 ];
 
+const goodslist = (
+  <div style={{ marginLeft: "50px" }}>
+  <ToolBar type={1}></ToolBar>
+  <Table
+    style={{ marginTop: "10px" }}
+    columns={columns}
+    dataSource={dataSource}
+    pagination={{
+      showQuickJumper: true,
+      total: dataSource.length,
+    }}
+    scroll={{
+      x: 1300,
+    }}
+  />
+</div>
+)
 function GoodsList() {
   return (
     <div>
-      <div style={{ marginLeft: "50px" }}>
-        <ToolBar type={1}></ToolBar>
-        <Table
-          style={{ marginTop: "10px" }}
-          columns={columns}
-          dataSource={dataSource}
-          pagination={{
-            showQuickJumper: true,
-            total: dataSource.length,
-          }}
-          scroll={{
-            x: 1300,
-          }}
-        />
-      </div>
+      <TabView
+            tabs={[
+              { name: "Goods List", content: goodslist },
+            ]}
+          />
+     
     </div>
   );
 }
