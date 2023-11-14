@@ -6,7 +6,6 @@ import ActionBar from "../../components/ActionBar/actionbar.js";
 import { AudioOutlined } from "@ant-design/icons";
 import TabView from "../../components/Button Header/TabView";
 
-
 const suffix = (
   <AudioOutlined
     style={{
@@ -113,31 +112,28 @@ const columns = [
 ];
 
 const goodslist = (
-  <div style={{ marginLeft: "50px" }}>
-  <ToolBar type={1}></ToolBar>
-  <Table
-    style={{ marginTop: "10px" }}
-    columns={columns}
-    dataSource={dataSource}
-    pagination={{
-      showQuickJumper: true,
-      total: dataSource.length,
-    }}
-    scroll={{
-      x: 1300,
-    }}
-  />
-</div>
-)
+  <div style={{ marginLeft: "0px" }}>
+    <ToolBar type={1}></ToolBar>
+    <Table
+      style={{ marginTop: "10px" }}
+      columns={columns}
+      dataSource={dataSource}
+      pagination={{
+        showQuickJumper: true,
+        total: dataSource.length,
+      }}
+      scroll={{
+        x: 1300,
+      }}
+    />
+  </div>
+);
 function GoodsList() {
   return (
-    <div>
+    <div style={{ padding: 0 }}>
       <TabView
-            tabs={[
-              { name: "Goods List", content: goodslist },
-            ]}
-          />
-     
+        tabs={[{ name: "Goods List", content: goodslist, padding: "0px" }]}
+      />
     </div>
   );
 }
