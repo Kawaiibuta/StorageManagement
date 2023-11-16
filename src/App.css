@@ -7,7 +7,6 @@
 
 .SideMenu {
   height: 100%;
-
   text-align: left;
 }
 
@@ -30,6 +29,7 @@
 .PageContent {
   margin-top: 20px;
   margin-left: 10px;
+  width: 100%;
 }
 
 .AppHeader {
