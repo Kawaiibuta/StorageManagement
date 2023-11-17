@@ -11,11 +11,11 @@ const normFile = (e) => {
   return e?.fileList;
 };
 
-function UpdateProductForm() {
+function NewProductForm() {
   return (
     <>
       <div>
-        <h1>UpdateProduct</h1>
+        <h1>New Product</h1>
         <Form
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 12 }}
@@ -74,4 +74,4 @@ function UpdateProductForm() {
   );
 }
 
-export default UpdateProductForm;
+export default NewProductForm;
