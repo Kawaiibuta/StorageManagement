@@ -123,9 +123,9 @@ const goodslist = (
       minWidth: "90%",
     }}
   >
-    <ToolBar type={2}></ToolBar>
+    <ToolBar type={2} page={"product"}></ToolBar>
     <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
       columns={good_columns}
       dataSource={good_dataSource}
       pagination={{

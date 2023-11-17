@@ -174,7 +174,7 @@ const staff_employee = (
       minWidth: "90%",
     }}
   >
-    <ToolBar type={2}></ToolBar>
+    <ToolBar type={2} page={"employee"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={employee_columns}
@@ -192,7 +192,7 @@ const staff_employee = (
 
 const staff_user = (
   <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
-    <ToolBar type={2}></ToolBar>
+    <ToolBar type={2} page={"user"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={user_columns}

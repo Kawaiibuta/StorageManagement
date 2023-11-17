@@ -72,7 +72,7 @@ const all = (
       minWidth: "90%",
     }}
   >
-    <ToolBar type={2}></ToolBar>
+    <ToolBar type={2} page={"inbound"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={inbound_columns}
