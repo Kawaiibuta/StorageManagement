@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./TabView.css";
 
-function TabView({  tabs = [] }) {
+function TabView({ tabs = [] }) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [allTabs] = useState(tabs);
 
@@ -29,7 +29,9 @@ function TabView({  tabs = [] }) {
                 </label>
               ))}
             </div>
-            <div className="content">{allTabs[activeTabIndex].content}</div>
+            <div className="content" style={{ marginRight: "0px" }}>
+              {allTabs[activeTabIndex].content}
+            </div>
           </div>
         )}
       </div>

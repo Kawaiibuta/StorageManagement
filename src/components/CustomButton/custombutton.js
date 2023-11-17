@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "antd";
-import { GrAdd, GrRefresh } from "react-icons/gr";
+import { MdAdd, MdAutorenew } from "react-icons/md";
 import "./custombutton.css";
 
 const CustomButton = (props) => {
@@ -12,31 +12,30 @@ const CustomButton = (props) => {
     case 1:
       buttons.push(
         <Button className="one">
-          <GrAdd className="icon" />
-          NEW
+          <MdAutorenew className="icon" />
+          REFRESH
         </Button>
       );
       break;
     case 2:
       buttons.push(
         <Button className="two-one">
-          <GrAdd className="icon" />
+          <MdAdd className="icon" />
           NEW
         </Button>
       );
       buttons.push(
         <Button className="two-two">
-          <GrRefresh className="icon" />
+          <MdAutorenew className="icon" />
           REFRESH
         </Button>
       );
       break;
-
     default:
       buttons.push(
         <Button className="one">
-          <GrAdd className="icon" />
-          NEW
+          <MdAutorenew className="icon" />
+          REFRESH
         </Button>
       );
       break;

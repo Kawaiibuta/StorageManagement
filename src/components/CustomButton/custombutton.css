@@ -1,15 +1,22 @@
 .one {
   width: 120px;
-  height: 45px;
+  height: 40px;
   background-color: white;
   border-radius: 10px;
 }
 .two-one {
   width: 120px;
-  height: 45px;
+  height: 40px;
   background-color: white;
   border-right: none;
   border-radius: 10px 0px 0px 10px;
+}
+.two-two {
+  width: 120px;
+  height: 40px;
+  background-color: white;
+  border-left: none;
+  border-radius: 0px 10px 10px 0px;
 }
 .two-one:hover,
 .two-two:hover,
@@ -19,15 +26,8 @@
   border-width: 1px;
   transition: 0.2s;
 }
-
-.two-two {
-  width: 120px;
-  height: 45px;
-  background-color: white;
-  border-left: none;
-  border-radius: 0px 10px 10px 0px;
-}
 .icon {
   margin-right: 5px;
-  vertical-align: -1px;
+  vertical-align: -4px;
+  font-size: 18px;
 }

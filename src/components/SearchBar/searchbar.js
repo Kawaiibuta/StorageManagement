@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, Button } from "antd";
+import { Input, Button, Divider } from "antd";
 import { AiOutlineSearch } from "react-icons/ai";
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
@@ -9,8 +9,10 @@ const SearchBar = (props) => {
       addonAfter={
         <Button
           style={{
+            display: "inline",
             margin: "0px",
-            height: "30px",
+            height: "40px",
+            width: "100%",
             border: "none",
             backgroundColor: "#fcfcfc",
           }}
@@ -21,6 +23,7 @@ const SearchBar = (props) => {
       onSearch={onSearch}
       placeholder="input search text"
       allowClear
+      size="large"
       style={{ width: "250px" }}
       {...props}
     />

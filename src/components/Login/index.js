@@ -1,6 +1,7 @@
-import { Card } from "antd";
+import { Typography } from "antd";
 import "./style.css";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input, ConfigProvider } from "antd";
+const { Title } = Typography;
 const onFinish = (values) => {
   console.log("Success:", values);
 };
@@ -12,58 +13,75 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   return (
     <div className="background">
-      <Card
-        className="card"
-        bordered={false}
-        style={{
-          width: 300,
+      <Form
+        layout="vertical"
+        className="loginForm"
+        // name="basic"
+        // labelCol={{
+        //   span: 8,
+        // }}
+        // wrapperCol={{
+        //   span: 16,
+        // }}
+        // style={{
+        //   maxWidth: 600,
+        //   textAlign: "center",
+        // }}
+        initialValues={{
+          remember: true,
         }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
       >
-        <Form
-          name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
+        <img
+          className="logo"
+          src={require("../../assets/images/WarehouseLogo.png")}
+          alt=""
+          width={200}
+          // width={150}
+          // height={100}
+          // style={{ margin: 0, padding: 0, textAlign: "center" }}
+        ></img>
+        <Typography
           style={{
-            maxWidth: 600,
+            fontWeight: "bolder",
+            fontSize: 30,
+            color: "white",
+            marginTop: 0,
+            marginBottom: 10,
           }}
-          initialValues={{
-            remember: true,
-          }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
         >
-          <Form.Item
-            label="Username"
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: "Please input your username!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+          Login
+        </Typography>
+        <Form.Item
+          label={<p className="label">Username</p>}
+          name="username"
 
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your password!",
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: "Please input your username!",
+          //   },
+          // ]}
+        >
+          <Input size="large" placeholder="Enter Username" />
+        </Form.Item>
 
-          <Form.Item
+        <Form.Item
+          label={<p className="label">Password</p>}
+          name="password"
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: "Please input your password!",
+          //   },
+          // ]}
+        >
+          <Input.Password size="large" placeholder="Password" />
+        </Form.Item>
+
+        {/* <Form.Item
             name="remember"
             valuePropName="checked"
             wrapperCol={{
@@ -72,20 +90,34 @@ function Login() {
             }}
           >
             <Checkbox>Remember me</Checkbox>
-          </Form.Item>
+          </Form.Item> */}
 
-          <Form.Item
-            wrapperCol={{
-              offset: 8,
-              span: 16,
+        <Form.Item
+        // wrapperCol={{
+        //   offset: 8,
+        //   span: 16,
+        // }}
+        >
+          <ConfigProvider
+            theme={{
+              token: {
+                colorBgContainer: "rgba(0, 52, 101, 1)",
+                colorBorder: "none",
+              },
             }}
           >
-            <Button type="primary" htmlType="submit">
-              Submit
+            <Button
+              style={{ fontWeight: "bold", color: "white" }}
+              block
+              size="large"
+              type="default"
+              htmlType="submit"
+            >
+              Sign in
             </Button>
-          </Form.Item>
-        </Form>
-      </Card>
+          </ConfigProvider>
+        </Form.Item>
+      </Form>
     </div>
   );
 }

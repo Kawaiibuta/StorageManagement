@@ -7,24 +7,17 @@ import {
   RiTruckLine,
   RiPrinterLine,
 } from "react-icons/ri";
-import { GrFormView } from "react-icons/gr";
+import { PiEyeBold } from "react-icons/pi"; 
 import "./actionbar.css";
 
 const CustomAction = (props) => {
   const { numActions } = props;
   const actions = [];
   switch (numActions) {
-    case 2:
+    case "bound":
       actions.push(
         <div>
-          <a>{<RiEditBoxLine />}</a>
-          <a>{<RiDeleteBin6Line />}</a>
-        </div>
-      );
-      break;
-    case 4:
-      actions.push(
-        <div>
+          <a>{<PiEyeBold />}</a>
           <a>{<RiTruckLine />}</a>
           <a>{<RiCheckboxLine />}</a>
           <a>{<RiEditBoxLine />}</a>
@@ -32,14 +25,22 @@ const CustomAction = (props) => {
         </div>
       );
       break;
-    case 5:
+    case "report":
       actions.push(
         <div>
-          <a>{<GrFormView />}</a>
+          <a>{<PiEyeBold />}</a>
           <a>{<RiCheckboxLine />}</a>
           <a>{<RiPrinterLine />}</a>
-          <a>{<RiCheckboxLine />}</a>
-          <a>{<RiTruckLine />}</a>
+          <a>{<RiEditBoxLine />}</a>
+          <a>{<RiDeleteBin6Line />}</a>
+        </div>
+      );
+      break;
+    case "edt_del":
+      actions.push(
+        <div>
+          <a>{<RiEditBoxLine />}</a>
+          <a>{<RiDeleteBin6Line />}</a>
         </div>
       );
       break;
