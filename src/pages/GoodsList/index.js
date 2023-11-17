@@ -118,7 +118,7 @@ const good_columns = [
 const goodslist = (
   <div
     style={{
-      maxWidth: "1800px",
+      maxWidth: "80%",
       width: "100%",
       minWidth: "90%",
     }}
@@ -141,7 +141,7 @@ const goodslist = (
 function GoodsList() {
   return (
     <div style={{ width: "100%" }}>
-      <TabView tabs={[{ name: "Goods List", content: goodslist }]} />
+      <TabView tabs={[{ name: "Goods Listt", content: goodslist }]} />
     </div>
   );
 }

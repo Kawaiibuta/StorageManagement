@@ -29,7 +29,7 @@ function TabView({ tabs = [] }) {
                 </label>
               ))}
             </div>
-            <div className="content" style={{ marginRight: "200px" }}>
+            <div className="content" style={{ marginRight: "0px" }}>
               {allTabs[activeTabIndex].content}
             </div>
           </div>

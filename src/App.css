@@ -28,7 +28,8 @@
 
 .PageContent {
   margin-top: 20px;
-  margin-left: 10px;
+  /* margin-left: 10px; */
+  /* margin-left: 10px; */
   width: 100%;
 }
 
@@ -39,6 +40,10 @@
   background-color: #a4acd6;
   align-items: center;
   padding: 4px 20px 4px 12px;
+}
+
+.TabView .content {
+  padding: 0px;
 }
 
 .ant-menu-vertical .ant-menu-submenu-title {
