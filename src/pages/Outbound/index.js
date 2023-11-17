@@ -66,7 +66,7 @@ const outbound_columns = [
 
 const all = (
   <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
-    <ToolBar type={2}></ToolBar>
+    <ToolBar type={2} page={"outbound"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={outbound_columns}

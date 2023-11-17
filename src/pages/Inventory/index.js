@@ -148,7 +148,7 @@ const inventory_report = (
       minWidth: "90%",
     }}
   >
-    <ToolBar type={2}></ToolBar>
+    <ToolBar type={2} page={"report"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={report_columns}
