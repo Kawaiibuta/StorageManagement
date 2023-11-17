@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { Button, Modal } from "antd";
 import { MdAdd, MdAutorenew } from "react-icons/md";
 import "./custombutton.css";
-
+import InboundForm from "../Form/InBoundForm.js";
+import OutboundForm from "../Form/OutBoundForm.js";
+import NewCustomerForm from "../Form/NewCustomerForm.js";
+import NewEmployeeForm from "../Form/NewEmployeeForm.js";
+import NewProductForm from "../Form/NewProductForm.js";
+import NewSupplierForm from "../Form/NewSupplierForm.js";
+import NewUserForm from "../Form/NewUserForm.js";
 const CustomButton = (props) => {
   const { numButtons, page } = props;
   const buttons = [];
@@ -31,12 +37,12 @@ const CustomButton = (props) => {
   switch (page) {
     case "inbound":
       {
-        form.push(<p>Này là form thêm Inbound</p>);
+        form.push(<InboundForm />);
       }
       break;
     case "outbound":
       {
-        form.push(<p>Này là form thêm Outbound</p>);
+        form.push(<OutboundForm />);
       }
       break;
     case "report":
@@ -46,22 +52,27 @@ const CustomButton = (props) => {
       break;
     case "product":
       {
-        form.push(<p>Này là form thêm Product</p>);
+        form.push(<NewProductForm />);
       }
       break;
-    case "partner":
+    case "supplier":
       {
-        form.push(<p>Này là form thêm Parner</p>);
+        form.push(<NewSupplierForm />);
+      }
+      break;
+    case "customer":
+      {
+        form.push(<NewCustomerForm />);
       }
       break;
     case "employee":
       {
-        form.push(<p>Này là form thêm Employee</p>);
+        form.push(<NewEmployeeForm />);
       }
       break;
     case "user":
       {
-        form.push(<p>Này là form thêm User</p>);
+        form.push(<NewUserForm />);
       }
       break;
     default:
@@ -109,10 +120,11 @@ const CustomButton = (props) => {
     <div style={{ display: "inline" }}>
       {buttons}
       <Modal
-        title="Basic Modal"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        width="500px"
+        height="300px"
       >
         {form}
       </Modal>

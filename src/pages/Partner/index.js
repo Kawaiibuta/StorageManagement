@@ -78,7 +78,7 @@ const partner_columns = [
 
 const supplier = (
   <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
-    <ToolBar type={2} page={"partner"}></ToolBar>
+    <ToolBar type={2} page={"supplier"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={partner_columns}
@@ -95,7 +95,7 @@ const supplier = (
 );
 const customer = (
   <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
-    <ToolBar type={2} page={"partner"}></ToolBar>
+    <ToolBar type={2} page={"customer"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}
       columns={partner_columns}

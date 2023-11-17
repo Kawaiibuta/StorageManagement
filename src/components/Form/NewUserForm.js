@@ -1,38 +1,35 @@
-import React from 'react';
-import {Select,Form,Input, InputNumber, Button} from 'antd';
+import React from "react";
+import { Select, Form, Input, InputNumber, Button } from "antd";
 
 function NewUserForm() {
   return (
     <>
-    <div >
-      <h3>New User</h3>
-     <Form 
-     labelCol={{ span: 15 }}
-     wrapperCol={{ span: 30 }}
-     layout="horizontal"
-     style={{ Width: 1800 }}>
-        <Form.Item label="Employee Name:">
+      <div>
+        <h1>New User</h1>
+        <Form
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 12 }}
+          layout="horizontal"
+        >
+          <Form.Item label="Employee Name:">
             <Input />
-        </Form.Item>
-        <Form.Item label="Employee Role">
-          <Select>
-            <Select.Option value="Type">Manager</Select.Option>
-            <Select.Option value="Type">Employee</Select.Option>
-          </Select>
-        </Form.Item>    
-        <Form.Item label="Username:">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Password:">
-          <Input type='password'/>
-        </Form.Item>
-        <Form.Item style={{ paddingLeft: 100}}>
-          <Button >Submit</Button>
-        </Form.Item>
+          </Form.Item>
+          <Form.Item label="Employee Role">
+            <Select>
+              <Select.Option value="Manager">Manager</Select.Option>
+              <Select.Option value="Employee">Employee</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Username:">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Password:">
+            <Input type="password" />
+          </Form.Item>
         </Form>
-    </div>
+      </div>
     </>
-  )
+  );
 }
 
-export default NewUserForm
+export default NewUserForm;

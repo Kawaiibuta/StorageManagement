@@ -141,9 +141,8 @@ const goodslist = (
 function GoodsList() {
   return (
     <div style={{ width: "100%" }}>
-      <TabView tabs={[{ name: "Goods Listt", content: goodslist }]} />
+      <TabView tabs={[{ name: "Goods List", content: goodslist }]} />
     </div>
   );
 }
-
 export default GoodsList;
