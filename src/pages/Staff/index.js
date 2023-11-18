@@ -169,14 +169,14 @@ const employee_columns = [
 const staff_employee = (
   <div
     style={{
-      maxWidth: "1800px",
+      maxWidth: "80%",
       width: "100%",
       minWidth: "90%",
     }}
   >
     <ToolBar type={2} page={"employee"}></ToolBar>
     <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
       columns={employee_columns}
       dataSource={employee_dataSource}
       pagination={{
@@ -191,7 +191,7 @@ const staff_employee = (
 );
 
 const staff_user = (
-  <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
+  <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
     <ToolBar type={2} page={"user"}></ToolBar>
     <Table
       style={{ marginTop: "10px", maxWidth: "100%" }}

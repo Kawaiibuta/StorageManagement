@@ -124,10 +124,10 @@ const report_columns = [
 ];
 
 const inventory_product = (
-  <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
+  <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
     <ToolBar type={1}></ToolBar>
     <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
       columns={inventory_columns}
       dataSource={inventory_dataSource}
       pagination={{
@@ -143,14 +143,14 @@ const inventory_product = (
 const inventory_report = (
   <div
     style={{
-      maxWidth: "1800px",
+      maxWidth: "80%",
       width: "100%",
       minWidth: "90%",
     }}
   >
     <ToolBar type={2} page={"report"}></ToolBar>
     <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
       columns={report_columns}
       dataSource={report_dataSource}
       pagination={{
