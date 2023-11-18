@@ -1,0 +1,62 @@
+.fs-12 {
+  font-size: 12px;
+}
+.fs-16 {
+  font-size: 16px;
+}
+.fs-18 {
+  font-size: 18px;
+}
+.fs-20 {
+  font-size: 20px;
+}
+.fs-24 {
+  font-size: 24px;
+}
+.fs-28 {
+  font-size: 28px;
+}
+.bold {
+  font-weight: bold;
+}
+.italic {
+  font-style: italic;
+}
+.v-al-bottom {
+  vertical-align: text-bottom;
+}
+.Header {
+  border-radius: 10px 10px 0px 0px;
+  background-color: #d5dcff;
+  border-bottom: 1px solid black;
+  margin-top: 25px;
+  padding: 0px 10px 15px 10px;
+}
+.Info {
+  display: flex;
+  border-radius: 0px 0px 10px 10px;
+  background-color: #d5dcff;
+}
+.TransactionInfo {
+  padding-left: 10px;
+  flex-grow: 6;
+}
+.WarehouseInfo {
+  border-left: 1px solid black;
+  padding-left: 10px;
+  flex-grow: 1;
+}
+.PartnerInfo {
+  border-left: 1px solid black;
+  padding-left: 10px;
+  flex-grow: 1;
+}
+.TransactionDetail {
+  margin: 20px 0px;
+}
+.TotalPrice {
+  padding: 15px 20px;
+  border-radius: 10px;
+  background-color: #d5dcff;
+  vertical-align: middle;
+}

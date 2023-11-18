@@ -67,14 +67,14 @@ const inbound_columns = [
 const all = (
   <div
     style={{
-      maxWidth: "1800px",
+      maxWidth: "80%",
       width: "100%",
       minWidth: "90%",
     }}
   >
     <ToolBar type={2} page={"inbound"}></ToolBar>
     <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
       columns={inbound_columns}
       dataSource={inbound_dataSource}
       pagination={{

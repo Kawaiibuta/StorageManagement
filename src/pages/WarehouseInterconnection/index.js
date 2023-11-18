@@ -72,10 +72,10 @@ const columns = [
   },
 ];
 const warehouseinter = (
-  <div style={{ maxWidth: "1800px", width: "100%", minWidth: "90%" }}>
+  <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
     <ToolBar type={1}></ToolBar>
     <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
       columns={columns}
       dataSource={dataSource}
       pagination={{

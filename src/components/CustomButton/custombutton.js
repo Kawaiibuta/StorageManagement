@@ -4,11 +4,15 @@ import { MdAdd, MdAutorenew } from "react-icons/md";
 import "./custombutton.css";
 import InboundForm from "../Form/InBoundForm.js";
 import OutboundForm from "../Form/OutBoundForm.js";
+import InventoryReport from "../Form/InventoryReport.js";
 import NewCustomerForm from "../Form/NewCustomerForm.js";
 import NewEmployeeForm from "../Form/NewEmployeeForm.js";
 import NewProductForm from "../Form/NewProductForm.js";
 import NewSupplierForm from "../Form/NewSupplierForm.js";
 import NewUserForm from "../Form/NewUserForm.js";
+import InBoundBill from "../Form/InBoundBill.js";
+import OutBoundBill from "../Form/OutBoundBill.js";
+
 const CustomButton = (props) => {
   const { numButtons, page } = props;
   const buttons = [];
@@ -27,11 +31,30 @@ const CustomButton = (props) => {
     setIsModalOpen(false);
   };
 
+  //Test
+  /*const [isModal2Open, setIsModal2Open] = useState(false);
+  const showModal2 = () => {
+    setIsModal2Open(true);
+  };
+
+  const handleOk2 = () => {
+    setIsModal2Open(false);
+  };
+
+  const handleCancel2 = () => {
+    setIsModal2Open(false);
+  };
+
+  //End Test
+*/
   const handleButtonClick = (buttonType) => {
     if (buttonType === "NEW") {
       showModal();
     } else if (buttonType === "REFRESH") {
       // Chức năng refresh lại trang
+      //Test
+      //showModal2();
+      //End Test
     }
   };
   switch (page) {
@@ -47,7 +70,7 @@ const CustomButton = (props) => {
       break;
     case "report":
       {
-        form.push(<p>Này là form thêm Report</p>);
+        form.push(<InventoryReport />);
       }
       break;
     case "product":
@@ -128,6 +151,17 @@ const CustomButton = (props) => {
       >
         {form}
       </Modal>
+      {/* Test */}
+      {/* <Modal
+        open={isModal2Open}
+        onOk={handleOk2}
+        onCancel={handleCancel2}
+        width="21cm"
+        height="29.7cm"
+      >
+        {<OutBoundBill />}
+      </Modal> */}
+      {/* End Test */}
     </div>
   );
 };
