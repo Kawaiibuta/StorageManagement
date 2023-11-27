@@ -1,7 +1,10 @@
 import { Typography } from "antd";
 import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
-const { Title } = Typography;
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../../redux/apiRequest";
+
 const onFinish = (values) => {
   console.log("Success:", values);
 };
@@ -11,9 +14,25 @@ const onFinishFailed = (errorInfo) => {
 };
 
 function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  // const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const newUser = {
+      username: username,
+      password: password,
+    };
+    loginUser(newUser, dispatch);
+    // navigate("/dashboard");
+  };
+
   return (
     <div className="background">
       <Form
+        onSubmitCapture={handleLogin}
         layout="vertical"
         className="loginForm"
         // name="basic"
@@ -36,9 +55,9 @@ function Login() {
       >
         <img
           className="logo"
-          src={require("../../assets/images/WarehouseLogo.png")}
+          src={require("../../../assets/images/WarehouseLogo.png")}
           alt=""
-          width={200}
+          width={150}
           // width={150}
           // height={100}
           // style={{ margin: 0, padding: 0, textAlign: "center" }}
@@ -65,7 +84,11 @@ function Login() {
           //   },
           // ]}
         >
-          <Input size="large" placeholder="Enter Username" />
+          <Input
+            size="large"
+            placeholder="Enter Username"
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </Form.Item>
 
         <Form.Item
@@ -78,7 +101,11 @@ function Login() {
           //   },
           // ]}
         >
-          <Input.Password size="large" placeholder="Password" />
+          <Input.Password
+            size="large"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Form.Item>
 
         {/* <Form.Item

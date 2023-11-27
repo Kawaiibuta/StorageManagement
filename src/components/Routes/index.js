@@ -8,6 +8,7 @@ import GoodsList from "../../pages/GoodsList";
 import Partner from "../../pages/Partner";
 import Staff from "../../pages/Staff";
 import WarehouseInterconnection from "../../pages/WarehouseInterconnection";
+import Authentication from "../../pages/Authentication";
 
 function AppRoutes() {
   return (

@@ -1,6 +1,6 @@
 .background {
   display: flex;
-  background-image: url(../../assets/images/form-background.png);
+  background-image: url(../../../assets/images/form-background.png);
   background-size: cover;
   height: 100vh;
   width: 100vw;
