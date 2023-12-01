@@ -11,10 +11,10 @@ function WarehouseInterconnection() {
   const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
-      title: "ID",
+      title: "Code",
       fixed: "left",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "code",
+      key: "code",
       width: 60,
     },
     {
@@ -55,8 +55,8 @@ function WarehouseInterconnection() {
     },
   ];
 
-  function warehouse(id, name, address, capacity, contact_info, description) {
-    this.id = id;
+  function warehouse(code, name, address, capacity, contact_info, description) {
+    this.code = code;
     this.name = name;
     this.address = address;
     this.capacity = capacity;
@@ -95,11 +95,11 @@ function WarehouseInterconnection() {
 
       for (const wh in request.data) {
         const nextWarehouse = new warehouse(
-          request.data[wh]._id,
+          request.data[wh].code,
           request.data[wh].name,
           request.data[wh].contactId.address,
           request.data[wh].capacity,
-          request.data[wh].name,
+          request.data[wh].contactId.phone_num,
           request.data[wh].description
         );
         whList.push(nextWarehouse);
