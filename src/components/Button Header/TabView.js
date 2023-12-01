@@ -3,7 +3,9 @@ import "./TabView.css";
 
 function TabView({ tabs = [] }) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [allTabs] = useState(tabs);
+  const allTabs = tabs;
+
+  console.log("tabs", allTabs);
 
   const activateTab = (index) => {
     setActiveTabIndex(index);
