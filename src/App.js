@@ -12,7 +12,7 @@ function App() {
     console.log(user);
   }, [user]);
 
-  if (user) {
+  if (true) {
     return (
       <div className="App">
         <AppHeader />
