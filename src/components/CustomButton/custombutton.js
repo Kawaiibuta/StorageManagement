@@ -10,6 +10,7 @@ import NewEmployeeForm from "../Form/NewEmployeeForm.js";
 import NewProductForm from "../Form/NewProductForm.js";
 import NewSupplierForm from "../Form/NewSupplierForm.js";
 import NewUserForm from "../Form/NewUserForm.js";
+import NewWarehouseForm from "../Form/NewWarehouseForm.js";
 import InBoundBill from "../Form/InBoundBill.js";
 import OutBoundBill from "../Form/OutBoundBill.js";
 
@@ -96,6 +97,11 @@ const CustomButton = (props) => {
     case "user":
       {
         form.push(<NewUserForm />);
+      }
+      break;
+    case "warehouseinter":
+      {
+        form.push(<NewWarehouseForm />);
       }
       break;
     default:
