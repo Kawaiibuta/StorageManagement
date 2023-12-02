@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import axios from "axios";
@@ -8,6 +8,7 @@ import axios from "axios";
 // let data = [];
 
 function WarehouseInterconnection() {
+  const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
@@ -55,6 +56,10 @@ function WarehouseInterconnection() {
     },
   ];
 
+  function onLoadingChange() {
+    setLoading(!loading);
+  }
+
   function warehouse(code, name, address, capacity, contact_info, description) {
     this.code = code;
     this.name = name;
@@ -68,7 +73,11 @@ function WarehouseInterconnection() {
     console.log("data", warehouses);
     return (
       <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
-        <ToolBar type={1}></ToolBar>
+        <ToolBar
+          onLoadingChange={onLoadingChange}
+          type={2}
+          page={"warehouseinter"}
+        ></ToolBar>
         <Table
           style={{ marginTop: "10px", maxWidth: "80vw" }}
           columns={columns}
@@ -106,11 +115,12 @@ function WarehouseInterconnection() {
       }
 
       setDataSource(whList);
+
+      // onLoadingChange();
       return request.data;
     }
     fetchData();
-    console.log("use effect");
-  }, []);
+  }, [loading]);
 
   console.log("return", dataSource);
   return (
@@ -124,6 +134,7 @@ function WarehouseInterconnection() {
           },
         ]}
       />
+      <Button onClick={onLoadingChange}>new</Button>
     </div>
     // <Warehouseinter warehouses={dataSource} />
   );

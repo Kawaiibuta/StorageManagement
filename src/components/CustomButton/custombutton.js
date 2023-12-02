@@ -13,13 +13,14 @@ import NewUserForm from "../Form/NewUserForm.js";
 import NewWarehouseForm from "../Form/NewWarehouseForm.js";
 import InBoundBill from "../Form/InBoundBill.js";
 import OutBoundBill from "../Form/OutBoundBill.js";
+import axios from "axios";
 
-const CustomButton = (props) => {
-  const { numButtons, page } = props;
+const CustomButton = ({ onLoadingChange, numButtons, page }) => {
   const buttons = [];
   const form = [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -101,7 +102,14 @@ const CustomButton = (props) => {
       break;
     case "warehouseinter":
       {
-        form.push(<NewWarehouseForm />);
+        form.push(
+          <NewWarehouseForm
+            onLoadingChange={onLoadingChange}
+            isModalOpen={isModalOpen}
+            handleOkButton={handleOk}
+            handleCancelButton={handleCancel}
+          />
+        );
       }
       break;
     default:
@@ -148,15 +156,9 @@ const CustomButton = (props) => {
   return (
     <div style={{ display: "inline" }}>
       {buttons}
-      <Modal
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        width="500px"
-        height="300px"
-      >
-        {form}
-      </Modal>
+
+      {form}
+
       {/* Test */}
       {/* <Modal
         open={isModal2Open}
