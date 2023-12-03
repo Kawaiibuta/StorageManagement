@@ -6,7 +6,7 @@ import { Form, Input, Button, Modal, Space, message } from "antd";
 const { TextArea } = Input;
 
 function NewWarehouseForm({
-  onLoadingChange,
+  onUpdateData,
   isModalOpen,
   handleOkButton,
   handleCancelButton,
@@ -31,20 +31,22 @@ function NewWarehouseForm({
       phone_num: warehouseContactPhoneNum,
       address: warehouseAddress,
     };
-    onLoadingChange();
-    setIsLoading(!isLoading);
+
+    setIsLoading(true);
+
     try {
       await axios.post(
         "https://warehousemanagement.onrender.com/api/warehouse",
         data
       );
 
-      onLoadingChange();
-      setIsLoading(!isLoading);
       message.success("Your warehouse has been added successfully.");
     } catch (e) {
       message.error(e);
     }
+    onUpdateData();
+    setIsLoading(false);
+    // onLoadingChange();
     handleOkButton();
   };
 

@@ -15,7 +15,7 @@ import InBoundBill from "../Form/InBoundBill.js";
 import OutBoundBill from "../Form/OutBoundBill.js";
 import axios from "axios";
 
-const CustomButton = ({ onLoadingChange, numButtons, page }) => {
+const CustomButton = ({ onUpdateData, onLoadingChange, numButtons, page }) => {
   const buttons = [];
   const form = [];
 
@@ -57,60 +57,52 @@ const CustomButton = ({ onLoadingChange, numButtons, page }) => {
       //Test
       //showModal2();
       //End Test
+      onUpdateData();
     }
   };
   switch (page) {
     case "inbound":
-      {
-        form.push(<InboundForm />);
-      }
+      form.push(<InboundForm />);
+
       break;
     case "outbound":
-      {
-        form.push(<OutboundForm />);
-      }
+      form.push(<OutboundForm />);
+
       break;
     case "report":
-      {
-        form.push(<InventoryReport />);
-      }
+      form.push(<InventoryReport />);
+
       break;
     case "product":
-      {
-        form.push(<NewProductForm />);
-      }
+      form.push(<NewProductForm />);
+
       break;
     case "supplier":
-      {
-        form.push(<NewSupplierForm />);
-      }
+      form.push(<NewSupplierForm />);
+
       break;
     case "customer":
-      {
-        form.push(<NewCustomerForm />);
-      }
+      form.push(<NewCustomerForm />);
+
       break;
     case "employee":
-      {
-        form.push(<NewEmployeeForm />);
-      }
+      form.push(<NewEmployeeForm />);
+
       break;
     case "user":
-      {
-        form.push(<NewUserForm />);
-      }
+      form.push(<NewUserForm />);
+
       break;
     case "warehouseinter":
-      {
-        form.push(
-          <NewWarehouseForm
-            onLoadingChange={onLoadingChange}
-            isModalOpen={isModalOpen}
-            handleOkButton={handleOk}
-            handleCancelButton={handleCancel}
-          />
-        );
-      }
+      form.push(
+        <NewWarehouseForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
+
       break;
     default:
       console.log("Nope");

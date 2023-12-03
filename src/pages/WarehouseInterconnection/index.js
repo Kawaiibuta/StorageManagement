@@ -8,7 +8,8 @@ import axios from "axios";
 // let data = [];
 
 function WarehouseInterconnection() {
-  const [loading, setLoading] = useState(false);
+  const [isUpdateData, setIsUpdateData] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
@@ -56,8 +57,8 @@ function WarehouseInterconnection() {
     },
   ];
 
-  function onLoadingChange() {
-    setLoading(!loading);
+  function onUpdateData() {
+    setIsUpdateData(!isUpdateData);
   }
 
   function warehouse(code, name, address, capacity, contact_info, description) {
@@ -74,11 +75,12 @@ function WarehouseInterconnection() {
     return (
       <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
         <ToolBar
-          onLoadingChange={onLoadingChange}
+          onUpdateData={onUpdateData}
           type={2}
           page={"warehouseinter"}
         ></ToolBar>
         <Table
+          loading={isFetching}
           style={{ marginTop: "10px", maxWidth: "80vw" }}
           columns={columns}
           dataSource={warehouses}
@@ -96,6 +98,7 @@ function WarehouseInterconnection() {
 
   useEffect(() => {
     async function fetchData() {
+      setIsFetching(true);
       const request = await axios.get(
         "https://warehousemanagement.onrender.com/api/warehouse"
       );
@@ -115,12 +118,13 @@ function WarehouseInterconnection() {
       }
 
       setDataSource(whList);
+      setIsFetching(false);
 
       // onLoadingChange();
       return request.data;
     }
     fetchData();
-  }, [loading]);
+  }, [isUpdateData]);
 
   console.log("return", dataSource);
   return (
@@ -134,7 +138,6 @@ function WarehouseInterconnection() {
           },
         ]}
       />
-      <Button onClick={onLoadingChange}>new</Button>
     </div>
     // <Warehouseinter warehouses={dataSource} />
   );
