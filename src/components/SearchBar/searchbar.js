@@ -11,7 +11,7 @@ const SearchBar = (props) => {
           style={{
             display: "inline",
             margin: "0px",
-            height: "40px",
+            height: "38px",
             width: "100%",
             border: "none",
             backgroundColor: "#fcfcfc",

@@ -18,7 +18,7 @@ for (let i = 1; i < 100; i++) {
     new user_item(
       i,
       "Employee Name " + i.toString(),
-      "Manager/Employee",
+      "Employee",
       "Username_" + i.toString(),
       "Password_" + i.toString()
     )
@@ -58,7 +58,40 @@ for (let i = 1; i < 100; i++) {
     )
   );
 }
-
+function manager_item(
+  id,
+  name,
+  type,
+  address,
+  phone_num,
+  email,
+  warehouse_name,
+  start_time
+) {
+  this.id = id;
+  this.name = name;
+  this.type = type;
+  this.address = address;
+  this.phone_num = phone_num;
+  this.email = email;
+  this.warehouse_name = warehouse_name;
+  this.start_time = start_time;
+}
+const manager_dataSource = [];
+for (let i = 1; i < 100; i++) {
+  manager_dataSource.push(
+    new manager_item(
+      i,
+      "Manager Name " + i.toString(),
+      "Manager",
+      "123 ABC Street, State " + i.toString(),
+      "0900900900" + i.toString(),
+      i.toString() + "@gmail.com",
+      "Warehouse" + i.toString(),
+      "00:00:00 12/11/2023"
+    )
+  );
+}
 const user_columns = [
   {
     title: "ID",
@@ -123,7 +156,7 @@ const employee_columns = [
     fixed: "left",
   },
   {
-    title: "Employee Type",
+    title: "Type",
     dataIndex: "type",
     key: "6",
     width: 180,
@@ -189,6 +222,29 @@ const staff_employee = (
     />
   </div>
 );
+const staff_manager = (
+  <div
+    style={{
+      maxWidth: "80%",
+      width: "100%",
+      minWidth: "90%",
+    }}
+  >
+    <ToolBar type={2} page={"employee"}></ToolBar>
+    <Table
+      style={{ marginTop: "10px", maxWidth: "80vw" }}
+      columns={employee_columns}
+      dataSource={manager_dataSource}
+      pagination={{
+        showQuickJumper: true,
+        total: manager_dataSource.length,
+      }}
+      scroll={{
+        x: 2000,
+      }}
+    />
+  </div>
+);
 
 const staff_user = (
   <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
@@ -214,6 +270,7 @@ function Staff() {
       <TabView
         tabs={[
           { name: "Employee", content: staff_employee },
+          { name: "Manager", content: staff_manager },
           { name: "User", content: staff_user },
         ]}
       />
