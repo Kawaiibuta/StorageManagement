@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TabView from "../../components/Button Header/TabView";
 import { Table } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import { PiEyeBold } from "react-icons/pi";
+import axios from "axios";
+import { getAllEmployees, getAllWarehouses } from "../../redux/apiRequest.js";
+import { useDispatch, useSelector } from "react-redux";
 
 function user_item(id, employee_name, role, user_name, password) {
   this.id = id;
@@ -25,40 +28,6 @@ for (let i = 1; i < 100; i++) {
   );
 }
 console.log(user_dataSource);
-function employee_item(
-  id,
-  name,
-  type,
-  address,
-  phone_num,
-  email,
-  warehouse_name,
-  start_time
-) {
-  this.id = id;
-  this.name = name;
-  this.type = type;
-  this.address = address;
-  this.phone_num = phone_num;
-  this.email = email;
-  this.warehouse_name = warehouse_name;
-  this.start_time = start_time;
-}
-const employee_dataSource = [];
-for (let i = 1; i < 100; i++) {
-  employee_dataSource.push(
-    new employee_item(
-      i,
-      "Employee Name " + i.toString(),
-      "Manager/Employee",
-      "123 ABC Street, State " + i.toString(),
-      "0900900900" + i.toString(),
-      i.toString() + "@gmail.com",
-      "Warehouse" + i.toString(),
-      "00:00:00 12/11/2023"
-    )
-  );
-}
 
 const user_columns = [
   {
@@ -110,15 +79,15 @@ const user_columns = [
 ];
 const employee_columns = [
   {
-    title: "ID",
+    title: "Code",
     fixed: "left",
     dataIndex: "id",
     key: "id",
-    width: 60,
+    width: 90,
   },
   {
     title: "Full Name",
-    width: 250,
+    width: 200,
     dataIndex: "name",
     key: "name",
     fixed: "left",
@@ -127,12 +96,13 @@ const employee_columns = [
     title: "Employee Type",
     dataIndex: "type",
     key: "6",
-    width: 180,
+    width: 150,
   },
   {
     title: "Address",
     dataIndex: "address",
     key: "6",
+    width: 150,
   },
   {
     title: "Phone Number",
@@ -144,7 +114,7 @@ const employee_columns = [
     title: "Email",
     dataIndex: "email",
     key: "6",
-    width: 300,
+    width: 200,
   },
   {
     title: "Warehouse",
@@ -156,7 +126,7 @@ const employee_columns = [
     title: "Start Time",
     dataIndex: "start_time",
     key: "6",
-    width: 300,
+    width: 200,
   },
   {
     title: "Action",
@@ -166,30 +136,6 @@ const employee_columns = [
     render: () => <ActionBar numActions={"edt_del"} />,
   },
 ];
-
-const staff_employee = (
-  <div
-    style={{
-      maxWidth: "80%",
-      width: "100%",
-      minWidth: "90%",
-    }}
-  >
-    <ToolBar type={2} page={"employee"}></ToolBar>
-    <Table
-      style={{ marginTop: "10px", maxWidth: "80vw" }}
-      columns={employee_columns}
-      dataSource={employee_dataSource}
-      pagination={{
-        showQuickJumper: true,
-        total: employee_dataSource.length,
-      }}
-      scroll={{
-        x: 2000,
-      }}
-    />
-  </div>
-);
 
 const staff_user = (
   <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
@@ -210,6 +156,70 @@ const staff_user = (
 );
 
 function Staff() {
+  const [isFetching, setIsFetching] = useState(false);
+  const [isUpdateData, setIsUpdateData] = useState(false);
+  const dispatch = useDispatch();
+  const employeeList = useSelector(
+    (state) => state.employee.employee?.allEmployees
+  );
+  console.log("employee", employeeList);
+
+  function onUpdateData() {
+    setIsUpdateData(!isUpdateData);
+  }
+
+  const staff_employee = (
+    <div
+      style={{
+        width: "100%",
+      }}
+    >
+      <ToolBar onUpdateData={onUpdateData} type={2} page={"employee"}></ToolBar>
+      <Table
+        bordered
+        loading={isFetching}
+        style={{ marginTop: "10px", maxWidth: "85vw" }}
+        columns={employee_columns}
+        dataSource={employeeList?.map((employee) => {
+          return {
+            id: employee.code,
+            name: employee.name,
+            type: employee.position,
+            address: employee.contactId.address,
+            phone_num: employee.contactId.phone_num,
+            email: employee.contactId.email,
+            warehouse_name: employee.warehouseId.name,
+            start_time: employee.startDate,
+          };
+        })}
+        pagination={{
+          showQuickJumper: true,
+          total: employeeList?.length,
+        }}
+        scroll={{
+          x: 1800,
+          y: "60vh",
+        }}
+      />
+    </div>
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsFetching(true);
+
+      try {
+        await getAllEmployees(dispatch);
+        await getAllWarehouses(dispatch);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setIsFetching(false);
+    }
+    fetchData();
+  }, [dispatch, isUpdateData]);
+
   return (
     <div>
       <TabView

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button } from "antd";
 import { MdAdd, MdAutorenew } from "react-icons/md";
 import "./custombutton.css";
 import InboundForm from "../Form/InBoundForm.js";
@@ -11,11 +11,8 @@ import NewProductForm from "../Form/NewProductForm.js";
 import NewSupplierForm from "../Form/NewSupplierForm.js";
 import NewUserForm from "../Form/NewUserForm.js";
 import NewWarehouseForm from "../Form/NewWarehouseForm.js";
-import InBoundBill from "../Form/InBoundBill.js";
-import OutBoundBill from "../Form/OutBoundBill.js";
-import axios from "axios";
 
-const CustomButton = ({ onUpdateData, onLoadingChange, numButtons, page }) => {
+const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
   const buttons = [];
   const form = [];
 
@@ -86,7 +83,14 @@ const CustomButton = ({ onUpdateData, onLoadingChange, numButtons, page }) => {
 
       break;
     case "employee":
-      form.push(<NewEmployeeForm />);
+      form.push(
+        <NewEmployeeForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "user":
@@ -100,6 +104,7 @@ const CustomButton = ({ onUpdateData, onLoadingChange, numButtons, page }) => {
           isModalOpen={isModalOpen}
           handleOkButton={handleOk}
           handleCancelButton={handleCancel}
+          managersList={managersList}
         />
       );
 

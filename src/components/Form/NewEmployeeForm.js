@@ -1,45 +1,362 @@
-import React from "react";
-import { Select, Form, Input, Button, DatePicker } from "antd";
+import React, { useState } from "react";
+import { PlusOutlined } from "@ant-design/icons";
+import {
+  Select,
+  Form,
+  Input,
+  Modal,
+  DatePicker,
+  Space,
+  Button,
+  Upload,
+  message,
+} from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { addStaff } from "../../redux/apiRequest";
+import axios from "axios";
+const { Option } = Select;
 
-function NewEmployeeForm() {
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
+const SubmitButton = ({ form, isLoading }) => {
+  const [submittable, setSubmittable] = React.useState(true);
+
+  // Watch all values
+  const values = Form.useWatch([], form);
+  React.useEffect(() => {
+    form
+      .validateFields({
+        validateOnly: true,
+      })
+      .then(
+        () => {
+          setSubmittable(true);
+        },
+        () => {
+          setSubmittable(false);
+        }
+      );
+  }, [values]);
+  return (
+    <Button
+      type="primary"
+      htmlType="submit"
+      disabled={!submittable}
+      loading={isLoading}
+    >
+      Submit
+    </Button>
+  );
+};
+
+function NewEmployeeForm({
+  onUpdateData,
+  isModalOpen,
+  handleOkButton,
+  handleCancelButton,
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  //antd
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Add Staff Success",
+    });
+  };
+  const error = () => {
+    messageApi.open({
+      type: "error",
+      content: "Add Staff Failed",
+    });
+  };
+
+  const [fileList, setFileList] = useState([]);
+
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <div>
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
+
+  const handleFinish = async (values) => {
+    try {
+      setIsLoading(true);
+      let whIdSelected = warehouses.find(
+        (wh) => wh.code === values.employeeWarehouse
+      );
+
+      console.log("form", values);
+
+      // const data = {
+      //   name: values.employeeName,
+      //   position: values.employeePosition,
+      //   startDate: values.employeeStartDate.format("DD/MM/YYYY"),
+      //   gender: values.employeeGender.toString().toLowerCase(),
+      //   idCard: values.employeeIdCard,
+      //   birthday: values.employeeBirthday.format("DD/MM/YYYY"),
+      //   email: values.employeeEmail,
+      //   phone_num: values.employeePhoneNumber,
+      //   address: values.employeeAddress,
+      //   warehouseId: whIdSelected._id,
+      // };
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("name", values.employeeName);
+      formData.append("position", values.employeePosition);
+      formData.append(
+        "startDate",
+        values.employeeStartDate.format("DD/MM/YYYY")
+      );
+      formData.append("gender", values.employeeGender.toString().toLowerCase());
+      formData.append("idCard", values.employeeIdCard);
+      formData.append("birthday", values.employeeBirthday.format("DD/MM/YYYY"));
+      formData.append("email", values.employeeEmail);
+      formData.append("phone_num", values.employeePhoneNumber);
+      formData.append("address", values.employeeAddress);
+      formData.append("warehouseId", whIdSelected._id);
+
+      // Append the file to form data
+      formData.append("image", values.employeeAvatar.file.originFileObj);
+
+      // Make the POST request with axios
+      const res = await axios.post(
+        "https://warehousemanagement.onrender.com/api/employee",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      // console.log(data);
+      setIsLoading(true);
+
+      success();
+      onUpdateData();
+      form.resetFields();
+
+      handleOkButton();
+    } catch (e) {
+      console.log(e);
+      error();
+    }
+    setIsLoading(false);
+    // await addStaff(dispatch, data);
+  };
+
+  const warehouses = useSelector(
+    (state) => state.warehouse.warehouse?.allWarehouses
+  );
+  console.log(warehouses);
+  const tailLayout = {
+    wrapperCol: {
+      offset: 8,
+      span: 16,
+    },
+  };
+  const [form] = Form.useForm();
+
   return (
     <>
-      <div>
-        <h1>New Employee</h1>
-        <Form
-          labelCol={{ span: 10 }}
-          wrapperCol={{ span: 12 }}
-          layout="horizontal"
-        >
-          <Form.Item label="Employee Name:">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Employee Type">
-            <Select>
-              <Select.Option value="Manager">Manager</Select.Option>
-              <Select.Option value="Employee">Employee</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Address:">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Phone Number:">
-            <Input type="phone" />
-          </Form.Item>
-          <Form.Item label="Email:">
-            <Input type="email" />
-          </Form.Item>
-          <Form.Item label="Warehouse">
-            <Select>
-              <Select.Option value="Warehouse1">Warehouse1</Select.Option>
-              <Select.Option value="Warehouse2">Warehouse2</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Start Time">
-            <DatePicker />
-          </Form.Item>
-        </Form>
-      </div>
+      {contextHolder}
+      <Modal
+        open={isModalOpen}
+        width="500px"
+        height="300px"
+        onOk={handleOkButton}
+        onCancel={handleCancelButton}
+        footer={null}
+      >
+        <>
+          <div>
+            <h1>New Employee</h1>
+            <Form
+              onFinish={handleFinish}
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 12 }}
+              layout="horizontal"
+              form={form}
+            >
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                label="Name:"
+                name="employeeName"
+              >
+                <Input placeholder="Employee Name" />
+              </Form.Item>
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+                label="Position"
+                name="employeePosition"
+              >
+                <Select placeholder="Select Employee Position">
+                  <Select.Option value="Manager">Manager</Select.Option>
+                  <Select.Option value="Employee">Employee</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="employeeGender"
+                label="Gender"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Select placeholder="Select Employee Gender">
+                  <Option value="male">Male</Option>
+                  <Option value="female">Female</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label="Id Card:"
+                name="employeeIdCard"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input placeholder="Employe Id Card Number" />
+              </Form.Item>
+              <Form.Item
+                name="employeeBirthday"
+                label="Birthday"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <DatePicker format="DD/MM/YYYY" />
+              </Form.Item>
+              <Form.Item
+                name="employeeAddress"
+                label="Address:"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input placeholder="Employee Address" />
+              </Form.Item>
+              <Form.Item
+                name="employeePhoneNumber"
+                label="Phone Number:"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input placeholder="Employee Phone Number" type="phone" />
+              </Form.Item>
+              <Form.Item
+                name="employeeEmail"
+                label="Email:"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input placeholder="Employee Email" type="email" />
+              </Form.Item>
+              <Form.Item
+                label="Warehouse"
+                name="employeeWarehouse"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Select placeholder="Select Warehouse where Employee work">
+                  {warehouses !== null ? (
+                    warehouses.map((warehouse) => {
+                      return (
+                        <Select.Option
+                          key={warehouse.code}
+                          value={warehouse.code}
+                        ></Select.Option>
+                      );
+                    })
+                  ) : (
+                    <Select.Option
+                      key="nothing"
+                      value="nothing..."
+                    ></Select.Option>
+                  )}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="employeeStartDate"
+                label="Start Date"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <DatePicker format={"DD/MM/YYYY"} />
+              </Form.Item>
+              <Form.Item
+                name="employeeAvatar"
+                label="Avatar"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Upload
+                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                  listType="picture-circle"
+                  fileList={fileList}
+                  onChange={handleChange}
+                  maxCount={1}
+                >
+                  {uploadButton}
+                </Upload>
+              </Form.Item>
+              <Form.Item {...tailLayout}>
+                <Space>
+                  <Button htmlType="button" onClick={handleCancelButton}>
+                    Cancel
+                  </Button>
+                  <SubmitButton form={form} isLoading={isLoading}>
+                    Ok
+                  </SubmitButton>
+                </Space>
+              </Form.Item>
+            </Form>
+          </div>
+        </>
+      </Modal>
     </>
   );
 }

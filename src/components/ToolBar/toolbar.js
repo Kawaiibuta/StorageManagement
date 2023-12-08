@@ -3,7 +3,13 @@ import CustomButton from "../../components/CustomButton/custombutton.js";
 import SearchBar from "../../components/SearchBar/searchbar.js";
 import "./toolbar.css";
 
-const ToolBar = ({ onUpdateData, onLoadingChange, type, page }) => {
+const ToolBar = ({
+  managersList,
+  onUpdateData,
+  onLoadingChange,
+  type,
+  page,
+}) => {
   const toolbar = [];
   switch (type) {
     case 0:
@@ -20,6 +26,7 @@ const ToolBar = ({ onUpdateData, onLoadingChange, type, page }) => {
       toolbar.push(
         <div>
           <CustomButton
+            managersList={managersList}
             onUpdateData={onUpdateData}
             onLoadingChange={onLoadingChange}
             className="left"

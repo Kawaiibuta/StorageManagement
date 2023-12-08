@@ -1,36 +1,82 @@
-import React, { useState } from "react";
+import React, { useSelector, useState } from "react";
 
 import axios from "axios";
-import { Form, Input, Button, Modal, Space, message } from "antd";
+import { Form, Input, Button, Modal, Space, message, Select } from "antd";
 
 const { TextArea } = Input;
+const { Option } = Select;
+
+const SubmitButton = ({ form, isLoading }) => {
+  const [submittable, setSubmittable] = React.useState(false);
+
+  // Watch all values
+  const values = Form.useWatch([], form);
+  React.useEffect(() => {
+    form
+      .validateFields({
+        validateOnly: true,
+      })
+      .then(
+        () => {
+          setSubmittable(true);
+        },
+        () => {
+          setSubmittable(false);
+        }
+      );
+  }, [values]);
+  return (
+    <Button
+      type="primary"
+      htmlType="submit"
+      disabled={!submittable}
+      loading={isLoading}
+    >
+      Submit
+    </Button>
+  );
+};
 
 function NewWarehouseForm({
+  managersList,
   onUpdateData,
   isModalOpen,
   handleOkButton,
   handleCancelButton,
 }) {
   const [isLoading, setIsLoading] = useState(false);
-  const [warehouseName, setWarehouseName] = useState("");
-  const [warehouseAddress, setWarehouseAddress] = useState("");
-  const [warehouseCapacity, setWarehouseCapacity] = useState("");
-  const [warehouseContactEmail, setWarehouseContactEmail] = useState("");
-  const [warehouseContactPhoneNum, setWarehouseContactPhoneNum] = useState("");
-  const [warehouseDescription, setWarehouseDescription] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("ghi");
-    const data = {
-      managerId: "655fc39d6ba709d3e7f0f6ab",
-      name: warehouseName,
-      capacity: warehouseCapacity,
-      description: warehouseDescription,
-      email: warehouseContactEmail,
-      phone_num: warehouseContactPhoneNum,
-      address: warehouseAddress,
-    };
+  const [form] = Form.useForm();
+
+  const handleFinish = async (values) => {
+    let manager = managersList?.find(
+      (manager) => manager.code === values.warehouseManager
+    );
+    console.log("manager", manager);
+    let data;
+    if (manager) {
+      data = {
+        managerId: manager._id,
+        name: values.warehouseName,
+        capacity: values.warehouseCapacity,
+        description: values.warehouseDescription,
+        email: values.warehouseContactEmail,
+        phone_num: values.warehouseContactPhoneNum,
+        address: values.warehouseAddress,
+      };
+    } else {
+      data = {
+        // managerId: manager._id,
+        name: values.warehouseName,
+        capacity: values.warehouseCapacity,
+        description: values.warehouseDescription,
+        email: values.warehouseContactEmail,
+        phone_num: values.warehouseContactPhoneNum,
+        address: values.warehouseAddress,
+      };
+    }
+
+    console.log("data", data);
 
     setIsLoading(true);
 
@@ -42,10 +88,12 @@ function NewWarehouseForm({
 
       message.success("Your warehouse has been added successfully.");
     } catch (e) {
-      message.error(e);
+      console.log(e);
+      message.error(e.message);
     }
     onUpdateData();
     setIsLoading(false);
+    // form.resetFields();
     // onLoadingChange();
     handleOkButton();
   };
@@ -70,7 +118,10 @@ function NewWarehouseForm({
         <div>
           <h1>New Warehouse</h1>
           <Form
-            onSubmitCapture={handleSubmit}
+            onFinish={handleFinish}
+            form={form}
+            autoComplete="off"
+            name="newWarehouse"
             labelCol={{ span: 10 }}
             wrapperCol={{ span: 12 }}
             layout="horizontal"
@@ -82,13 +133,10 @@ function NewWarehouseForm({
                   message: "Please input your warehouse name!",
                 },
               ]}
-              label="Warehouse Name:"
+              label="Name:"
+              name="warehouseName"
             >
-              <Input
-                onChange={(e) => {
-                  setWarehouseName(e.target.value);
-                }}
-              />
+              <Input placeholder="Warehouse Name" />
             </Form.Item>
             <Form.Item
               rules={[
@@ -98,13 +146,9 @@ function NewWarehouseForm({
                 },
               ]}
               label="Address: "
+              name="warehouseAddress"
             >
-              <TextArea
-                rows={4}
-                onChange={(e) => {
-                  setWarehouseAddress(e.target.value);
-                }}
-              />
+              <TextArea placeholder="Warehouse Addresss" rows={4} />
             </Form.Item>
             <Form.Item
               rules={[
@@ -114,13 +158,27 @@ function NewWarehouseForm({
                 },
               ]}
               label="Capacity:"
+              name="warehouseCapacity"
             >
-              <Input
-                type="number"
-                onChange={(e) => {
-                  setWarehouseCapacity(e.target.value);
-                }}
-              />
+              <Input placeholder="Warehouse Capacity" type="number" />
+            </Form.Item>
+            <Form.Item
+              name="warehouseManager"
+              label="Manager"
+              rules={[
+                {
+                  // required: false,
+                  // message: "Please select warehoue manager!",
+                },
+              ]}
+            >
+              <Select placeholder="Select Manager for Warehouse">
+                {managersList?.map((manager) => {
+                  return (
+                    <Option key={manager._id} value={manager.code}></Option>
+                  );
+                })}
+              </Select>
             </Form.Item>
             <Form.Item
               rules={[
@@ -130,12 +188,9 @@ function NewWarehouseForm({
                 },
               ]}
               label="Email:"
+              name="warehouseContactEmail"
             >
-              <Input
-                onChange={(e) => {
-                  setWarehouseContactEmail(e.target.value);
-                }}
-              />
+              <Input placeholder="Warehouse Email" />
             </Form.Item>
             <Form.Item
               rules={[
@@ -145,12 +200,9 @@ function NewWarehouseForm({
                 },
               ]}
               label="Phone Number:"
+              name="warehouseContactPhoneNum"
             >
-              <Input
-                onChange={(e) => {
-                  setWarehouseContactPhoneNum(e.target.value);
-                }}
-              />
+              <Input placeholder="Warehouse Phone Number" />
             </Form.Item>
             <Form.Item
               rules={[
@@ -160,11 +212,13 @@ function NewWarehouseForm({
                 },
               ]}
               label="Description:"
+              name="warehouseDescription"
             >
               <TextArea
+                placeholder="Warehouse Description"
                 rows={4}
                 onChange={(e) => {
-                  setWarehouseDescription(e.target.value);
+                  // setWarehouseDescription(e.target.value);
                 }}
               />
             </Form.Item>
@@ -173,9 +227,9 @@ function NewWarehouseForm({
                 <Button htmlType="button" onClick={handleCancelButton}>
                   Cancel
                 </Button>
-                <Button type="primary" htmlType="submit" loading={isLoading}>
+                <SubmitButton form={form} isLoading={isLoading}>
                   Ok
-                </Button>
+                </SubmitButton>
               </Space>
             </Form.Item>
           </Form>

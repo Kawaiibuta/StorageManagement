@@ -1,8 +1,8 @@
 .App {
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 .SideMenu {
@@ -34,7 +34,8 @@
 }
 
 .AppHeader {
-  height: 50px;
+  /* height: 50px; */
+  /* width: 100vw; */
   display: flex;
   justify-content: space-between;
   background-color: #a4acd6;
@@ -47,7 +48,7 @@
 }
 
 .ant-menu-vertical .ant-menu-submenu-title {
-  padding: 30px;
+  /* padding: 30px; */
 }
 
 .App-logo {
