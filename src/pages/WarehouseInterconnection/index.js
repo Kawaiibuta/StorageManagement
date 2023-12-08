@@ -1,132 +1,149 @@
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Button, Table } from "antd";
+import { Table, message } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
-import axios from "axios";
+import { getAllWarehouses, onGetAllManagers } from "../../redux/apiRequest.js";
+import { useDispatch, useSelector } from "react-redux";
 
 // let data = [];
+const columns = [
+  {
+    title: "Code",
+    fixed: "left",
+    dataIndex: "code",
+    key: "code",
+    width: 80,
+  },
+  {
+    title: "Warehouse Name",
+    width: 150,
+    dataIndex: "name",
+    key: "name",
+    fixed: "left",
+  },
+  {
+    title: "Warehouse Address",
+    dataIndex: "address",
+    key: "address",
+    width: 200,
+  },
+  {
+    title: "Warehouse Contact",
+    dataIndex: "contact_info",
+    key: "contact_info",
+  },
+  {
+    title: "Warehouse Manager",
+    dataIndex: "managerName",
+    key: "managerName",
+    width: 200,
+  },
+  {
+    title: "Warehouse Capacity",
+    dataIndex: "capacity",
+    key: "capacity",
+  },
+
+  {
+    title: "Warehouse Description",
+    dataIndex: "description",
+    key: "description",
+    width: 200,
+  },
+  {
+    title: "Create Time",
+    dataIndex: "createTime",
+    key: "createTime",
+    width: 200,
+  },
+  {
+    title: "Update Time",
+    dataIndex: "updateTime",
+    key: "updateTime",
+    width: 200,
+  },
+  {
+    title: "Action",
+    key: "operation",
+    fixed: "right",
+    width: 120,
+    render: () => <ActionBar numActions={"edt_del"} />,
+  },
+];
 
 function WarehouseInterconnection() {
   const [isUpdateData, setIsUpdateData] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [dataSource, setDataSource] = useState([]);
-  const columns = [
-    {
-      title: "Code",
-      fixed: "left",
-      dataIndex: "code",
-      key: "code",
-      width: 60,
-    },
-    {
-      title: "Full Name",
-      width: 250,
-      dataIndex: "name",
-      key: "name",
-      fixed: "left",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Capacity",
-      dataIndex: "capacity",
-      key: "capacity",
-      width: 200,
-    },
-    {
-      title: "Contact",
-      dataIndex: "contact_info",
-      key: "contact_info",
-      width: 200,
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Action",
-      key: "operation",
-      fixed: "right",
-      width: 120,
-      render: () => <ActionBar numActions={"edt_del"} />,
-    },
-  ];
+  const dispatch = useDispatch();
+  const managersList = useSelector(
+    (state) => state.employee.manager?.allManagers
+  );
+  const allWarehouseList = useSelector(
+    (state) => state.warehouse.warehouse?.allWarehouses
+  );
+  const isError = useSelector((state) => state.employee.manager?.error);
 
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
   }
 
-  function warehouse(code, name, address, capacity, contact_info, description) {
-    this.code = code;
-    this.name = name;
-    this.address = address;
-    this.capacity = capacity;
-    this.contact_info = contact_info;
-    this.description = description;
-  }
-
-  function Warehouseinter({ warehouses }) {
-    console.log("data", warehouses);
-    return (
-      <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
-        <ToolBar
-          onUpdateData={onUpdateData}
-          type={2}
-          page={"warehouseinter"}
-        ></ToolBar>
-        <Table
-          loading={isFetching}
-          style={{ marginTop: "10px", maxWidth: "80vw" }}
-          columns={columns}
-          dataSource={warehouses}
-          pagination={{
-            showQuickJumper: true,
-            total: warehouses.length,
-          }}
-          scroll={{
-            x: 2000,
-          }}
-        />
-      </div>
-    );
-  }
+  const warehouseinter = (
+    <div style={{ width: "100%" }}>
+      <ToolBar
+        managersList={managersList}
+        onUpdateData={onUpdateData}
+        type={2}
+        page={"warehouseinter"}
+      ></ToolBar>
+      <Table
+        bordered
+        loading={isFetching}
+        style={{
+          marginTop: "10px",
+          maxWidth: "85vw",
+        }}
+        columns={columns}
+        dataSource={allWarehouseList?.map((wh) => {
+          return {
+            code: wh.code,
+            name: wh.name,
+            address: wh.contactId.address,
+            contact_info: wh.contactId.phone_num,
+            managerName: wh.managerId?.name,
+            capacity: wh.capacity,
+            description: wh.description,
+            // createTime: wh.createdAt,
+            // updateTime: wh.updatedAt,
+          };
+        })}
+        pagination={{
+          showQuickJumper: true,
+          total: allWarehouseList?.length,
+        }}
+        scroll={{
+          x: 1800,
+          y: "65vh",
+        }}
+      />
+    </div>
+  );
 
   useEffect(() => {
     async function fetchData() {
       setIsFetching(true);
-      const request = await axios.get(
-        "https://warehousemanagement.onrender.com/api/warehouse"
-      );
-
-      const whList = [];
-
-      for (const wh in request.data) {
-        const nextWarehouse = new warehouse(
-          request.data[wh].code,
-          request.data[wh].name,
-          request.data[wh].contactId.address,
-          request.data[wh].capacity,
-          request.data[wh].contactId.phone_num,
-          request.data[wh].description
-        );
-        whList.push(nextWarehouse);
-      }
-
-      setDataSource(whList);
+      await getAllWarehouses(dispatch);
       setIsFetching(false);
-
-      // onLoadingChange();
-      return request.data;
+      await onGetAllManagers(dispatch);
     }
     fetchData();
-  }, [isUpdateData]);
+    // console.log(allWarehouseList);
+  }, [dispatch, isUpdateData]);
 
-  console.log("return", dataSource);
+  if (isError) {
+    message.error("Something went wrong!");
+  }
+
   return (
     <div>
       <TabView
@@ -134,12 +151,11 @@ function WarehouseInterconnection() {
         tabs={[
           {
             name: "Warehouse Interconnection",
-            content: <Warehouseinter warehouses={dataSource} />,
+            content: warehouseinter,
           },
         ]}
       />
     </div>
-    // <Warehouseinter warehouses={dataSource} />
   );
 }
 
