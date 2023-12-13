@@ -20,6 +20,12 @@ const employeeSlice = createSlice({
       success: false,
       message: "",
     },
+    user: {
+      allUsers: null,
+      isFetching: false,
+      error: false,
+      success: false,
+    },
   },
   reducers: {
     getEmployeesStart: (state) => {
@@ -62,10 +68,28 @@ const employeeSlice = createSlice({
       state.staff.success = false;
       state.staff.message = action.payload;
     },
+    getAllUsersStart: (state) => {
+      state.user.isFetching = true;
+    },
+    getAllUsersSuccess: (state, action) => {
+      state.user.isFetching = false;
+      state.user.error = false;
+      state.user.success = true;
+      state.user.allUsers = action.payload;
+      // state.staff.message = action.payload;
+    },
+    getAllUsersFailed: (state) => {
+      state.user.isFetching = false;
+      state.user.error = true;
+      state.user.success = false;
+    },
   },
 });
 
 export const {
+  getAllUsersFailed,
+  getAllUsersStart,
+  getAllUsersSuccess,
   getEmployeesError,
   getEmployeesStart,
   getEmployeesSuccess,

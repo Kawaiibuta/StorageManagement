@@ -22,8 +22,10 @@ function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     const newUser = {
-      username: username,
-      password: password,
+      // username: username,
+      // password: password,
+      username: "EMP0007",
+      password: "eBrOPrFzej",
     };
     loginUser(newUser, dispatch);
     // navigate("/dashboard");

@@ -66,7 +66,6 @@ function NewWarehouseForm({
       };
     } else {
       data = {
-        // managerId: manager._id,
         name: values.warehouseName,
         capacity: values.warehouseCapacity,
         description: values.warehouseDescription,
@@ -75,9 +74,6 @@ function NewWarehouseForm({
         address: values.warehouseAddress,
       };
     }
-
-    console.log("data", data);
-
     setIsLoading(true);
 
     try {
@@ -87,15 +83,14 @@ function NewWarehouseForm({
       );
 
       message.success("Your warehouse has been added successfully.");
+      onUpdateData();
+      handleOkButton();
+      form.resetFields();
     } catch (e) {
       console.log(e);
-      message.error(e.message);
+      message.error(e.response.data);
     }
-    onUpdateData();
     setIsLoading(false);
-    // form.resetFields();
-    // onLoadingChange();
-    handleOkButton();
   };
 
   const tailLayout = {
@@ -172,7 +167,7 @@ function NewWarehouseForm({
                 },
               ]}
             >
-              <Select placeholder="Select Manager for Warehouse">
+              <Select allowClear placeholder="Select Manager for Warehouse">
                 {managersList?.map((manager) => {
                   return (
                     <Option key={manager._id} value={manager.code}></Option>
@@ -224,7 +219,13 @@ function NewWarehouseForm({
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Space>
-                <Button htmlType="button" onClick={handleCancelButton}>
+                <Button
+                  htmlType="button"
+                  onClick={() => {
+                    handleCancelButton();
+                    form.resetFields();
+                  }}
+                >
                   Cancel
                 </Button>
                 <SubmitButton form={form} isLoading={isLoading}>

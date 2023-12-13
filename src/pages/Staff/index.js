@@ -3,36 +3,16 @@ import TabView from "../../components/Button Header/TabView";
 import { Table } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
-import { PiEyeBold } from "react-icons/pi";
-import axios from "axios";
-import { getAllEmployees, getAllWarehouses } from "../../redux/apiRequest.js";
+import {
+  getAllEmployees,
+  getAllUsersAccount,
+  getAllWarehouses,
+} from "../../redux/apiRequest.js";
 import { useDispatch, useSelector } from "react-redux";
-
-function user_item(id, employee_name, role, user_name, password) {
-  this.id = id;
-  this.employee_name = employee_name;
-  this.role = role;
-  this.user_name = user_name;
-  this.password = password;
-}
-const user_dataSource = [];
-for (let i = 1; i < 100; i++) {
-  user_dataSource.push(
-    new user_item(
-      i,
-      "Employee Name " + i.toString(),
-      "Manager/Employee",
-      "Username_" + i.toString(),
-      "Password_" + i.toString()
-    )
-  );
-}
-console.log(user_dataSource);
 
 const user_columns = [
   {
-    title: "ID",
-    fixed: "left",
+    title: "STT",
     dataIndex: "id",
     key: "id",
     width: 60,
@@ -41,12 +21,10 @@ const user_columns = [
     title: "Employee",
     dataIndex: "employee_name",
     key: "employee_name",
-    fixed: "left",
-    width: 250,
   },
   {
     title: "Role",
-    width: 200,
+
     dataIndex: "role",
     key: "role",
   },
@@ -54,26 +32,13 @@ const user_columns = [
     title: "Username",
     dataIndex: "user_name",
     key: "user_name",
-    width: 200,
   },
-  {
-    title: "Password",
-    dataIndex: "password",
-    key: "password",
-    width: 200,
-  },
-  {
-    render: () => (
-      <div>
-        <a>{<PiEyeBold />}</a>
-      </div>
-    ),
-  },
+
   {
     title: "Action",
     key: "operation",
     fixed: "right",
-    width: 120,
+
     render: () => <ActionBar numActions={"edt_del"} />,
   },
 ];
@@ -137,24 +102,6 @@ const employee_columns = [
   },
 ];
 
-const staff_user = (
-  <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
-    <ToolBar type={2} page={"user"}></ToolBar>
-    <Table
-      style={{ marginTop: "10px", maxWidth: "100%" }}
-      columns={user_columns}
-      dataSource={user_dataSource}
-      pagination={{
-        showQuickJumper: true,
-        total: user_dataSource.length,
-      }}
-      scroll={{
-        x: 1659,
-      }}
-    />
-  </div>
-);
-
 function Staff() {
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
@@ -162,11 +109,39 @@ function Staff() {
   const employeeList = useSelector(
     (state) => state.employee.employee?.allEmployees
   );
-  console.log("employee", employeeList);
+  const usersList = useSelector((state) => state.employee.user?.allUsers);
+  const user = useSelector((state) => state.auth.login?.currentUser);
 
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
   }
+
+  const staff_user = (
+    <div style={{ width: "100%" }}>
+      <ToolBar onUpdateData={onUpdateData} type={2} page={"user"}></ToolBar>
+      <Table
+        bordered
+        loading={isFetching}
+        style={{ marginTop: "10px", maxWidth: "85vw" }}
+        columns={user_columns}
+        dataSource={usersList?.map((user, index) => {
+          return {
+            id: index + 1,
+            employee_name: user.employeeId.name,
+            role: user.isEmployee ? "Employee" : "Manager",
+            user_name: user.username,
+          };
+        })}
+        pagination={{
+          showQuickJumper: true,
+          total: usersList?.length,
+        }}
+        scroll={{
+          y: "60vh",
+        }}
+      />
+    </div>
+  );
 
   const staff_employee = (
     <div
@@ -210,6 +185,7 @@ function Staff() {
 
       try {
         await getAllEmployees(dispatch);
+        getAllUsersAccount(user.accessToken, dispatch);
         await getAllWarehouses(dispatch);
       } catch (e) {
         console.log(e);

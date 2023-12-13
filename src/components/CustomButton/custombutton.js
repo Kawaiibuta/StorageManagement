@@ -71,15 +71,36 @@ const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
 
       break;
     case "product":
-      form.push(<NewProductForm />);
+      form.push(
+        <NewProductForm
+        // onUpdateData={onUpdateData}
+        // isModalOpen={isModalOpen}
+        // handleOkButton={handleOk}
+        // handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "supplier":
-      form.push(<NewSupplierForm />);
+      form.push(
+        <NewSupplierForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "customer":
-      form.push(<NewCustomerForm />);
+      form.push(
+        <NewCustomerForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "employee":
@@ -94,7 +115,14 @@ const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
 
       break;
     case "user":
-      form.push(<NewUserForm />);
+      form.push(
+        <NewUserForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "warehouseinter":
