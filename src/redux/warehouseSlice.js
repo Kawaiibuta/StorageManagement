@@ -8,6 +8,7 @@ const warehouseSlice = createSlice({
       isFetching: false,
       error: false,
     },
+    msg: "",
   },
   reducers: {
     getAllWarehouseStart: (state) => {
@@ -22,6 +23,32 @@ const warehouseSlice = createSlice({
       state.warehouse.isFetching = false;
       state.warehouse.error = true;
     },
+    deleteWarehouseStart: (state) => {
+      state.warehouse.isFetching = true;
+    },
+    deleteWarehouseSuccess: (state, action) => {
+      state.warehouse.isFetching = false;
+      state.warehouse.error = false;
+      state.msg = action.payload;
+    },
+    deleteWarehouseError: (state, action) => {
+      state.warehouse.isFetching = false;
+      state.warehouse.error = true;
+      state.msg = action.payload;
+    },
+    editWarehouseStart: (state) => {
+      state.warehouse.isFetching = true;
+    },
+    editWarehouseSuccess: (state, action) => {
+      state.warehouse.isFetching = false;
+      state.warehouse.error = false;
+      state.msg = action.payload;
+    },
+    editWarehouseError: (state, action) => {
+      state.warehouse.isFetching = false;
+      state.warehouse.error = true;
+      state.msg = action.payload;
+    },
   },
 });
 
@@ -29,6 +56,12 @@ export const {
   getAllWarehouseError,
   getAllWarehouseStart,
   getAllWarehouseSuccess,
+  deleteWarehouseError,
+  deleteWarehouseStart,
+  deleteWarehouseSuccess,
+  editWarehouseError,
+  editWarehouseStart,
+  editWarehouseSuccess,
 } = warehouseSlice.actions;
 
 export default warehouseSlice.reducer;

@@ -11,18 +11,9 @@ import {
   Upload,
   message,
 } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { addStaff } from "../../redux/apiRequest";
+import { useSelector } from "react-redux";
 import axios from "axios";
 const { Option } = Select;
-
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
 
 const SubmitButton = ({ form, isLoading }) => {
   const [submittable, setSubmittable] = React.useState(true);
@@ -99,22 +90,6 @@ function NewEmployeeForm({
       let whIdSelected = warehouses.find(
         (wh) => wh.code === values.employeeWarehouse
       );
-
-      console.log("form", values);
-
-      // const data = {
-      //   name: values.employeeName,
-      //   position: values.employeePosition,
-      //   startDate: values.employeeStartDate.format("DD/MM/YYYY"),
-      //   gender: values.employeeGender.toString().toLowerCase(),
-      //   idCard: values.employeeIdCard,
-      //   birthday: values.employeeBirthday.format("DD/MM/YYYY"),
-      //   email: values.employeeEmail,
-      //   phone_num: values.employeePhoneNumber,
-      //   address: values.employeeAddress,
-      //   warehouseId: whIdSelected._id,
-      // };
-      // Prepare form data
       const formData = new FormData();
       formData.append("name", values.employeeName);
       formData.append("position", values.employeePosition);
@@ -128,7 +103,9 @@ function NewEmployeeForm({
       formData.append("email", values.employeeEmail);
       formData.append("phone_num", values.employeePhoneNumber);
       formData.append("address", values.employeeAddress);
-      formData.append("warehouseId", whIdSelected._id);
+      if (whIdSelected) {
+        formData.append("warehouseId", whIdSelected._id);
+      }
 
       // Append the file to form data
       formData.append("image", values.employeeAvatar.file.originFileObj);
@@ -162,7 +139,6 @@ function NewEmployeeForm({
   const warehouses = useSelector(
     (state) => state.warehouse.warehouse?.allWarehouses
   );
-  console.log(warehouses);
   const tailLayout = {
     wrapperCol: {
       offset: 8,
@@ -291,27 +267,20 @@ function NewEmployeeForm({
                 name="employeeWarehouse"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                   },
                 ]}
               >
-                <Select placeholder="Select Warehouse where Employee work">
-                  {warehouses !== null ? (
-                    warehouses.map((warehouse) => {
-                      return (
-                        <Select.Option
-                          key={warehouse.code}
-                          value={warehouse.code}
-                        ></Select.Option>
-                      );
-                    })
-                  ) : (
-                    <Select.Option
-                      key="nothing"
-                      value="nothing..."
-                    ></Select.Option>
-                  )}
-                </Select>
+                <Select
+                  allowClear
+                  options={warehouses?.map((warehouse) => {
+                    return {
+                      label: warehouse.code,
+                      value: warehouse._id,
+                    };
+                  })}
+                  placeholder="Select Warehouse where Employee work"
+                ></Select>
               </Form.Item>
               <Form.Item
                 name="employeeStartDate"
