@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, Button, Divider } from "antd";
+import { Input, Button } from "antd";
 import { AiOutlineSearch } from "react-icons/ai";
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button } from "antd";
 import { MdAdd, MdAutorenew } from "react-icons/md";
 import "./custombutton.css";
 import InboundForm from "../Form/InBoundForm.js";
@@ -11,15 +11,13 @@ import NewProductForm from "../Form/NewProductForm.js";
 import NewSupplierForm from "../Form/NewSupplierForm.js";
 import NewUserForm from "../Form/NewUserForm.js";
 import NewWarehouseForm from "../Form/NewWarehouseForm.js";
-import InBoundBill from "../Form/InBoundBill.js";
-import OutBoundBill from "../Form/OutBoundBill.js";
 
-const CustomButton = (props) => {
-  const { numButtons, page } = props;
+const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
   const buttons = [];
   const form = [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -56,53 +54,88 @@ const CustomButton = (props) => {
       //Test
       //showModal2();
       //End Test
+      onUpdateData();
     }
   };
   switch (page) {
     case "inbound":
-      {
-        form.push(<InboundForm />);
-      }
+      form.push(<InboundForm />);
+
       break;
     case "outbound":
-      {
-        form.push(<OutboundForm />);
-      }
+      form.push(<OutboundForm />);
+
       break;
     case "report":
-      {
-        form.push(<InventoryReport />);
-      }
+      form.push(<InventoryReport />);
+
       break;
     case "product":
-      {
-        form.push(<NewProductForm />);
-      }
+      form.push(
+        <NewProductForm
+        // onUpdateData={onUpdateData}
+        // isModalOpen={isModalOpen}
+        // handleOkButton={handleOk}
+        // handleCancelButton={handleCancel}
+        />
+      );
+
       break;
     case "supplier":
-      {
-        form.push(<NewSupplierForm />);
-      }
+      form.push(
+        <NewSupplierForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
+
       break;
     case "customer":
-      {
-        form.push(<NewCustomerForm />);
-      }
+      form.push(
+        <NewCustomerForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
+
       break;
     case "employee":
-      {
-        form.push(<NewEmployeeForm />);
-      }
+      form.push(
+        <NewEmployeeForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
+
       break;
     case "user":
-      {
-        form.push(<NewUserForm />);
-      }
+      form.push(
+        <NewUserForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
+
       break;
     case "warehouseinter":
-      {
-        form.push(<NewWarehouseForm />);
-      }
+      form.push(
+        <NewWarehouseForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+          managersList={managersList}
+        />
+      );
+
       break;
     default:
       console.log("Nope");
@@ -148,15 +181,9 @@ const CustomButton = (props) => {
   return (
     <div style={{ display: "inline" }}>
       {buttons}
-      <Modal
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        width="500px"
-        height="300px"
-      >
-        {form}
-      </Modal>
+
+      {form}
+
       {/* Test */}
       {/* <Modal
         open={isModal2Open}
