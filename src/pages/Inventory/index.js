@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TabView from "../../components/Button Header/TabView";
 import { Table } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
@@ -140,31 +140,36 @@ const inventory_product = (
     />
   </div>
 );
-const inventory_report = (
-  <div
-    style={{
-      maxWidth: "80%",
-      width: "100%",
-      minWidth: "90%",
-    }}
-  >
-    <ToolBar type={2} page={"report"}></ToolBar>
-    <Table
-      style={{ marginTop: "10px", maxWidth: "80vw" }}
-      columns={report_columns}
-      dataSource={report_dataSource}
-      pagination={{
-        showQuickJumper: true,
-        total: report_dataSource.length,
-      }}
-      scroll={{
-        x: 1800,
-      }}
-    />
-  </div>
-);
 
 function Inventory() {
+  const [isFetching, setIsFetching] = useState(false);
+  const [isUpdateData, setIsUpdateData] = useState(false);
+  function onUpdateData() {
+    setIsUpdateData(!isUpdateData);
+  }
+
+  const inventory_report = (
+    <div
+      style={{
+        width: "100%",
+      }}
+    >
+      <ToolBar onUpdateData={onUpdateData} type={2} page={"report"}></ToolBar>
+      <Table
+        style={{ marginTop: "10px", maxWidth: "85vw" }}
+        columns={report_columns}
+        dataSource={report_dataSource}
+        pagination={{
+          showQuickJumper: true,
+          total: report_dataSource.length,
+        }}
+        scroll={{
+          x: 1800,
+        }}
+      />
+    </div>
+  );
+
   return (
     <div>
       <TabView

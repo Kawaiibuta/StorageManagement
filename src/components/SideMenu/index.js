@@ -18,7 +18,7 @@ const dividerItem = {
 
 const items = [
   {
-    key: "/dashboard",
+    key: "/",
     icon: <MdAutoGraph />,
     label: "Dashboard",
   },

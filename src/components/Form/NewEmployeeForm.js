@@ -87,9 +87,7 @@ function NewEmployeeForm({
   const handleFinish = async (values) => {
     try {
       setIsLoading(true);
-      let whIdSelected = warehouses.find(
-        (wh) => wh.code === values.employeeWarehouse
-      );
+
       const formData = new FormData();
       formData.append("name", values.employeeName);
       formData.append("position", values.employeePosition);
@@ -103,15 +101,15 @@ function NewEmployeeForm({
       formData.append("email", values.employeeEmail);
       formData.append("phone_num", values.employeePhoneNumber);
       formData.append("address", values.employeeAddress);
-      if (whIdSelected) {
-        formData.append("warehouseId", whIdSelected._id);
+      if (values.employeeWarehouse) {
+        formData.append("warehouseId", values.employeeWarehouse);
       }
 
       // Append the file to form data
       formData.append("image", values.employeeAvatar.file.originFileObj);
 
       // Make the POST request with axios
-      const res = await axios.post(
+      await axios.post(
         "https://warehousemanagement.onrender.com/api/employee",
         formData,
         {

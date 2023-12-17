@@ -12,7 +12,7 @@ import WarehouseInterconnection from "../../pages/WarehouseInterconnection";
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/dashboard" element={<Dashboard />}></Route>
+      <Route path="/" element={<Dashboard />}></Route>
       <Route path="/inbound" element={<InBound />}></Route>
       <Route path="/outbound" element={<Outbound />}></Route>
       <Route path="/inventory" element={<Inventory />}></Route>

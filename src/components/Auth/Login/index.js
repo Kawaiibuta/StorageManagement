@@ -16,18 +16,19 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   // const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const newUser = {
-      // username: username,
-      // password: password,
-      username: "EMP0007",
-      password: "eBrOPrFzej",
+      username: username,
+      password: password,
     };
-    loginUser(newUser, dispatch);
+    await loginUser(newUser, dispatch);
+    setIsLoading(false);
     // navigate("/dashboard");
   };
 
@@ -37,17 +38,6 @@ function Login() {
         onSubmitCapture={handleLogin}
         layout="vertical"
         className="loginForm"
-        // name="basic"
-        // labelCol={{
-        //   span: 8,
-        // }}
-        // wrapperCol={{
-        //   span: 16,
-        // }}
-        // style={{
-        //   maxWidth: 600,
-        //   textAlign: "center",
-        // }}
         initialValues={{
           remember: true,
         }}
@@ -60,9 +50,6 @@ function Login() {
           src={require("../../../assets/images/WarehouseLogo.png")}
           alt=""
           width={150}
-          // width={150}
-          // height={100}
-          // style={{ margin: 0, padding: 0, textAlign: "center" }}
         ></img>
         <Typography
           style={{
@@ -75,17 +62,7 @@ function Login() {
         >
           Login
         </Typography>
-        <Form.Item
-          label={<p className="label">Username</p>}
-          name="username"
-
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: "Please input your username!",
-          //   },
-          // ]}
-        >
+        <Form.Item label={<p className="label">Username</p>} name="username">
           <Input
             size="large"
             placeholder="Enter Username"
@@ -93,16 +70,7 @@ function Login() {
           />
         </Form.Item>
 
-        <Form.Item
-          label={<p className="label">Password</p>}
-          name="password"
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: "Please input your password!",
-          //   },
-          // ]}
-        >
+        <Form.Item label={<p className="label">Password</p>} name="password">
           <Input.Password
             size="large"
             placeholder="Password"
@@ -110,23 +78,7 @@ function Login() {
           />
         </Form.Item>
 
-        {/* <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item> */}
-
-        <Form.Item
-        // wrapperCol={{
-        //   offset: 8,
-        //   span: 16,
-        // }}
-        >
+        <Form.Item>
           <ConfigProvider
             theme={{
               token: {
@@ -136,6 +88,7 @@ function Login() {
             }}
           >
             <Button
+              loading={isLoading}
               style={{ fontWeight: "bold", color: "white" }}
               block
               size="large"
