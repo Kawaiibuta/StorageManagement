@@ -9,7 +9,6 @@ import {
   getAllWarehouses,
 } from "../../redux/apiRequest.js";
 import { useDispatch, useSelector } from "react-redux";
-
 const user_columns = [
   {
     title: "STT",
@@ -58,7 +57,7 @@ const employee_columns = [
     fixed: "left",
   },
   {
-    title: "Employee Type",
+    title: "Type",
     dataIndex: "type",
     key: "6",
     width: 150,
@@ -201,6 +200,7 @@ function Staff() {
       <TabView
         tabs={[
           { name: "Employee", content: staff_employee },
+          { name: "Manager", content: staff_manager },
           { name: "User", content: staff_user },
         ]}
       />
