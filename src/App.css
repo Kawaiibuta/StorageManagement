@@ -1,5 +1,47 @@
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.SideMenu {
+  height: 100%;
+
+  text-align: left;
+}
+
+.SideMenuVertical {
+  height: 100%;
+}
+
+.SideMenuAndPageContent {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.AppTab {
+  background-color: red;
+  color: red;
+}
+
+.PageContent {
+  padding-left: 20px;
+}
+
+.AppHeader {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #a4acd6;
+  align-items: center;
+  padding: 4px 20px 4px 12px;
+}
+
+.ant-menu-vertical .ant-menu-submenu-title {
+  padding: 30px;
 }
 
 .App-logo {
