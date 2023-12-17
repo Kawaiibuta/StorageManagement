@@ -95,7 +95,7 @@ function InBoundForm({
         partnerId: values.supplier,
         warehouseId: "657c678f72304d206a0fd13f",
         details: details,
-        total: 10,
+        total: totalProducts,
       };
       console.log("data", data);
 

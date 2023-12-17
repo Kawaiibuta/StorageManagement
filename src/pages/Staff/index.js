@@ -45,6 +45,65 @@ const user_columns = [
     render: () => <ActionBar numActions={"edt_del"} />,
   },
 ];
+const employee_columns = [
+  {
+    title: "Code",
+    fixed: "left",
+    dataIndex: "id",
+    key: "id",
+    width: 90,
+  },
+  {
+    title: "Full Name",
+    width: 200,
+    dataIndex: "name",
+    key: "name",
+    fixed: "left",
+  },
+  {
+    title: "Type",
+    dataIndex: "type",
+    key: "6",
+    width: 150,
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "6",
+    width: 150,
+  },
+  {
+    title: "Phone Number",
+    dataIndex: "phone_num",
+    key: "6",
+    width: 150,
+  },
+  {
+    title: "Email",
+    dataIndex: "email",
+    key: "6",
+    width: 200,
+  },
+  {
+    title: "Warehouse",
+    dataIndex: "warehouse_name",
+    key: "6",
+    width: 200,
+  },
+  {
+    title: "Start Time",
+    dataIndex: "start_time",
+    key: "6",
+    width: 200,
+  },
+  {
+    title: "Action",
+    key: "operation",
+    fixed: "right",
+    width: 120,
+    render: () => <ActionBar numActions={"edt_del"} />,
+  },
+];
 
 function Staff() {
   const [isFetching, setIsFetching] = useState(false);
@@ -291,6 +350,7 @@ function Staff() {
       <TabView
         tabs={[
           { name: "Employee", content: staff_employee },
+          { name: "Manager", content: staff_manager },
           { name: "User", content: staff_user },
         ]}
       />

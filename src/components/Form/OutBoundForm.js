@@ -130,8 +130,8 @@ function OutBoundForm({
       onUpdateData();
       handleOkButton();
     } catch (e) {
-      // message.error(e.response.data);
       console.log(e);
+      message.error(e.response.data);
     }
     setIsLoading(false);
   };
