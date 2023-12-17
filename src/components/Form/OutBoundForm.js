@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  Select,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Modal,
-  Space,
-  Card,
-  message,
-} from "antd";
-import {
-  MinusCircleOutlined,
-  PlusOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
-import { MdOutlineMargin } from "react-icons/md";
+import { Select, Form, InputNumber, Button, Modal, Space, message } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
+
 import { useSelector } from "react-redux";
 import { addTransaction, updateTransaction } from "../../redux/apiRequest";
 
@@ -37,6 +23,7 @@ const SubmitButton = ({ form, isLoading }) => {
           setSubmittable(false);
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
   return (
     <Button
@@ -68,7 +55,7 @@ function OutBoundForm({
   console.log("formdata", formData);
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
-  const [action, setAction] = useState("");
+
   const customersList = useSelector(
     (state) => state.partner.customer?.allCustomers
   );

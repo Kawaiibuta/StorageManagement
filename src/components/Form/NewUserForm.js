@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Select, Form, Input, Modal, Button, Space, message } from "antd";
+import { Select, Form, Modal, Button, Space, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { registerEmployeeUser } from "../../redux/apiRequest";
 
@@ -21,6 +21,7 @@ const SubmitButton = ({ form, isLoading }) => {
           setSubmittable(false);
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
   return (
     <Button
@@ -43,9 +44,7 @@ function NewUserForm({
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const usersList = useSelector((state) => state.employee.user?.allUsers);
-  const allEmployeesList = useSelector(
-    (state) => state.employee.employee?.allEmployees
-  );
+  const allStaffsList = useSelector((state) => state.employee.staff?.allStaffs);
 
   const tailLayout = {
     wrapperCol: {
@@ -58,12 +57,10 @@ function NewUserForm({
   const handleFinish = async (values) => {
     setIsLoading(true);
     try {
-      let employee = allEmployeesList?.find(
-        (e) => e.code === values.employeeCode
-      );
+      let staff = allStaffsList?.find((e) => e.code === values.employeeCode);
 
-      console.log("emp", employee);
-      await registerEmployeeUser({ employeeId: employee._id }, dispatch);
+      console.log("emp", staff);
+      await registerEmployeeUser({ employeeId: staff._id }, dispatch);
     } catch (e) {
       console.log(e);
       message.error(e);
@@ -95,7 +92,7 @@ function NewUserForm({
           >
             <Form.Item name="employeeCode" label="Select Employee Code: ">
               <Select>
-                {allEmployeesList.map((employee) => {
+                {allStaffsList?.map((employee) => {
                   const employeeHasAccount = usersList?.find(
                     (e) => e.employeeId._id === employee._id
                   );

@@ -6,24 +6,17 @@ import {
   Select,
   Form,
   Input,
-  InputNumber,
   Button,
   Upload,
-  Modal,
   Space,
   message,
   DatePicker,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useSelector } from "react-redux";
-import {
-  addProduct,
-  updateEmployee,
-  updateProduct,
-} from "../../redux/apiRequest";
+import { updateEmployee } from "../../redux/apiRequest";
 import moment from "moment";
 const { Option } = Select;
-const { TextArea } = Input;
 
 const SubmitButton = ({ form, isLoading }) => {
   const [submittable, setSubmittable] = React.useState(true);
@@ -43,6 +36,7 @@ const SubmitButton = ({ form, isLoading }) => {
           setSubmittable(false);
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
   return (
     <Button
@@ -162,7 +156,7 @@ function UpdateProductForm({
   return (
     <>
       <div>
-        <h1>Update Product</h1>
+        <h1>Update Employee</h1>
         <Form
           onFinish={handleFinish}
           form={form}

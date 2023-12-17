@@ -16,18 +16,19 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   // const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const newUser = {
-      // username: username,
-      // password: password,
-      username: "MAN0010",
-      password: "VHLJ3H1j13",
+      username: username,
+      password: password,
     };
-    loginUser(newUser, dispatch);
+    await loginUser(newUser, dispatch);
+    setIsLoading(false);
     // navigate("/dashboard");
   };
 
@@ -87,6 +88,7 @@ function Login() {
             }}
           >
             <Button
+              loading={isLoading}
               style={{ fontWeight: "bold", color: "white" }}
               block
               size="large"

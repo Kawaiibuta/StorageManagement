@@ -1,14 +1,5 @@
-import React, { useState } from "react";
-import {
-  Select,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Modal,
-  Space,
-  message,
-} from "antd";
+import React, { useState, useEffect } from "react";
+import { Select, Form, InputNumber, Button, Modal, Space, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { addTransaction } from "../../redux/apiRequest";
@@ -31,6 +22,7 @@ const SubmitButton = ({ form, isLoading }) => {
           setSubmittable(false);
         }
       );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
   return (
     <Button
@@ -110,6 +102,21 @@ function InBoundForm({
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (formData) {
+      form.setFieldsValue({
+        supplier: formData.supplier,
+        products: formData.trans_details.map((e) => ({
+          id: e._id,
+          action: "update",
+          productId: e.productId,
+          quantity: e.quantity,
+        })),
+      });
+    }
+  }, [formData, form]);
+
   return (
     <>
       <Modal

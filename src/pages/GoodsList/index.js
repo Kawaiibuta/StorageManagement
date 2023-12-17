@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Button, Image, Modal, Space, Table, Tooltip, message } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Image, Modal, Table, message } from "antd";
+import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
+
 import ToolBar from "../../components/ToolBar/toolbar.js";
 
 import { PiEyeBold } from "react-icons/pi";
@@ -144,27 +145,10 @@ function GoodsList() {
       fixed: "right",
       width: 120,
       render: (_, record) => (
-        <Space>
-          <Tooltip title="Edit" key="edit">
-            {" "}
-            <Button
-              disabled={isModalOpen}
-              onClick={() => edit(record)}
-              icon={<EditOutlined />}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="Delete" key="delete">
-            {" "}
-            <Button
-              disabled={isModalOpen}
-              onClick={() => {
-                handleDelete(record.key);
-              }}
-              icon={<DeleteOutlined />}
-              danger
-            ></Button>
-          </Tooltip>
-        </Space>
+        <>
+          <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
+          <a onClick={() => handleDelete(record.key)}>{<RiDeleteBin6Line />}</a>
+        </>
       ),
     },
   ];
@@ -205,7 +189,7 @@ function GoodsList() {
             unit: goods.unit,
             image: goods.imageUrl,
             specification: goods.specification,
-            warehouse_name: goods.warehouseId,
+            warehouse_name: goods.warehouseId?.code,
           };
         })}
         pagination={{

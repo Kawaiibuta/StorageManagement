@@ -1,31 +1,20 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import {
-  Table,
-  Form,
-  Input,
-  Tooltip,
-  Space,
-  Button,
-  message,
-  Popconfirm,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  SaveOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
+import { Table, Form, Input, message, Modal } from "antd";
+
+import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
 import ToolBar from "../../components/ToolBar/toolbar.js";
-import ActionBar from "../../components/ActionBar/actionbar.js";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   deletePartner,
   getAllCustomer,
   getAllSupplier,
-  updateSupplier,
 } from "../../redux/apiRequest.js";
-import axios from "axios";
+
+import UpdateSupplierForm from "../../components/Form/UpdateSupplierForm.js";
+import UpdateCustomerForm from "../../components/Form/UpdateCustomerForm.js";
 
 const EditableCell = ({
   editing,
@@ -68,8 +57,10 @@ function Partner() {
   const [form] = Form.useForm();
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
-  const [editingKey, setEditingKey] = useState("");
-  const isEditing = (record) => record.key === editingKey;
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState();
+
   const dispatch = useDispatch();
   const suppliersList = useSelector(
     (state) => state.partner.supplier?.allSuppliers
@@ -79,39 +70,19 @@ function Partner() {
   );
 
   const edit = (record) => {
-    console.log("edit", record);
-    form.setFieldsValue({
-      name: "",
-      address: "",
-      phone_num: "",
-      email: "",
-      ...record,
-    });
-    setEditingKey(record.key);
+    setFormData(record);
+    showModal();
   };
-  const cancel = () => {
-    setEditingKey("");
+
+  const showModal = () => {
+    setIsModalOpen(true);
   };
-  const save = async (key) => {
-    console.log("key", key);
-    try {
-      const row = await form.validateFields();
-
-      console.log("row", row);
-      await updateSupplier(key, {
-        name: row.name,
-        email: row.email,
-        phone_num: row.phone_num,
-        address: row.address,
-      });
-
-      message.success("Edit partner success");
-      setEditingKey("");
-      onUpdateData();
-    } catch (e) {
-      console.log(e);
-      message.error(e.messsage);
-    }
+  const handleOk = () => {
+    setIsModalOpen(false);
+    onUpdateData();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const handleDelete = async (key) => {
@@ -168,10 +139,13 @@ function Partner() {
       fixed: "right",
       width: 120,
       render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <Space>
-            <Tooltip title="Save" key="save">
+        return (
+          <>
+            <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
+            <a onClick={() => handleDelete(record.key)}>
+              {<RiDeleteBin6Line />}
+            </a>
+            {/* <Tooltip title="Save" key="save">
               {" "}
               <Button
                 icon={<SaveOutlined />}
@@ -206,28 +180,12 @@ function Partner() {
                 icon={<DeleteOutlined />}
                 danger
               ></Button>
-            </Tooltip>
-          </Space>
+            </Tooltip> */}
+          </>
         );
       },
     },
   ];
-
-  const mergedColumns = partner_columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: "text",
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
 
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
@@ -252,42 +210,69 @@ function Partner() {
   const customer = (
     <div style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"customer"}></ToolBar>
-      <Form form={form}>
-        <Table
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          loading={isFetching}
-          bordered
-          style={{ marginTop: "10px", maxWidth: "85vw" }}
-          columns={mergedColumns}
-          dataSource={customersList?.map((cus) => {
-            return {
-              key: cus._id,
-              code: cus.code,
-              name: cus.name,
-              address: cus.contactId.address,
-              phone_num: cus.contactId.phone_num,
-              email: cus.contactId.email,
-            };
-          })}
-          pagination={{
-            showQuickJumper: true,
-            total: customersList?.length,
-          }}
-          scroll={{
-            y: "60vh",
-          }}
+      <Modal
+        footer={null}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <UpdateCustomerForm
+          isModalOpen={isModalOpen}
+          handleCancelButton={handleCancel}
+          handleOkButton={handleOk}
+          onUpdateData={onUpdateData}
+          formData={formData}
         />
-      </Form>
+      </Modal>
+
+      <Table
+        components={{
+          body: {
+            cell: EditableCell,
+          },
+        }}
+        loading={isFetching}
+        bordered
+        style={{ marginTop: "10px", maxWidth: "85vw" }}
+        columns={partner_columns}
+        dataSource={customersList?.map((cus) => {
+          return {
+            key: cus._id,
+            code: cus.code,
+            name: cus.name,
+            address: cus.contactId.address,
+            phone_num: cus.contactId.phone_num,
+            email: cus.contactId.email,
+          };
+        })}
+        pagination={{
+          showQuickJumper: true,
+          total: customersList?.length,
+        }}
+        scroll={{
+          y: "60vh",
+        }}
+      />
     </div>
   );
 
   const supplier = (
     <div style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"supplier"}></ToolBar>
+      <Modal
+        footer={null}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <UpdateSupplierForm
+          isModalOpen={isModalOpen}
+          handleCancelButton={handleCancel}
+          handleOkButton={handleOk}
+          onUpdateData={onUpdateData}
+          formData={formData}
+        />
+      </Modal>
       <Form form={form} component={false}>
         <Table
           components={{
@@ -298,7 +283,7 @@ function Partner() {
           bordered
           loading={isFetching}
           style={{ marginTop: "10px", maxWidth: "85vw" }}
-          columns={mergedColumns}
+          columns={partner_columns}
           dataSource={suppliersList?.map((supplier) => {
             return {
               key: supplier._id,

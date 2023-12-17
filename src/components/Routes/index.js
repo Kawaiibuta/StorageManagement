@@ -8,13 +8,11 @@ import GoodsList from "../../pages/GoodsList";
 import Partner from "../../pages/Partner";
 import Staff from "../../pages/Staff";
 import WarehouseInterconnection from "../../pages/WarehouseInterconnection";
-import { FaHome } from "react-icons/fa";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<FaHome />}></Route>
-      <Route path="/dashboard" element={<Dashboard />}></Route>
+      <Route path="/" element={<Dashboard />}></Route>
       <Route path="/inbound" element={<InBound />}></Route>
       <Route path="/outbound" element={<Outbound />}></Route>
       <Route path="/inventory" element={<Inventory />}></Route>

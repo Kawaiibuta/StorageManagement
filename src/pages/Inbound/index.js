@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
 import { Table, message } from "antd";
@@ -12,70 +13,12 @@ import {
 import { PiEyeBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteTransaction,
   getAllInbound,
   getAllSupplier,
   getGoodsList,
 } from "../../redux/apiRequest.js";
-
-function inbound_item(
-  id,
-  order_timestamp,
-  finish_timestamp,
-  status,
-  employee_name
-) {
-  this.id = id;
-  this.order_timestamp = order_timestamp;
-  this.finish_timestamp = finish_timestamp;
-  this.status = status;
-  this.employee_name = employee_name;
-}
-const inbound_dataSource = [];
-for (let i = 1; i <= 100; i++) {
-  inbound_dataSource.push(
-    new inbound_item(
-      i,
-      "2023-11-11 00:00:00",
-      "2023-11-11 23:59:59",
-      "Order/Delivery/Done",
-      "Employee " + i.toString()
-    )
-  );
-}
-
-// const inbound_columns = [
-//   {
-//     title: "ID",
-//     fixed: "left",
-//     dataIndex: "id",
-//     key: "id",
-//     width: 60,
-//   },
-//   {
-//     title: "Order at",
-//     dataIndex: "order_timestamp",
-//     key: "order_timestamp",
-//     width: 300,
-//   },
-//   {
-//     title: "Finish at",
-//     dataIndex: "finish_timestamp",
-//     key: "finish_timestamp",
-//     width: 300,
-//   },
-//   {
-//     title: "Employee",
-//     dataIndex: "employee_name",
-//     key: "employee_name",
-//   },
-//   {
-//     title: "Action",
-//     key: "operation",
-//     fixed: "right",
-//     width: 230,
-//     render: () => <ActionBar numActions={"bound"} />,
-//   },
-// ];
+import InBoundForm from "../../components/Form/InBoundForm.js";
 
 function InBound() {
   const dispatch = useDispatch();
@@ -106,7 +49,7 @@ function InBound() {
   const handleDelete = async (key) => {
     console.log("key", key);
     try {
-      // await deleteTransaction(key);
+      await deleteTransaction(key);
 
       onUpdateData();
       message.success("Delete inbound success");
@@ -200,10 +143,10 @@ function InBound() {
             <a>{<PiEyeBold />}</a>
             <a>{<RiCheckboxLine />}</a>
             <a>{<RiPrinterLine />}</a>
-            {/* <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a> */}
-            {/* <a onClick={() => handleDelete(record.key)}>
+            <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
+            <a onClick={() => handleDelete(record.key)}>
               {<RiDeleteBin6Line />}
-            </a> */}
+            </a>
           </>
         );
       },
@@ -217,7 +160,15 @@ function InBound() {
       }}
     >
       <ToolBar onUpdateData={onUpdateData} type={2} page={"inbound"}></ToolBar>
+      <InBoundForm
+        isModalOpen={isModalOpen}
+        handleCancelButton={handleCancel}
+        handleOkButton={handleOk}
+        onUpdateData={onUpdateData}
+        formData={formData}
+      ></InBoundForm>
       <Table
+        loading={isFetching}
         bordered
         style={{ marginTop: "10px", maxWidth: "85vw" }}
         columns={inbound_columns}

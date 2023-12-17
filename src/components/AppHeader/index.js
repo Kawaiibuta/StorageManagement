@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { AiOutlineMenu } from "react-icons/ai";
 import { FaUserCircle } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
@@ -18,42 +19,13 @@ function AppHeader() {
       key: "1",
       label: (
         <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.antgroup.com"
-        >
-          1st menu item
-        </a>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com"
-        >
-          2nd menu item
-        </a>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <a
-          // target="_blank"
-          // rel="noopener noreferrer"
-          onClick={() => {
+          onClick={async () => {
             try {
-              logoutUser(id, accessToken, dispatch, axiosJWT);
+              await logoutUser(id, accessToken, dispatch, axiosJWT);
             } catch (e) {
               console.log(e);
             }
           }}
-          // href={() => {
-          //   logoutUser(id, accessToken, dispatch);
-          // }}
         >
           Logout
         </a>

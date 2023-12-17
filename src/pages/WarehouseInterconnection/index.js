@@ -1,27 +1,12 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  SaveOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
-import {
-  Table,
-  message,
-  Input,
-  Form,
-  Popconfirm,
-  Button,
-  Space,
-  Tooltip,
-  Select,
-  Modal,
-} from "antd";
+
+import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
+import { Table, message, Modal } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import {
   deleteWarehouse,
-  editWarehouse,
   getAllWarehouses,
   onGetAllManagers,
 } from "../../redux/apiRequest.js";
@@ -105,8 +90,10 @@ function WarehouseInterconnection() {
       width: 120,
 
       render: (_, record) => (
-        <Space>
-          <Tooltip title="Edit" key="edit">
+        <>
+          <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
+          <a onClick={() => handleDelete(record.key)}>{<RiDeleteBin6Line />}</a>
+          {/* <Tooltip title="Edit" key="edit">
             {" "}
             <Button
               disabled={isModalOpen}
@@ -124,8 +111,8 @@ function WarehouseInterconnection() {
               icon={<DeleteOutlined />}
               danger
             ></Button>
-          </Tooltip>
-        </Space>
+          </Tooltip> */}
+        </>
       ),
     },
   ];
@@ -149,10 +136,10 @@ function WarehouseInterconnection() {
     setIsUpdateData(!isUpdateData);
   }
 
-  const handleDelete = async (record) => {
-    console.log(record);
+  const handleDelete = async (key) => {
+    console.log(key);
     try {
-      await deleteWarehouse(record.key, dispatch);
+      await deleteWarehouse(key, dispatch);
       onUpdateData();
       message.success("Delete warehouse success");
     } catch (e) {

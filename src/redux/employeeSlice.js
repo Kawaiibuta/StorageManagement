@@ -15,6 +15,7 @@ const employeeSlice = createSlice({
       msg: null,
     },
     staff: {
+      allStaffs: null,
       isFetching: false,
       error: false,
       success: false,
@@ -52,6 +53,18 @@ const employeeSlice = createSlice({
       state.manager.isFetching = false;
       state.manager.error = true;
       state.manager.msg = action.payload;
+    },
+    getStaffsStart: (state) => {
+      state.staff.isFetching = true;
+    },
+    getStaffsSuccess: (state, action) => {
+      state.staff.isFetching = false;
+      state.staff.allStaffs = action.payload;
+      state.staff.error = false;
+    },
+    getStaffsError: (state) => {
+      state.staff.isFetching = false;
+      state.staff.error = true;
     },
     addStaffStart: (state) => {
       state.staff.isFetching = true;
@@ -99,6 +112,9 @@ export const {
   addStaffFailed,
   addStaffStart,
   addStaffSuccess,
+  getStaffsError,
+  getStaffsStart,
+  getStaffsSuccess,
 } = employeeSlice.actions;
 
 export default employeeSlice.reducer;
