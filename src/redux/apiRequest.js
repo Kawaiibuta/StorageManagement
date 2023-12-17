@@ -3,6 +3,8 @@ import {
   loginError,
   loginStart,
   loginSuccess,
+  logoutSuccess,
+  logoutStart,
   registerFailed,
   registerStart,
   registerSuccess,
@@ -37,6 +39,14 @@ import {
   getSuppliersStart,
   getSuppliersSuccess,
 } from "./partnerSlice";
+import {
+  getInboundsStart,
+  getInboundsSuccess,
+  getOutboundsStart,
+  getOutboundsSuccess,
+  getProductsStart,
+  getProductsSuccess,
+} from "./productSlice";
 
 export const loginUser = async (user, dispatch) => {
   dispatch(loginStart());
@@ -51,6 +61,19 @@ export const loginUser = async (user, dispatch) => {
     console.log(err);
     dispatch(loginError());
   }
+};
+
+export const logoutUser = async (id, accessToken, dispatch, axiosJWT) => {
+  dispatch(logoutStart());
+
+  await axiosJWT.post(
+    "https://warehousemanagement.onrender.com/api/auth/logout",
+    id,
+    {
+      headers: { token: `Bearer ${accessToken}` },
+    }
+  );
+  dispatch(logoutSuccess());
 };
 
 export const registerEmployeeUser = async (employeeId, dispatch) => {
@@ -112,7 +135,7 @@ export const getAllEmployees = async (dispatch) => {
   dispatch(getEmployeesStart());
   try {
     const res = await axios.get(
-      "https://warehousemanagement.onrender.com/api/employee/staff"
+      "https://warehousemanagement.onrender.com/api/employee/"
     );
     dispatch(getEmployeesSuccess(res.data));
     // console.log("hihi");
@@ -120,6 +143,24 @@ export const getAllEmployees = async (dispatch) => {
     console.log(e);
     dispatch(getEmployeesError(e.response.data));
   }
+};
+
+export const updateEmployee = async (employeeId, formData) => {
+  await axios.put(
+    `https://warehousemanagement.onrender.com/api/employee/${employeeId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+export const deleteEmployee = async (employeeId) => {
+  await axios.delete(
+    `https://warehousemanagement.onrender.com/api/employee/${employeeId}`
+  );
 };
 
 export const getAllUsersAccount = async (accessToken, dispatch) => {
@@ -189,4 +230,83 @@ export const getAllCustomer = async (dispatch) => {
     `https://warehousemanagement.onrender.com/api/partner/customer`
   );
   dispatch(getCustomersSuccess(res.data));
+};
+
+export const getGoodsList = async (dispatch) => {
+  dispatch(getProductsStart());
+
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/product`
+  );
+  dispatch(getProductsSuccess(res.data));
+};
+
+export const addProduct = async (formData) => {
+  await axios.post(
+    `https://warehousemanagement.onrender.com/api/product`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+export const updateProduct = async (productId, formData) => {
+  await axios.put(
+    `https://warehousemanagement.onrender.com/api/product/${productId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
+export const deleteProduct = async (productId) => {
+  await axios.delete(
+    `https://warehousemanagement.onrender.com/api/product/${productId}`
+  );
+};
+
+export const addTransaction = async (transactionData) => {
+  await axios.post(
+    `https://warehousemanagement.onrender.com/api/transaction`,
+    transactionData
+  );
+};
+
+export const getAllOutbound = async (dispatch) => {
+  dispatch(getOutboundsStart());
+
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/transaction/outbound`
+  );
+
+  dispatch(getOutboundsSuccess(res.data));
+};
+
+export const updateTransaction = async (transactionId, data) => {
+  await axios.put(
+    `https://warehousemanagement.onrender.com/api/transaction/${transactionId}`,
+    data
+  );
+};
+
+export const deleteTransaction = async (transactionId) => {
+  await axios.delete(
+    `https://warehousemanagement.onrender.com/api/transaction/${transactionId}`
+  );
+};
+
+export const getAllInbound = async (dispatch) => {
+  dispatch(getInboundsStart());
+
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/transaction/inbound`
+  );
+
+  dispatch(getInboundsSuccess(res.data));
 };

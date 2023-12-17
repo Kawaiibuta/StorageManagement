@@ -24,8 +24,8 @@ function Login() {
     const newUser = {
       // username: username,
       // password: password,
-      username: "EMP0007",
-      password: "eBrOPrFzej",
+      username: "MAN0010",
+      password: "VHLJ3H1j13",
     };
     loginUser(newUser, dispatch);
     // navigate("/dashboard");
@@ -37,17 +37,6 @@ function Login() {
         onSubmitCapture={handleLogin}
         layout="vertical"
         className="loginForm"
-        // name="basic"
-        // labelCol={{
-        //   span: 8,
-        // }}
-        // wrapperCol={{
-        //   span: 16,
-        // }}
-        // style={{
-        //   maxWidth: 600,
-        //   textAlign: "center",
-        // }}
         initialValues={{
           remember: true,
         }}
@@ -60,9 +49,6 @@ function Login() {
           src={require("../../../assets/images/WarehouseLogo.png")}
           alt=""
           width={150}
-          // width={150}
-          // height={100}
-          // style={{ margin: 0, padding: 0, textAlign: "center" }}
         ></img>
         <Typography
           style={{
@@ -75,17 +61,7 @@ function Login() {
         >
           Login
         </Typography>
-        <Form.Item
-          label={<p className="label">Username</p>}
-          name="username"
-
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: "Please input your username!",
-          //   },
-          // ]}
-        >
+        <Form.Item label={<p className="label">Username</p>} name="username">
           <Input
             size="large"
             placeholder="Enter Username"
@@ -93,16 +69,7 @@ function Login() {
           />
         </Form.Item>
 
-        <Form.Item
-          label={<p className="label">Password</p>}
-          name="password"
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: "Please input your password!",
-          //   },
-          // ]}
-        >
+        <Form.Item label={<p className="label">Password</p>} name="password">
           <Input.Password
             size="large"
             placeholder="Password"
@@ -110,23 +77,7 @@ function Login() {
           />
         </Form.Item>
 
-        {/* <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item> */}
-
-        <Form.Item
-        // wrapperCol={{
-        //   offset: 8,
-        //   span: 16,
-        // }}
-        >
+        <Form.Item>
           <ConfigProvider
             theme={{
               token: {

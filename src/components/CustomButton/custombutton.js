@@ -59,24 +59,45 @@ const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
   };
   switch (page) {
     case "inbound":
-      form.push(<InboundForm />);
+      form.push(
+        <InboundForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "outbound":
-      form.push(<OutboundForm />);
+      form.push(
+        <OutboundForm
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "report":
-      form.push(<InventoryReport />);
+      form.push(
+        <InventoryReport
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
+        />
+      );
 
       break;
     case "product":
       form.push(
         <NewProductForm
-        // onUpdateData={onUpdateData}
-        // isModalOpen={isModalOpen}
-        // handleOkButton={handleOk}
-        // handleCancelButton={handleCancel}
+          onUpdateData={onUpdateData}
+          isModalOpen={isModalOpen}
+          handleOkButton={handleOk}
+          handleCancelButton={handleCancel}
         />
       );
 

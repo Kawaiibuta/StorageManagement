@@ -4,15 +4,11 @@ import AppHeader from "./components/AppHeader";
 import Authentication from "./pages/Authentication";
 import { useSelector } from "react-redux";
 import SideMenu from "./components/SideMenu";
-import { useEffect } from "react";
+
 function App() {
   const user = useSelector((state) => state.auth.login?.currentUser);
 
-  // useEffect(() => {
-  //   console.log("managers", managers);
-  // }, [managers]);
-
-  if (true) {
+  if (user) {
     return (
       <div className="App">
         <AppHeader />

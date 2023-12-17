@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table } from "antd";
+import { Button, Modal, Space, Table, Tooltip, message } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import {
+  deleteEmployee,
   getAllEmployees,
   getAllUsersAccount,
   getAllWarehouses,
 } from "../../redux/apiRequest.js";
 import { useDispatch, useSelector } from "react-redux";
+import UpdateEmployeeForm from "../../components/Form/UpdateEmployeeForm.js";
 
 const user_columns = [
   {
@@ -42,69 +45,12 @@ const user_columns = [
     render: () => <ActionBar numActions={"edt_del"} />,
   },
 ];
-const employee_columns = [
-  {
-    title: "Code",
-    fixed: "left",
-    dataIndex: "id",
-    key: "id",
-    width: 90,
-  },
-  {
-    title: "Full Name",
-    width: 200,
-    dataIndex: "name",
-    key: "name",
-    fixed: "left",
-  },
-  {
-    title: "Employee Type",
-    dataIndex: "type",
-    key: "6",
-    width: 150,
-  },
-  {
-    title: "Address",
-    dataIndex: "address",
-    key: "6",
-    width: 150,
-  },
-  {
-    title: "Phone Number",
-    dataIndex: "phone_num",
-    key: "6",
-    width: 150,
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-    key: "6",
-    width: 200,
-  },
-  {
-    title: "Warehouse",
-    dataIndex: "warehouse_name",
-    key: "6",
-    width: 200,
-  },
-  {
-    title: "Start Time",
-    dataIndex: "start_time",
-    key: "6",
-    width: 200,
-  },
-  {
-    title: "Action",
-    key: "operation",
-    fixed: "right",
-    width: 120,
-    render: () => <ActionBar numActions={"edt_del"} />,
-  },
-];
 
 function Staff() {
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState();
   const dispatch = useDispatch();
   const employeeList = useSelector(
     (state) => state.employee.employee?.allEmployees
@@ -116,9 +62,133 @@ function Staff() {
     setIsUpdateData(!isUpdateData);
   }
 
+  const edit = (record) => {
+    setFormData(record);
+    showModal();
+  };
+
+  const handleDelete = async (key) => {
+    try {
+      console.log("key", key);
+      await deleteEmployee(key);
+      onUpdateData();
+      message.success("Delete staff success");
+    } catch (e) {
+      console.log(e);
+      message.error(e.response?.data);
+    }
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+    onUpdateData();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const employee_columns = [
+    {
+      title: "Code",
+      fixed: "left",
+      dataIndex: "id",
+      key: "id",
+      width: 90,
+    },
+    {
+      title: "Full Name",
+      width: 200,
+      dataIndex: "name",
+      key: "name",
+      fixed: "left",
+    },
+    {
+      title: "Employee Type",
+      dataIndex: "type",
+      key: "6",
+      width: 150,
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "6",
+      width: 150,
+    },
+    {
+      title: "Phone Number",
+      dataIndex: "phone_num",
+      key: "6",
+      width: 150,
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "6",
+      width: 200,
+    },
+    {
+      title: "Warehouse",
+      dataIndex: "warehouse_name",
+      key: "6",
+      width: 200,
+    },
+    {
+      title: "Start Time",
+      dataIndex: "start_time",
+      key: "6",
+      width: 200,
+    },
+    {
+      title: "Action",
+      key: "operation",
+      fixed: "right",
+      width: 120,
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="Edit" key="edit">
+            {" "}
+            <Button
+              disabled={isModalOpen}
+              onClick={() => edit(record)}
+              icon={<EditOutlined />}
+            ></Button>
+          </Tooltip>
+          <Tooltip title="Delete" key="delete">
+            {" "}
+            <Button
+              disabled={isModalOpen}
+              onClick={() => {
+                handleDelete(record.key);
+              }}
+              icon={<DeleteOutlined />}
+              danger
+            ></Button>
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
+
   const staff_user = (
     <div style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"user"}></ToolBar>
+      <Modal
+        footer={null}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <UpdateEmployeeForm
+          isModalOpen={isModalOpen}
+          handleCancelButton={handleCancel}
+          handleOkButton={handleOk}
+          onUpdateData={onUpdateData}
+          formData={formData}
+        />
+      </Modal>
       <Table
         bordered
         loading={isFetching}
@@ -150,6 +220,20 @@ function Staff() {
       }}
     >
       <ToolBar onUpdateData={onUpdateData} type={2} page={"employee"}></ToolBar>
+      <Modal
+        footer={null}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <UpdateEmployeeForm
+          isModalOpen={isModalOpen}
+          handleCancelButton={handleCancel}
+          handleOkButton={handleOk}
+          onUpdateData={onUpdateData}
+          formData={formData}
+        />
+      </Modal>
       <Table
         bordered
         loading={isFetching}
@@ -157,14 +241,21 @@ function Staff() {
         columns={employee_columns}
         dataSource={employeeList?.map((employee) => {
           return {
+            key: employee._id,
             id: employee.code,
             name: employee.name,
             type: employee.position,
             address: employee.contactId.address,
             phone_num: employee.contactId.phone_num,
             email: employee.contactId.email,
-            warehouse_name: employee.warehouseId.name,
+            idCard: employee.idCard,
+            gender: employee.gender,
+            avatar: employee.imageUrl,
+            warehouse_name: employee.warehouseId?.name,
+            warehouse_code: employee.warehouseId?.code,
+            warehouse_id: employee.warehouseId?._id,
             start_time: employee.startDate,
+            birthday: employee.birthday,
           };
         })}
         pagination={{
@@ -182,7 +273,6 @@ function Staff() {
   useEffect(() => {
     async function fetchData() {
       setIsFetching(true);
-
       try {
         await getAllEmployees(dispatch);
         getAllUsersAccount(user.accessToken, dispatch);

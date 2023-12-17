@@ -64,38 +64,6 @@ const EditableCell = ({
   );
 };
 
-function partner_item(id, name, address, phone_num, email) {
-  this.id = id;
-  this.name = name;
-  this.address = address;
-  this.phone_num = phone_num;
-  this.email = email;
-}
-const supplier_dataSource = [];
-for (let i = 1; i < 100; i++) {
-  supplier_dataSource.push(
-    new partner_item(
-      i,
-      "Supplier " + i.toString(),
-      "123 ABC Street, State " + i.toString(),
-      "0900" + i.toString(),
-      i.toString() + "@gmail.com"
-    )
-  );
-}
-const customer_dataSource = [];
-for (let i = 1; i < 100; i++) {
-  customer_dataSource.push(
-    new partner_item(
-      i,
-      "Customer " + i.toString(),
-      "123 ABC Street, State " + i.toString(),
-      "0900" + i.toString(),
-      i.toString() + "@gmail.com"
-    )
-  );
-}
-
 function Partner() {
   const [form] = Form.useForm();
   const [isFetching, setIsFetching] = useState(false);
