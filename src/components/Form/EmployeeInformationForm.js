@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import "./EmployeeInformationForm.css";
 
+const abc = "ádasd";
+
 function EmployeeInformationForm({ isModalOpen, handleOkButton }) {
   return (
     <>
@@ -21,7 +23,6 @@ function EmployeeInformationForm({ isModalOpen, handleOkButton }) {
               labelCol={{ span: 8 }}
               wrapperCol={{ span: 16 }}
               layout="horizontal"
-              form={form}
             >
               <div className="full_form">
                 <div className="first_col">
@@ -38,43 +39,46 @@ function EmployeeInformationForm({ isModalOpen, handleOkButton }) {
                   <div className="second_col_content">
                     <div className="second_child_col">
                       <Form.Item label="Name:" name="employeeName">
-                        <Input disabled placeholder="Tên nhân viên" />
+                        <Input readOnly defaultValue="Khoa Pham" />
                       </Form.Item>
                       <Form.Item name="employeeBirthday" label="Birthday">
-                        <Input disabled placeholder="Ngày sinh" />
+                        <Input readOnly defaultValue="01/01/2003" />
                       </Form.Item>
                       <Form.Item name="employeeGender" label="Gender">
-                        <Input disabled placeholder="Giới tính" />
+                        <Input readOnly defaultValue="Male" />
                       </Form.Item>
                       <Form.Item
                         name="employeePhoneNumber"
                         label="Phone Number:"
                       >
                         <Input
-                          disabled
-                          placeholder="Số điện thoại"
+                          readOnly
+                          defaultValue="0912345678"
                           type="phone"
                         />
                       </Form.Item>
                       <Form.Item name="employeeEmail" label="Email:">
-                        <Input disabled placeholder="Email" type="email" />
+                        <Input readOnly defaultValue="email@email.com" />
                       </Form.Item>
                       <Form.Item name="employeeAddress" label="Address:">
-                        <Input disabled placeholder="Địa chỉ nhà" />
+                        <Input
+                          readOnly
+                          defaultValue="123, ABC Street, DEF City, VietNam"
+                        />
                       </Form.Item>
                     </div>
                     <div className="second_child_col">
                       <Form.Item label="Id Card:" name="employeeIdCard">
-                        <Input disabled placeholder="Id Card" />
+                        <Input readOnly defaultValue="091234567890" />
                       </Form.Item>
                       <Form.Item label="Position" name="employeePosition">
-                        <Input disabled placeholder="Chức vụ" />
+                        <Input readOnly defaultValue="Employee" />
                       </Form.Item>
                       <Form.Item label="Warehouse" name="employeeWarehouse">
-                        <Input disabled placeholder="Warehouse" />
+                        <Input readOnly defaultValue="WH00" />
                       </Form.Item>
                       <Form.Item name="employeeStartDate" label="Start Date">
-                        <Input disabled placeholder="Ngày vào làm" />
+                        <Input readOnly defaultValue="17/12/2023" />
                       </Form.Item>
                     </div>
                   </div>
