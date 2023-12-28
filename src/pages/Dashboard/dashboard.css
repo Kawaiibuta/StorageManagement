@@ -1,0 +1,81 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+.inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+  height: 80vh;
+}
+
+.TransactionsToday {
+  width: 33%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  border: 3px solid black;
+  border-right: 0px;
+}
+.OrderStatus {
+  width: 33%;
+  height: 100%;
+  border: 3px solid black;
+  border-right: 0px;
+}
+.WarehouseStatus {
+  width: 33%;
+  height: 100%;
+  border: 3px solid black;
+}
+.Title {
+  font-size: 3vh;
+  font-weight: bold;
+  text-align: center;
+}
+.DoughnutWrapper {
+  width: 25vh;
+  padding-left: 1vw;
+}
+.Transactions,
+.Inbound,
+.Outbound,
+.ActivePartners,
+.WarehouseCapacity,
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.Transactions,
+.Inbound,
+.Outbound {
+  height: 33%;
+}
+.ActivePartners,
+.WarehouseCapacity {
+  height: 50%;
+}
+.top {
+  height: 40%;
+  width: 100%;
+}
+.bottom {
+  border-top: 3px solid black;
+  height: 60%;
+  width: 100%;
+}
+.padtop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.divide {
+  display: flex;
+  flex-direction: column;
+}

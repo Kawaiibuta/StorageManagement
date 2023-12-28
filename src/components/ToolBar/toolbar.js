@@ -3,8 +3,13 @@ import CustomButton from "../../components/CustomButton/custombutton.js";
 import SearchBar from "../../components/SearchBar/searchbar.js";
 import "./toolbar.css";
 
-const ToolBar = (props) => {
-  const { type } = props;
+const ToolBar = ({
+  managersList,
+  onUpdateData,
+  onLoadingChange,
+  type,
+  page,
+}) => {
   const toolbar = [];
   switch (type) {
     case 0:
@@ -12,7 +17,7 @@ const ToolBar = (props) => {
     case 1:
       toolbar.push(
         <div>
-          <CustomButton className="left" numButtons={1} />
+          <CustomButton className="left" numButtons={1} page={page} />
           <SearchBar className="right"></SearchBar>
         </div>
       );
@@ -20,7 +25,14 @@ const ToolBar = (props) => {
     case 2:
       toolbar.push(
         <div>
-          <CustomButton className="left" numButtons={2} />
+          <CustomButton
+            managersList={managersList}
+            onUpdateData={onUpdateData}
+            onLoadingChange={onLoadingChange}
+            className="left"
+            numButtons={2}
+            page={page}
+          />
           <SearchBar className="right"></SearchBar>
         </div>
       );
@@ -35,7 +47,7 @@ const ToolBar = (props) => {
     default:
       toolbar.push(
         <div>
-          <CustomButton className="left" numButtons={1} />
+          <CustomButton className="left" numButtons={1} page={page} />
           <SearchBar className="right"></SearchBar>
         </div>
       );

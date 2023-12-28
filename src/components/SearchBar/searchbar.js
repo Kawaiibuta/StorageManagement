@@ -9,8 +9,10 @@ const SearchBar = (props) => {
       addonAfter={
         <Button
           style={{
+            display: "inline",
             margin: "0px",
-            height: "30px",
+            height: "38px",
+            width: "100%",
             border: "none",
             backgroundColor: "#fcfcfc",
           }}
@@ -21,6 +23,7 @@ const SearchBar = (props) => {
       onSearch={onSearch}
       placeholder="input search text"
       allowClear
+      size="large"
       style={{ width: "250px" }}
       {...props}
     />
