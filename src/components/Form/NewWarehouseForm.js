@@ -49,14 +49,11 @@ function NewWarehouseForm({
   const [form] = Form.useForm();
 
   const handleFinish = async (values) => {
-    let manager = managersList?.find(
-      (manager) => manager.code === values.warehouseManager
-    );
-    console.log("manager", manager);
     let data;
-    if (manager) {
+    console.log("values", values);
+    if (values.warehouseManager) {
       data = {
-        managerId: manager._id,
+        managerId: values.warehouseManager,
         name: values.warehouseName,
         capacity: values.warehouseCapacity,
         description: values.warehouseDescription,
@@ -75,6 +72,7 @@ function NewWarehouseForm({
       };
     }
     setIsLoading(true);
+    console.log("data", data);
 
     try {
       await axios.post(
@@ -88,7 +86,11 @@ function NewWarehouseForm({
       form.resetFields();
     } catch (e) {
       console.log(e);
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };
@@ -167,13 +169,16 @@ function NewWarehouseForm({
                 },
               ]}
             >
-              <Select allowClear placeholder="Select Manager for Warehouse">
-                {managersList?.map((manager) => {
-                  return (
-                    <Option key={manager._id} value={manager.code}></Option>
-                  );
+              <Select
+                options={managersList?.map((manager) => {
+                  return {
+                    value: manager._id,
+                    label: manager.code,
+                  };
                 })}
-              </Select>
+                allowClear
+                placeholder="Select Manager for Warehouse"
+              ></Select>
             </Form.Item>
             <Form.Item
               rules={[

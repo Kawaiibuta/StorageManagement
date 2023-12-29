@@ -9,6 +9,7 @@ const ToolBar = ({
   onLoadingChange,
   type,
   page,
+  position,
 }) => {
   const toolbar = [];
   switch (type) {
@@ -18,7 +19,6 @@ const ToolBar = ({
       toolbar.push(
         <div>
           <CustomButton className="left" numButtons={1} page={page} />
-          <SearchBar className="right"></SearchBar>
         </div>
       );
       break;
@@ -26,6 +26,7 @@ const ToolBar = ({
       toolbar.push(
         <div>
           <CustomButton
+            position={position}
             managersList={managersList}
             onUpdateData={onUpdateData}
             onLoadingChange={onLoadingChange}
@@ -33,22 +34,16 @@ const ToolBar = ({
             numButtons={2}
             page={page}
           />
-          <SearchBar className="right"></SearchBar>
         </div>
       );
       break;
     case 3:
-      toolbar.push(
-        <div>
-          <SearchBar className="right"></SearchBar>
-        </div>
-      );
+      toolbar.push(<div></div>);
       break;
     default:
       toolbar.push(
         <div>
           <CustomButton className="left" numButtons={1} page={page} />
-          <SearchBar className="right"></SearchBar>
         </div>
       );
       break;

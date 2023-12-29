@@ -1,6 +1,7 @@
 import React from "react";
 import { Input, Button } from "antd";
 import { AiOutlineSearch } from "react-icons/ai";
+import Search from "antd/es/input/Search";
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SearchBar = (props) => {
@@ -23,7 +24,6 @@ const SearchBar = (props) => {
       onSearch={onSearch}
       placeholder="input search text"
       allowClear
-      size="large"
       style={{ width: "250px" }}
       {...props}
     />

@@ -61,14 +61,19 @@ function NewUserForm({
 
       console.log("emp", staff);
       await registerEmployeeUser({ employeeId: staff._id }, dispatch);
+      form.resetFields();
+      handleOkButton();
+      onUpdateData();
+      message.success("Add user success!");
     } catch (e) {
       console.log(e);
-      message.error(e);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
-    form.resetFields();
-    handleOkButton();
-    onUpdateData();
   };
 
   return (

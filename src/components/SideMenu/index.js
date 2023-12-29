@@ -9,14 +9,17 @@ import {
   MdAutoGraph,
   MdOutlineMultilineChart,
 } from "react-icons/md";
-import { ConfigProvider, Menu } from "antd";
+import { ConfigProvider, Menu, Layout } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
+import WarehouseLogo from "../../assets/images/WarehouseLogo.png";
+const { Sider } = Layout;
 
 const dividerItem = {
   type: "divider",
 };
 
 const items = [
+  dividerItem,
   {
     key: "/",
     icon: <MdAutoGraph />,
@@ -59,13 +62,14 @@ const items = [
   {
     key: "/warehouse-interconnection",
     icon: <MdSettings />,
-    label: <span>Warehouse interconnection</span>,
+    label: "Warehouse interconnection",
   },
 ];
 
-export default function SideMenu() {
+export default function SideMenu({ collapsed }) {
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState("/");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,31 +78,52 @@ export default function SideMenu() {
   }, [location.pathname]);
 
   return (
-    <div className="SideMenu">
+    <Sider
+      style={{ backgroundColor: "white" }}
+      trigger={null}
+      collapsed={collapsed}
+      collapsible
+    >
       <ConfigProvider
         theme={{
           components: {
             Menu: {
-              iconSize: 18,
+              iconSize: 20,
               fontSize: 18,
               itemHeight: 50,
               iconMarginInlineEnd: 20,
+              selectable: false,
+              // collapsedIconSize: 20,
             },
           },
         }}
       >
+        {collapsed ? null : (
+          <div
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <img
+              src={WarehouseLogo}
+              alt="Logo"
+              style={{ height: "100px", width: "auto" }}
+            />
+          </div>
+        )}
         <Menu
-          className="SideMenuVertical"
+          // className="SideMenuVertical"
           theme="light"
+          mode="inline"
           selectedKeys={[selectedKeys]}
           defaultSelectedKeys={["1"]}
-          style={{ fontWeight: 500, width: 200 }}
+          style={{ fontWeight: 500 }}
           items={items}
           onClick={(item) => {
             navigate(item.key);
           }}
         ></Menu>
       </ConfigProvider>
-    </div>
+    </Sider>
   );
 }

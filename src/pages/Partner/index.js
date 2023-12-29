@@ -1,7 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table, Form, Input, message, Modal } from "antd";
+import {
+  Table,
+  Form,
+  Input,
+  message,
+  Modal,
+  Tabs,
+  Tooltip,
+  Popconfirm,
+} from "antd";
 
 import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
 import ToolBar from "../../components/ToolBar/toolbar.js";
@@ -15,6 +24,10 @@ import {
 
 import UpdateSupplierForm from "../../components/Form/UpdateSupplierForm.js";
 import UpdateCustomerForm from "../../components/Form/UpdateCustomerForm.js";
+import TabPane from "antd/es/tabs/TabPane.js";
+import { FaUserTie } from "react-icons/fa6";
+import customerIcon from "../../assets/images/customer_icon.png";
+import customerIconActive from "../../assets/images/customer_icon_active.png";
 
 const EditableCell = ({
   editing,
@@ -60,6 +73,8 @@ function Partner() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState();
+  const [currentTab, setCurrentTab] = useState(null);
+  const [hoveredTab, setHoveredTab] = useState(null);
 
   const dispatch = useDispatch();
   const suppliersList = useSelector(
@@ -94,7 +109,11 @@ function Partner() {
       message.success("Delete partner success");
     } catch (e) {
       console.log(e);
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
   };
 
@@ -137,50 +156,23 @@ function Partner() {
       title: "Action",
       key: "operation",
       fixed: "right",
-      width: 120,
+      width: 150,
       render: (_, record) => {
         return (
           <>
-            <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
-            <a onClick={() => handleDelete(record.key)}>
-              {<RiDeleteBin6Line />}
-            </a>
-            {/* <Tooltip title="Save" key="save">
-              {" "}
-              <Button
-                icon={<SaveOutlined />}
-                onClick={() => save(record.key)}
-              ></Button>
-            </Tooltip>
-
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <Tooltip title="Cancel" key="cancel">
-                {" "}
-                <Button icon={<CloseOutlined />}></Button>
-              </Tooltip>
-            </Popconfirm>
-          </Space>
-        ) : (
-          <Space>
             <Tooltip title="Edit" key="edit">
-              {" "}
-              <Button
-                disabled={editingKey !== ""}
-                onClick={() => edit(record)}
-                icon={<EditOutlined />}
-              ></Button>
+              <a onClick={() => edit(record)}>
+                {<RiEditBoxLine size={20} color="purple" />}
+              </a>
             </Tooltip>
             <Tooltip title="Delete" key="delete">
-              {" "}
-              <Button
-                disabled={editingKey !== ""}
-                onClick={() => {
-                  handleDelete(record.key);
-                }}
-                icon={<DeleteOutlined />}
-                danger
-              ></Button>
-            </Tooltip> */}
+              <Popconfirm
+                title="Sure to delete partner?"
+                onConfirm={() => handleDelete(record.key)}
+              >
+                <a>{<RiDeleteBin6Line size={20} />}</a>
+              </Popconfirm>
+            </Tooltip>
           </>
         );
       },
@@ -306,14 +298,58 @@ function Partner() {
     </div>
   );
 
+  const onTabsChange = (key) => {
+    console.log(key);
+    setCurrentTab(key);
+  };
+
   return (
-    <div>
-      <TabView
-        tabs={[
-          { name: "Supplier", content: supplier },
-          { name: "Customer", content: customer },
-        ]}
-      />
+    <div style={{ margin: "0px 16px" }}>
+      <Tabs onChange={onTabsChange} size="large" defaultActiveKey="1">
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <FaUserTie size={30} /> SUPPLIER
+            </span>
+          }
+          key="1"
+        >
+          {supplier}
+        </TabPane>
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onMouseEnter={() => setHoveredTab("2")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <img
+                src={
+                  currentTab === "2" || hoveredTab === "2"
+                    ? customerIconActive
+                    : customerIcon
+                }
+                alt="warehouses"
+                style={{ width: "30px", height: "30px" }}
+              />
+              CUSTOMER
+            </span>
+          }
+          key="2"
+        >
+          {customer}
+        </TabPane>
+      </Tabs>
     </div>
   );
 }

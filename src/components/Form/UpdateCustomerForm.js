@@ -67,9 +67,13 @@ function UpdateCustomerForm({
       onUpdateData();
       handleOkButton();
       form.resetFields();
-      message.success("Add customer Success");
+      message.success("Update customer success");
     } catch (e) {
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };

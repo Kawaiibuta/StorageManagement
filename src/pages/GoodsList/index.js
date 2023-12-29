@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Image, Modal, Table, message } from "antd";
+import { Image, Modal, Popconfirm, Table, Tabs, Tooltip, message } from "antd";
 import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
 
 import ToolBar from "../../components/ToolBar/toolbar.js";
@@ -12,10 +12,12 @@ import {
   deleteProduct,
   getAllSupplier,
   getAllWarehouses,
-  getGoodsList,
+  getGoodsListByWarehouseId,
 } from "../../redux/apiRequest.js";
+import goodsListIcon from "../../assets/images/goods_list_icon.png";
 
 import UpdateProductForm from "../../components/Form/UpdateProductForm.js";
+import TabPane from "antd/es/tabs/TabPane.js";
 
 function GoodsList() {
   const [isFetching, setIsFetching] = useState(false);
@@ -28,6 +30,9 @@ function GoodsList() {
   const dispatch = useDispatch();
   const goodsList = useSelector(
     (state) => state.product.goodsList?.allProducts
+  );
+  const userWarehouseId = useSelector(
+    (state) => state.auth.login?.currentUser.employeeId.warehouseId
   );
 
   function onUpdateData() {
@@ -47,7 +52,11 @@ function GoodsList() {
       message.success("Delete product success");
     } catch (e) {
       console.log(e);
-      message.error(e.message);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
   };
 
@@ -132,6 +141,7 @@ function GoodsList() {
       title: "Specification",
       dataIndex: "specification",
       key: "specification",
+      width: 200,
     },
     {
       title: "Warehouse",
@@ -146,8 +156,19 @@ function GoodsList() {
       width: 120,
       render: (_, record) => (
         <>
-          <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
-          <a onClick={() => handleDelete(record.key)}>{<RiDeleteBin6Line />}</a>
+          <Tooltip title="Edit" key="edit">
+            <a onClick={() => edit(record)}>
+              {<RiEditBoxLine size={20} color="purple" />}
+            </a>
+          </Tooltip>
+          <Tooltip title="Delete" key="delete">
+            <Popconfirm
+              title="Sure to delete product?"
+              onConfirm={() => handleDelete(record.key)}
+            >
+              <a>{<RiDeleteBin6Line size={20} />}</a>
+            </Popconfirm>
+          </Tooltip>
         </>
       ),
     },
@@ -175,21 +196,24 @@ function GoodsList() {
         />
       </Modal>
       <Table
+        bordered
         loading={isFetching}
         style={{ marginTop: "10px", maxWidth: "85vw" }}
         columns={good_columns}
         dataSource={goodsList?.map((goods) => {
           return {
-            key: goods._id,
+            key: goods?._id,
             name: goods.name,
             sku_code: goods.skuCode,
-            supplier_name: goods.supplierId,
+            supplier_name: goods.supplierId?.code,
+            supplier_id: goods.supplierId?._id,
             maximum_quantity: goods.maximumQuantity,
             price: goods.price,
             unit: goods.unit,
             image: goods.imageUrl,
             specification: goods.specification,
             warehouse_name: goods.warehouseId?.code,
+            warehouse_id: goods.warehouseId?._id,
           };
         })}
         pagination={{
@@ -209,7 +233,7 @@ function GoodsList() {
       setIsFetching(true);
 
       try {
-        await getGoodsList(dispatch);
+        await getGoodsListByWarehouseId(dispatch, userWarehouseId);
         getAllSupplier(dispatch);
         getAllWarehouses(dispatch);
       } catch (e) {
@@ -222,22 +246,47 @@ function GoodsList() {
   }, [dispatch, isUpdateData]);
 
   return (
-    <div style={{ width: "100%" }}>
-      <TabView tabs={[{ name: "Goods List", content: goodslist }]} />
-      <Image
-        width={200}
-        style={{
-          display: "none",
-        }}
-        src={imageUrl}
-        preview={{
-          visible,
-          src: imageUrl,
-          onVisibleChange: (value) => {
-            setVisible(value);
-          },
-        }}
-      />
+    // <div style={{ width: "100%" }}>
+    //   <TabView tabs={[{ name: "Goods List", content: goodslist }]} />
+    //   <Image
+    //     width={200}
+    //     style={{
+    //       display: "none",
+    //     }}
+    //     src={imageUrl}
+    //     preview={{
+    //       visible,
+    //       src: imageUrl,
+    //       onVisibleChange: (value) => {
+    //         setVisible(value);
+    //       },
+    //     }}
+    //   />
+    // </div>
+    <div style={{ margin: "0px 16px" }}>
+      <Tabs size="large" defaultActiveKey="1">
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <img
+                src={goodsListIcon}
+                alt="goodslist"
+                style={{ width: "30px", height: "30px" }}
+              />
+              GOODS LIST
+            </span>
+          }
+          key="1"
+        >
+          {goodslist}
+        </TabPane>
+      </Tabs>
     </div>
   );
 }
