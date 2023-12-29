@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table } from "antd";
+import { Table, Tabs } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import { PiEyeBold } from "react-icons/pi";
+import {
+  getGoodsListByWarehouseId,
+  getInventoryReport,
+} from "../../redux/apiRequest.js";
+import { useDispatch, useSelector } from "react-redux";
+import TabPane from "antd/es/tabs/TabPane.js";
+import inventoryIcon from "../../assets/images/inventory_icon.png";
+import inventoryIconActive from "../../assets/images/inventory_icon_active.png";
+import invenReportIcon from "../../assets/images/inventory_report_icon.png";
+import invenReportIconActive from "../../assets/images/inventory_report_icon_active.png";
 
 function inventory_item(
   product_id,
@@ -97,22 +107,47 @@ const inventory_columns = [
 ];
 const report_columns = [
   {
-    title: "ID",
+    title: "Code",
     fixed: "left",
-    dataIndex: "id",
-    key: "id",
-    width: 60,
+    dataIndex: "code",
+    key: "code",
+    width: 150,
   },
   {
-    title: "Employee",
-    dataIndex: "employee_name",
-    key: "6",
-    width: 290,
+    title: "Total Actual Quantity",
+    dataIndex: "totalActualQuantity",
+    key: "totalActualQuantity",
+    width: 200,
   },
   {
-    title: "Create at",
-    dataIndex: "timestamp",
-    key: "6",
+    title: "Total Difference Quantity",
+    dataIndex: "totalDiffQuantity",
+    key: "totalDiffQuantity",
+    width: 200,
+  },
+  {
+    title: "Increase Quantity",
+    dataIndex: "increaseQuantity",
+    key: "increaseQuantity",
+    width: 200,
+  },
+  {
+    title: "Decrease Quantity",
+    dataIndex: "decreaseQuantity",
+    key: "decreaseQuantity",
+    width: 200,
+  },
+  {
+    title: "Created At",
+    dataIndex: "createdAt",
+    key: "createdAt",
+    width: 200,
+  },
+  {
+    title: "Updated At",
+    dataIndex: "updatedAt",
+    key: "updatedAt",
+    width: 200,
   },
   {
     title: "Action",
@@ -144,6 +179,12 @@ const inventory_product = (
 function Inventory() {
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
+  const [dataSource, setDataSource] = useState([]);
+  const [currentTab, setCurrentTab] = useState("1");
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
+  const dispatch = useDispatch();
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
   }
@@ -156,12 +197,25 @@ function Inventory() {
     >
       <ToolBar onUpdateData={onUpdateData} type={2} page={"report"}></ToolBar>
       <Table
+        bordered
+        loading={isFetching}
         style={{ marginTop: "10px", maxWidth: "85vw" }}
         columns={report_columns}
-        dataSource={report_dataSource}
+        dataSource={dataSource?.map((report) => {
+          return {
+            key: report._id,
+            code: report.code,
+            totalActualQuantity: report.totalActualQuantity,
+            totalDiffQuantity: report.totalDiffQuantity,
+            increaseQuantity: report.increaseQuantity,
+            decreaseQuantity: report.decreaseQuantity,
+            createdAt: report.createdAt,
+            updatedAt: report.updatedAt,
+          };
+        })}
         pagination={{
           showQuickJumper: true,
-          total: report_dataSource.length,
+          total: dataSource?.length,
         }}
         scroll={{
           x: 1800,
@@ -170,14 +224,86 @@ function Inventory() {
     </div>
   );
 
+  useEffect(() => {
+    async function fetchData() {
+      setIsFetching(true);
+      try {
+        const data = await getInventoryReport(userWarehouseId);
+        getGoodsListByWarehouseId(dispatch, userWarehouseId);
+        setDataSource(data);
+      } catch (e) {
+        console.log(e);
+      }
+      setIsFetching(false);
+    }
+    fetchData();
+  }, [isUpdateData, dispatch, userWarehouseId]);
+
+  console.log("datasource", dataSource);
+
+  const onTabsChange = (key) => {
+    console.log(key);
+    setCurrentTab(key);
+  };
+
   return (
-    <div>
-      <TabView
-        tabs={[
-          { name: "Inventory", content: inventory_product },
-          { name: "Inventory Report", content: inventory_report },
-        ]}
-      />
+    <div style={{ margin: "0px 16px" }}>
+      <Tabs onChange={onTabsChange} size="large" defaultActiveKey="1">
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onMouseEnter={() => setHoveredTab("1")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <img
+                src={
+                  currentTab === "1" || hoveredTab === "1"
+                    ? inventoryIconActive
+                    : inventoryIcon
+                }
+                alt="goodslist"
+                style={{ width: "30px", height: "30px" }}
+              />
+              INVENTORY
+            </span>
+          }
+          key="1"
+        >
+          {inventory_product}
+        </TabPane>
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onMouseEnter={() => setHoveredTab("2")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <img
+                src={
+                  currentTab === "2" || hoveredTab === "2"
+                    ? invenReportIconActive
+                    : invenReportIcon
+                }
+                alt="goodslist"
+                style={{ width: "30px", height: "30px" }}
+              />
+              INVENTORY REPORT
+            </span>
+          }
+          key="2"
+        >
+          {inventory_report}
+        </TabPane>
+      </Tabs>
     </div>
   );
 }

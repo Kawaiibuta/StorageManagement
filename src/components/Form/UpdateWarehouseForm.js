@@ -54,9 +54,12 @@ function UpdateWarehouseForm({
 
   const handleFinish = async (values) => {
     let data;
-    if (values.warehouseManager !== formData.managerCode) {
+    if (values.warehouseManager) {
       data = {
-        managerId: values.warehouseManager,
+        managerId:
+          values.warehouseManager.length < 10
+            ? formData.managerId
+            : values.warehouseManager,
         name: values.warehouseName,
         capacity: values.warehouseCapacity,
         description: values.warehouseDescription,
@@ -84,7 +87,11 @@ function UpdateWarehouseForm({
       handleOkButton();
     } catch (e) {
       console.log(e);
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };

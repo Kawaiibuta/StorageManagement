@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./TabView.css";
+import { Avatar, Flex, Segmented } from "antd";
 
 function TabView({ tabs = [] }) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -27,11 +28,18 @@ function TabView({ tabs = [] }) {
                 >
                   {tab.name}
                 </label>
+
+                // <div
+                //   style={{
+                //     padding: 4,
+                //   }}
+                // >
+
+                //   <div>User 1</div>
+                // </div>
               ))}
             </div>
-            <div className="content" style={{ marginRight: "0px" }}>
-              {allTabs[activeTabIndex].content}
-            </div>
+            <div className="content">{allTabs[activeTabIndex].content}</div>
           </div>
         )}
       </div>

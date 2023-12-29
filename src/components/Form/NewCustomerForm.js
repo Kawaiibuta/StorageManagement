@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Input, Button, Modal, Space, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const { TextArea } = Input;
 
@@ -51,6 +52,8 @@ function NewCustomerForm({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [form] = useForm();
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
 
   const handleFinish = async (values) => {
     console.log(values);
@@ -62,13 +65,18 @@ function NewCustomerForm({
         email: values.customerEmail,
         phone_num: values.customerPhoneNumber,
         address: values.customerAddress,
+        warehouseId: userWarehouseId,
       });
       onUpdateData();
       handleOkButton();
       form.resetFields();
       message.success("Add Customer Success");
     } catch (e) {
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };

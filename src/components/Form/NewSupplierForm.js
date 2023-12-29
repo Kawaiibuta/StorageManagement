@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Input, Button, Modal, Space, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const { TextArea } = Input;
 
@@ -43,6 +44,8 @@ function NewSupplierForm({
   handleCancelButton,
 }) {
   const [form] = useForm();
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
   const [isLoading, setIsLoading] = useState(false);
   const tailLayout = {
     wrapperCol: {
@@ -53,6 +56,7 @@ function NewSupplierForm({
 
   const handleFinish = async (values) => {
     console.log(values);
+    console.log("warehouseid", userWarehouseId);
     setIsLoading(true);
     try {
       await axios.post("https://warehousemanagement.onrender.com/api/partner", {
@@ -61,13 +65,18 @@ function NewSupplierForm({
         email: values.supplierEmail,
         phone_num: values.supplierPhoneNumber,
         address: values.supplierAddress,
+        warehouseId: userWarehouseId,
       });
       onUpdateData();
       handleOkButton();
       form.resetFields();
       message.success("Add Supplier Success");
     } catch (e) {
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };

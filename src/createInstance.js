@@ -4,11 +4,9 @@ import { jwtDecode } from "jwt-decode";
 const refreshToken = async () => {
   try {
     const res = await axios.post(
-      "https://warehousemanagement.onrender.com/auth/refresh",
-      {
-        withCredentials: true,
-      }
+      "https://warehousemanagement.onrender.com/auth/refresh"
     );
+    console.log("refreshtoken", res.data);
     return res.data;
   } catch (err) {
     console.log(err);

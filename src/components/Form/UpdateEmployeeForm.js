@@ -94,12 +94,17 @@ function UpdateProductForm({
   const handleFinish = async (values) => {
     try {
       const formDt = new FormData();
-      console.log(values);
-      if (values.employeeWarehouse?.length <= 6) {
-        formDt.append("warehouseId", formData.warehouse_id);
-      } else if (values.employeeWarehouse) {
-        formDt.append("warehouseId", values.employeeWarehouse);
+      console.log("values", values);
+      if (values.employeeWarehouse) {
+        formDt.append(
+          "warehouseId",
+          values.employeeWarehouse.length < 10
+            ? formData.warehouse_id
+            : values.employeeWarehouse
+        );
       }
+      //   formDt.append("warehouseId", values.employeeWarehouse);
+      // }
       setIsLoading(true);
 
       formDt.append("name", values.employeeName);
@@ -118,7 +123,6 @@ function UpdateProductForm({
       formDt.append("image", values.employeeAvatar?.file.originFileObj);
       // }
       console.log(formDt);
-      console.log("values", values);
 
       // Make the POST request with axios
       await updateEmployee(formData.key, formDt);
@@ -132,7 +136,11 @@ function UpdateProductForm({
       handleOkButton();
     } catch (e) {
       console.log(e);
-      message.error(e.response?.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
     // await addStaff(dispatch, data);
@@ -151,6 +159,14 @@ function UpdateProductForm({
       employeeStartDate: dayjs(formData.start_time),
       employeeWarehouse: formData.warehouse_code,
     });
+    setFileList([
+      {
+        uid: "-1",
+        name: "image.png",
+        status: "done",
+        url: formData.avatar,
+      },
+    ]);
   }, [formData, form]);
 
   return (

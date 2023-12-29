@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Select, Form, InputNumber, Button, Modal, Space, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { addTransaction } from "../../redux/apiRequest";
+import { addTransaction, updateTransaction } from "../../redux/apiRequest";
 
 const SubmitButton = ({ form, isLoading }) => {
   const [submittable, setSubmittable] = React.useState(true);
@@ -53,6 +53,7 @@ function InBoundForm({
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId?.warehouseId;
   const suppliersList = useSelector(
     (state) => state.partner.supplier?.allSuppliers
   );
@@ -62,7 +63,8 @@ function InBoundForm({
 
   let totalProducts = 0;
 
-  const totalForEachProduct = (products) => {
+  const calculateTotal = (products) => {
+    console.log("products", products);
     return products.map((product) => {
       let total = 0;
       let goods = goodsList?.find((good) => good._id === product.productId);
@@ -71,6 +73,7 @@ function InBoundForm({
       return {
         ...product,
         total: total,
+        action: product.id ? "update" : "new",
       };
     });
   };
@@ -80,24 +83,42 @@ function InBoundForm({
     setIsLoading(true);
 
     try {
-      const details = totalForEachProduct(values.products);
-      const data = {
-        type: "Inbound",
-        employeeId: user.employeeId,
-        partnerId: values.supplier,
-        warehouseId: "657c678f72304d206a0fd13f",
-        details: details,
-        total: totalProducts,
-      };
-      console.log("data", data);
+      if (!formData) {
+        const details = calculateTotal(values.products);
+        const data = {
+          type: "Inbound",
+          employeeId: user.employeeId,
+          partnerId: values.supplier,
+          warehouseId: userWarehouseId,
+          details: details,
+          total: totalProducts,
+        };
+        console.log("data", data);
 
-      await addTransaction(data);
-      message.success("Add Inbound success");
+        await addTransaction(data);
+        message.success("Add Inbound success");
+
+        form.resetFields();
+      } else {
+        const partner_id =
+          values.customer.length < 10 ? formData.customerId : values.supplier;
+        const data = {
+          details: calculateTotal(values.products),
+          toal: totalProducts,
+          partnerId: partner_id,
+        };
+        console.log("data", data);
+        await updateTransaction(formData.key, data);
+      }
       totalProducts = 0;
       onUpdateData();
       handleOkButton();
     } catch (e) {
-      // message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
       console.log(e);
     }
     setIsLoading(false);
@@ -108,6 +129,7 @@ function InBoundForm({
       form.setFieldsValue({
         supplier: formData.supplier,
         products: formData.trans_details.map((e) => ({
+          key: e._id,
           id: e._id,
           action: "update",
           productId: e.productId,
@@ -186,7 +208,7 @@ function InBoundForm({
                                 label: goods.skuCode,
                               };
                             })}
-                          />
+                          ></Select>
                         </Form.Item>
                         <Form.Item
                           noStyle
@@ -207,7 +229,16 @@ function InBoundForm({
                         />
                       </Space>
                     ))}
-                    <Button type="dashed" onClick={() => subOpt.add()} block>
+                    <Button
+                      type="dashed"
+                      onClick={() => {
+                        console.log(subOpt);
+                        console.log("subFields", subFields);
+
+                        subOpt.add();
+                      }}
+                      block
+                    >
                       + Add Sub Item
                     </Button>
                   </div>

@@ -55,7 +55,6 @@ function UpdateProductForm({
   formData,
 }) {
   const [form] = useForm();
-
   console.log("formdata", formData);
   const [isLoading, setIsLoading] = useState(false);
   const tailLayout = {
@@ -101,9 +100,20 @@ function UpdateProductForm({
       formDt.append("maximumQuantity", values.productMaxQuantity);
       formDt.append("price", values.productPrice);
       formDt.append("unit", values.productUnit);
+      formDt.append(
+        "warehouseId",
+        values.warehouseCode.length <= 10
+          ? formData.warehouse_id
+          : values.warehouseCode
+      );
       formDt.append("specification", values.productSpecification);
-      formDt.append("warehouseId", values.warehouseCode);
-      formDt.append("supplierId", values.supplierCode);
+
+      formDt.append(
+        "supplierId",
+        values.supplierCode.length <= 10
+          ? formData.supplier_id
+          : values.supplierCode
+      );
       // Append the file to form data
       if (values.productImage) {
         formDt.append("image", values.productImage.file.originFileObj);
@@ -123,7 +133,11 @@ function UpdateProductForm({
       handleOkButton();
     } catch (e) {
       console.log(e);
-      message.error(e.message);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
     // await addStaff(dispatch, data);
@@ -139,6 +153,14 @@ function UpdateProductForm({
       warehouseCode: formData.warehouse_name,
       supplierCode: formData.supplier_name,
     });
+    setFileList([
+      {
+        uid: "-1",
+        name: "image.png",
+        status: "done",
+        url: formData.image,
+      },
+    ]);
   }, [formData, form]);
 
   return (

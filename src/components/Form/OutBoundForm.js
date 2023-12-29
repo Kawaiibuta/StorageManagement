@@ -55,7 +55,7 @@ function OutBoundForm({
   console.log("formdata", formData);
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
-
+  const userWarehouseId = user.employeeId?.warehouseId;
   const customersList = useSelector(
     (state) => state.partner.customer?.allCustomers
   );
@@ -74,6 +74,7 @@ function OutBoundForm({
       return {
         ...product,
         total: total,
+        action: product.id ? "update" : "new",
       };
     });
   };
@@ -83,18 +84,13 @@ function OutBoundForm({
     setIsLoading(true);
 
     try {
-      let partner_id;
       if (!formData) {
         console.log("add");
-
-        console.log();
-
         const data = {
           type: "Outbound",
           employeeId: user.employeeId,
           partnerId: values.customer,
-          warehouseId: "657c678f72304d206a0fd13f",
-          // details: values.products,
+          warehouseId: userWarehouseId,
           details: calculateTotal(values.products),
           total: totalProducts,
         };
@@ -103,22 +99,30 @@ function OutBoundForm({
         await addTransaction(data);
         message.success("Add Outbound success");
       } else {
-        if (values.customer.length > 10) {
-          partner_id = values.customer;
-        } else {
-          partner_id = formData.customerId;
-        }
+        const partner_id =
+          values.customer.length < 10 ? formData.customerId : values.customer;
         console.log("update");
-        await updateTransaction(formData.key, {
+        const data = {
           partnerId: partner_id,
-          details: values.products,
-        });
+          details: calculateTotal(values.products),
+          toal: totalProducts,
+          // partnerId: values.customer,
+        };
+        console.log("data", data);
+        console.log("key", formData.key);
+        await updateTransaction(formData.key, data);
       }
       onUpdateData();
       handleOkButton();
     } catch (e) {
       console.log(e);
-      message.error(e.response.data);
+      // message.error("Something went wrong!");
+
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };

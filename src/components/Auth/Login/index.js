@@ -1,4 +1,4 @@
-import { Typography } from "antd";
+import { Typography, message } from "antd";
 import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
 import { useState } from "react";
@@ -27,7 +27,16 @@ function Login() {
       username: username,
       password: password,
     };
-    await loginUser(newUser, dispatch);
+    try {
+      await loginUser(newUser, dispatch);
+    } catch (e) {
+      console.log(e);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
+    }
     setIsLoading(false);
     // navigate("/dashboard");
   };

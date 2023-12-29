@@ -70,7 +70,11 @@ function UpdateSupplierForm({
       form.resetFields();
       message.success("Add Supplier Success");
     } catch (e) {
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };

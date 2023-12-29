@@ -68,6 +68,9 @@ function NewProductForm({
   const warehouseList = useSelector(
     (state) => state.warehouse.warehouse?.allWarehouses
   );
+  const userWarehouseId = useSelector(
+    (state) => state.auth.login?.currentUser.employeeId.warehouseId
+  );
   const [fileList, setFileList] = useState([]);
 
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
@@ -94,7 +97,7 @@ function NewProductForm({
       formData.append("price", values.productPrice);
       formData.append("unit", values.productUnit);
       formData.append("specification", values.productSpecification);
-      formData.append("warehouseId", values.warehouseCode);
+      formData.append("warehouseId", userWarehouseId);
       formData.append("supplierId", values.supplierCode);
       // Append the file to form data
       formData.append("image", values.productImage.file.originFileObj);
@@ -107,11 +110,16 @@ function NewProductForm({
       message.success("Add product success");
       onUpdateData();
       form.resetFields();
+      setFileList([]);
 
       handleOkButton();
     } catch (e) {
       console.log(e);
-      message.error(e.message);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
     // await addStaff(dispatch, data);
@@ -157,7 +165,7 @@ function NewProductForm({
               label="Maximum Quantity:"
               name="productMaxQuantity"
             >
-              <InputNumber placeholder="Product Maximum Quantity" />
+              <InputNumber min={1} placeholder="Product Maximum Quantity" />
             </Form.Item>
             <Form.Item
               rules={[
@@ -189,7 +197,7 @@ function NewProductForm({
               label="Price:"
               name="productPrice"
             >
-              <Input placeholder="Product Price" />
+              <InputNumber min={0} placeholder="Product Price" />
             </Form.Item>
             <Form.Item
               rules={[
@@ -235,7 +243,7 @@ function NewProductForm({
             >
               <TextArea placeholder="Product Specification" rows={4} />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               rules={[
                 {
                   required: true,
@@ -254,7 +262,7 @@ function NewProductForm({
                   };
                 })}
               ></Select>
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item {...tailLayout}>
               <Space>
                 <Button htmlType="button" onClick={handleCancelButton}>

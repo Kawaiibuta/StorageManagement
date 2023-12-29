@@ -51,6 +51,7 @@ function NewEmployeeForm({
   isModalOpen,
   handleOkButton,
   handleCancelButton,
+  position,
 }) {
   const [isLoading, setIsLoading] = useState(false);
   //antd
@@ -90,7 +91,7 @@ function NewEmployeeForm({
 
       const formData = new FormData();
       formData.append("name", values.employeeName);
-      formData.append("position", values.employeePosition);
+      formData.append("position", position);
       formData.append(
         "startDate",
         values.employeeStartDate.format("DD/MM/YYYY")
@@ -124,14 +125,17 @@ function NewEmployeeForm({
       success();
       onUpdateData();
       form.resetFields();
-
+      setFileList([]);
       handleOkButton();
     } catch (e) {
       console.log(e);
-      error();
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
-    // await addStaff(dispatch, data);
   };
 
   const warehouses = useSelector(
@@ -158,7 +162,7 @@ function NewEmployeeForm({
       >
         <>
           <div>
-            <h1>New Employee</h1>
+            <h1>New {position}</h1>
             <Form
               onFinish={handleFinish}
               labelCol={{ span: 10 }}
@@ -177,7 +181,7 @@ function NewEmployeeForm({
               >
                 <Input placeholder="Employee Name" />
               </Form.Item>
-              <Form.Item
+              {/* <Form.Item
                 rules={[
                   {
                     required: true,
@@ -190,7 +194,7 @@ function NewEmployeeForm({
                   <Select.Option value="Manager">Manager</Select.Option>
                   <Select.Option value="Employee">Employee</Select.Option>
                 </Select>
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item
                 name="employeeGender"
                 label="Gender"
