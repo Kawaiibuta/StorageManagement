@@ -9,22 +9,43 @@ import {
   Dropdown,
   ConfigProvider,
   Drawer,
+  Row,
+  Col,
+  Divider,
+  Flex,
+  Upload,
+  Badge,
 } from "antd";
 
-import { logoutUser } from "../../redux/apiRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { createAxios } from "../../createInstance";
 import { logoutSuccess } from "../../redux/authSlice";
+import { IoMdArrowDropdown } from "react-icons/io";
+import keyIcon from "../../assets/images/key.png";
+import dayjs from "dayjs";
+
+import "./style.css";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  AntDesignOutlined,
+  InfoCircleOutlined,
+  KeyOutlined,
+  LogoutOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
-import { AiOutlineMenu } from "react-icons/ai";
-import { FaUserCircle } from "react-icons/fa";
-import { GrLogout } from "react-icons/gr";
-import { useState } from "react";
+
+import React, { useState } from "react";
+import { logoutUser } from "../../redux/apiRequest";
+
 const { Header } = Layout;
+const { useToken } = theme;
+
+const DescriptionItem = ({ title, content }) => (
+  <div className="site-description-item-profile-wrapper">
+    <p className="site-description-item-profile-p-label">{title}:</p>
+    {content}
+  </div>
+);
 
 function AppHeader({ collapsed, setCollapsed }) {
   const [open, setOpen] = useState([false, false]);
@@ -53,26 +74,15 @@ function AppHeader({ collapsed, setCollapsed }) {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-
-  const items = [
-    {
-      key: "1",
-      label: (
-        <a
-          onClick={async () => {
-            try {
-              await logoutUser(id, accessToken, dispatch, axiosJWT);
-            } catch (e) {
-              console.log(e);
-            }
-          }}
-        >
-          Logout
-        </a>
-      ),
-      danger: true,
-    },
-  ];
+  const menuStyle = {
+    boxShadow: "none",
+  };
+  const { token } = useToken();
+  const contentStyle = {
+    backgroundColor: token.colorBgElevated,
+    borderRadius: token.borderRadiusLG,
+    boxShadow: token.boxShadowSecondary,
+  };
   return (
     <Header
       style={{
@@ -80,94 +90,216 @@ function AppHeader({ collapsed, setCollapsed }) {
         background: colorBgContainer,
       }}
     >
-      <div
-        style={{
-          // alignItems: "flex-start",
-          display: "flex",
-          justifyContent: "space-between",
-
-          // verticalAlign: "middle",
-        }}
-      >
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={setCollapsed}
-          style={{
-            fontSize: "16px",
-            width: 64,
-            height: 64,
-          }}
-        />
-        <a
-          onClick={() => {
-            toggleDrawer(0, true);
-          }}
-        >
-          <Avatar
-            style={{}}
-            size="large"
-            icon={<img src={user.employeeId.imageUrl} alt="" />}
+      <div>
+        <Flex justify="space-between" size="middle" align="center">
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={setCollapsed}
+            style={{
+              fontSize: "16px",
+              width: 64,
+              height: 64,
+            }}
           />
-        </a>
+          <Space>
+            <h4 style={{ fontWeight: "500" }}>
+              {"Hello " + user.employeeId.name}
+            </h4>
+            <a style={{ padding: 0 }}>
+              <Avatar
+                size="large"
+                icon={<img src={user.employeeId.imageUrl} alt="" />}
+              />
+            </a>
+            <Dropdown
+              dropdownRender={(_) => (
+                <div style={contentStyle}>
+                  {/* <div class="columnLeft">
+                    <img src={keyIcon} width={80} alt=""></img>
+                    <h3>{user.username}</h3>
+                    <p style={{ fontWeight: "500" }}>
+                      Role:{" "}
+                      {user.isEmployee ? user.employeeId.position : "Admin"}
+                    </p>
+                  </div> */}
+                  {/* <div class="vertical-divider"></div> */}
+                  <div class="columnLeft">
+                    <h2>User Center</h2>
+                    <ConfigProvider
+                      theme={{
+                        components: {
+                          Button: {
+                            defaultBg: "rgba(156, 188, 235, 1)",
+                          },
+                        },
+                      }}
+                    >
+                      <Button
+                        onClick={() => {
+                          toggleDrawer(0, true);
+                        }}
+                        style={{
+                          width: "160px",
+                          fontWeight: "500",
+                          display: "block",
+                          margin: "8px",
+                        }}
+                        icon={<InfoCircleOutlined />}
+                      >
+                        View User Profile
+                      </Button>
+                      <Button
+                        style={{
+                          width: "160px",
+                          marginTop: "10px",
+                          fontWeight: "500",
+                          display: "block",
+                          margin: "8px",
+                        }}
+                        icon={<KeyOutlined />}
+                      >
+                        Change password
+                      </Button>
+                      <Button
+                        type="primary"
+                        danger
+                        onClick={() => {
+                          logoutUser(
+                            user.id,
+                            user.accessToken,
+                            dispatch,
+                            axiosJWT
+                          );
+                        }}
+                        style={{
+                          width: "160px",
+                          marginTop: "10px",
+                          fontWeight: "500",
+                          display: "block",
+                          margin: "8px",
+                        }}
+                        icon={<LogoutOutlined />}
+                      >
+                        Logout
+                      </Button>
+                    </ConfigProvider>
+                  </div>
+                </div>
+              )}
+            >
+              <a style={{ padding: 0 }} onClick={(e) => e.preventDefault()}>
+                <IoMdArrowDropdown size={30} />
+              </a>
+            </Dropdown>
+          </Space>
+        </Flex>
+
         <Drawer
-          title="Basic Drawer"
+          title="User Profile"
           placement="right"
           footer="Footer"
+          width={640}
           onClose={() => toggleDrawer(0, false)}
           open={open[0]}
           styles={drawerStyles}
+          extra={
+            <Space>
+              <Button>Cancel</Button>
+              <Button type="primary">Edit profile</Button>
+            </Space>
+          }
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <p className="site-description-item-profile-p">Personal</p>
+          <Row>
+            <Col span={12}></Col>
+            <Col span={12}>
+              <DescriptionItem title="Username" content={user.username} />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <DescriptionItem
+                title="Full Name"
+                content={user.employeeId.name}
+              />
+            </Col>
+            <Col span={12}>
+              <DescriptionItem title="Username" content={user.username} />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <DescriptionItem
+                title="Address"
+                content={user.employeeId.address}
+              />
+            </Col>
+            <Col span={12}>
+              <DescriptionItem
+                title="Birthday"
+                content={dayjs(user.employeeId.birthday).format(
+                  "MMMM DD, YYYY"
+                )}
+              />
+            </Col>
+          </Row>
+
+          <Divider />
+          <p className="site-description-item-profile-p">Company</p>
+          <Row>
+            <Col span={12}>
+              <DescriptionItem
+                title="Position"
+                content={user.isEmployee ? user.employeeId.position : "Admin"}
+              />
+            </Col>
+            <Col span={12}>
+              <DescriptionItem title="Responsibilities" content="Coding" />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <DescriptionItem title="Department" content="XTech" />
+            </Col>
+            <Col span={12}>
+              <DescriptionItem title="Supervisor" content={<a>Lin</a>} />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <DescriptionItem
+                title="Skills"
+                content="C / C + +, data structures, software engineering, operating systems, computer networks, databases, compiler theory, computer architecture, Microcomputer Principle and Interface Technology, Computer English, Java, ASP, etc."
+              />
+            </Col>
+          </Row>
+          <Divider />
+          <p className="site-description-item-profile-p">Contacts</p>
+          <Row>
+            <Col span={12}>
+              <DescriptionItem title="Email" content="AntDesign@example.com" />
+            </Col>
+            <Col span={12}>
+              <DescriptionItem
+                title="Phone Number"
+                content="+86 181 0000 0000"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <DescriptionItem
+                title="Github"
+                content={
+                  <a href="http://github.com/ant-design/ant-design/">
+                    github.com/ant-design/ant-design/
+                  </a>
+                }
+              />
+            </Col>
+          </Row>
         </Drawer>
-        <ConfigProvider
-          drawer={{
-            styles: drawerStyles,
-          }}
-        >
-          <Drawer
-            title="Basic Drawer"
-            placement="right"
-            footer="Footer"
-            onClose={() => toggleDrawer(1, false)}
-            open={open[1]}
-          >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Drawer>
-        </ConfigProvider>
-        <Drawer
-          title="Basic Drawer"
-          placement="right"
-          footer="Footer"
-          onClose={() => toggleDrawer(0, false)}
-          open={open[0]}
-          styles={drawerStyles}
-        >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-        </Drawer>
-        <ConfigProvider
-          drawer={{
-            styles: drawerStyles,
-          }}
-        >
-          <Drawer
-            title="Basic Drawer"
-            placement="right"
-            footer="Footer"
-            onClose={() => toggleDrawer(1, false)}
-            open={open[1]}
-          >
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-            <p>Some contents...</p>
-          </Drawer>
-        </ConfigProvider>
       </div>
     </Header>
   );

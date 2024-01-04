@@ -2,38 +2,9 @@ import React, { useState } from "react";
 import { Select, Form, Modal, Button, Space, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { registerEmployeeUser } from "../../redux/apiRequest";
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
+import CustomForm from "../CustomForm";
+import SubmitButton from "../SubmitButton";
+import "./style.css";
 
 function NewUserForm({
   onUpdateData,
@@ -78,7 +49,55 @@ function NewUserForm({
 
   return (
     <>
-      <Modal
+      <CustomForm
+        marginTop={200}
+        handleCancelButton={handleCancelButton}
+        isModalOpen={isModalOpen}
+        title="New User"
+        form={
+          <Form
+            className="formLabel"
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 12 }}
+            layout="horizontal"
+            onFinish={handleFinish}
+            form={form}
+          >
+            <Form.Item
+              labelAlign="left"
+              name="employeeCode"
+              label={<p>Select Employee</p>}
+            >
+              <Select
+                options={allStaffsList?.map((employee) => {
+                  const employeeHasAccount = usersList?.find(
+                    (e) => e.employeeId._id === employee._id
+                  );
+                  if (!employeeHasAccount) {
+                    return (
+                      <Select.Option
+                        key={employee._id}
+                        label={employee.code + " - " + employee.name}
+                        value={employee.code}
+                      ></Select.Option>
+                    );
+                  }
+
+                  return null;
+                })}
+              ></Select>
+            </Form.Item>
+            <Form.Item {...tailLayout}>
+              <Space>
+                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
+                  Ok
+                </SubmitButton>
+              </Space>
+            </Form.Item>
+          </Form>
+        }
+      />
+      {/* <Modal
         open={isModalOpen}
         width="500px"
         height="300px"
@@ -126,7 +145,7 @@ function NewUserForm({
             </Form.Item>
           </Form>
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 }

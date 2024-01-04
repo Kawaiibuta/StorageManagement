@@ -1,7 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Popconfirm, Table, Tabs, Tooltip, message } from "antd";
+import {
+  ConfigProvider,
+  Modal,
+  Popconfirm,
+  Table,
+  Tabs,
+  Tag,
+  Tooltip,
+  message,
+} from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import {
@@ -10,12 +19,16 @@ import {
   RiEditBoxLine,
   RiPrinterLine,
 } from "react-icons/ri";
+import { CloseOutlined } from "@ant-design/icons";
 import { PiEyeBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteTransaction,
   getAllInbound,
+  getAllPartnersIncludeDelete,
+  getAllProductsIncludeDelete,
   getAllSupplier,
+  getAllWarehouses,
   getGoodsList,
   getGoodsListByWarehouseId,
   updateStatus,
@@ -28,19 +41,52 @@ import orderInboundIconActive from "../../assets/images/order_inbound_icon_activ
 import receiveListIcon from "../../assets/images/receive_list_icon.png";
 import receiveListIconActive from "../../assets/images/receive_list_icon_done.png";
 import TabPane from "antd/es/tabs/TabPane.js";
+import { ExportButtonForInBound } from "../../components/Print/index.js";
+import CustomTable from "../../components/Table/index.js";
+import dayjs from "dayjs";
+import InBoundBill from "../../components/Form/InBoundBill.js";
+import { useReactToPrint } from "react-to-print";
+
+const PrintButton = ({ record }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  return (
+    <>
+      <div style={{ display: "none" }}>
+        <InBoundBill formData={record} ref={componentRef} />
+      </div>
+      <Tooltip title="Print" key="print">
+        {
+          <RiPrinterLine
+            onClick={() => {
+              handlePrint();
+            }}
+            size={24}
+            color="#1ba79b"
+          />
+        }
+      </Tooltip>
+    </>
+  );
+};
 
 function InBound() {
-  const dispatch = useDispatch();
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalViewOpen, setIsModalViewOpen] = useState(false);
   const [formData, setFormData] = useState();
   const [currentTab, setCurrentTab] = useState("1");
   const [hoveredTab, setHoveredTab] = useState(null);
+  const dispatch = useDispatch();
 
   const inboundsList = useSelector(
     (state) => state.product.inbound?.allInBounds
   );
+
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId?.warehouseId;
 
@@ -57,6 +103,17 @@ function InBound() {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const showModalView = (record) => {
+    setFormData(record);
+    setIsModalViewOpen(true);
+  };
+  const handleOkView = () => {
+    setIsModalViewOpen(false);
+  };
+  const handleCancelView = () => {
+    setIsModalViewOpen(false);
   };
 
   const handleEditStatus = async (key) => {
@@ -98,15 +155,16 @@ function InBound() {
   useEffect(() => {
     async function fetchData() {
       setIsFetching(true);
-
       try {
         await getAllInbound(dispatch, userWarehouseId);
-        getGoodsListByWarehouseId(dispatch, userWarehouseId);
+        getAllWarehouses(dispatch);
         getAllSupplier(dispatch);
+        getGoodsListByWarehouseId(dispatch, userWarehouseId);
+        getAllPartnersIncludeDelete(dispatch);
+        getAllProductsIncludeDelete(dispatch);
       } catch (e) {
         console.log(e);
       }
-
       setIsFetching(false);
     }
     fetchData();
@@ -116,47 +174,57 @@ function InBound() {
   const inbound_columns = [
     {
       title: "ASN",
-      fixed: "left",
       dataIndex: "ASN",
       key: "ASN",
-      // width: 60,
+      width: 120,
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Status",
-      fixed: "left",
+
       dataIndex: "status",
       key: "status",
+      width: 80,
       defaultFilteredValue:
         currentTab === "2" ? ["Order"] : currentTab === "3" ? ["Done"] : [""],
       onFilter: (value, record) => record.status.indexOf(value) === 0,
+      render: (status) => {
+        let color;
+        if (status === "Order") color = "geekblue";
+        else if (status === "Done") color = "green";
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
     },
     {
       title: "Supplier",
-      dataIndex: "supplier",
-      key: "supplier",
+      dataIndex: "supplierCodeAndName",
+      key: "supplierCodeAndName",
+      width: 200,
     },
     {
       title: "Total Value",
       dataIndex: "total_value",
       key: "total_value",
+      width: 150,
     },
     {
       title: "Creator",
       dataIndex: "creator",
       key: "creator",
+      width: 200,
     },
 
     {
       title: "Create Time",
       dataIndex: "create_time",
       key: "create_time",
-      // width: 300,
+      width: 200,
     },
     {
       title: "Update Time",
       dataIndex: "update_time",
       key: "update_time",
-      // width: 300,
+      width: 200,
     },
 
     // {
@@ -170,26 +238,67 @@ function InBound() {
       title: "Action",
       key: "operation",
       fixed: "right",
-      width: 250,
+      width: 200,
       render: (_, record) => {
         return (
           <>
-            <a>{<PiEyeBold />}</a>
+            <Tooltip key="view" title="View">
+              <a
+                onClick={() => {
+                  showModalView(record);
+                }}
+              >
+                {<PiEyeBold size={24} color="#85dcea" />}
+              </a>
+            </Tooltip>
             <a>
-              {<RiCheckboxLine onClick={() => handleEditStatus(record.key)} />}
+              {
+                <RiCheckboxLine
+                  color={record.status === "Done" ? "gray" : ""}
+                  size={24}
+                  onClick={
+                    record.status === "Done"
+                      ? null
+                      : () => handleEditStatus(record.key)
+                  }
+                />
+              }
             </a>
-            <a>{<RiPrinterLine />}</a>
+            <a
+              onClickCapture={() => {
+                setFormData(record);
+              }}
+            >
+              <PrintButton key={record._id} record={formData} />
+            </a>
+
             <Tooltip title="Edit" key="edit">
-              <a onClick={() => edit(record)}>
-                {<RiEditBoxLine size={20} color="purple" />}
+              <a onClick={record.status === "Done" ? null : () => edit(record)}>
+                {
+                  <RiEditBoxLine
+                    size={24}
+                    color={record.status === "Done" ? "gray" : "purple"}
+                  />
+                }
               </a>
             </Tooltip>
             <Tooltip title="Delete" key="delete">
               <Popconfirm
                 title="Sure to delete?"
-                onConfirm={() => handleDelete(record.key)}
+                onConfirm={
+                  record.status === "Done"
+                    ? null
+                    : () => handleDelete(record.key)
+                }
               >
-                <a>{<RiDeleteBin6Line size={20} />}</a>
+                <a>
+                  {
+                    <RiDeleteBin6Line
+                      size={24}
+                      color={record.status === "Done" ? "gray" : "red"}
+                    />
+                  }
+                </a>
               </Popconfirm>
             </Tooltip>
           </>
@@ -211,11 +320,49 @@ function InBound() {
         handleOkButton={handleOk}
         onUpdateData={onUpdateData}
         formData={formData}
-      ></InBoundForm>
-      <Table
-        loading={isFetching}
-        bordered
-        style={{ marginTop: "10px", maxWidth: "85vw" }}
+      />
+      <ConfigProvider
+        theme={{
+          components: {
+            Modal: {
+              titleFontSize: 24,
+              headerBg: "rgba(156, 188, 235, 1)",
+              paddingLG: 0,
+              padding: 0,
+            },
+          },
+        }}
+      >
+        <Modal
+          style={{
+            top: 20,
+          }}
+          title=" &nbsp;"
+          width={700}
+          footer={null}
+          open={isModalViewOpen}
+          onOk={handleOkView}
+          onCancel={handleCancelView}
+          closeIcon={
+            <CloseOutlined
+              style={{
+                fontSize: "25px",
+                paddingTop: "10px",
+                paddingRight: "20px",
+                color: "white",
+              }}
+            />
+          }
+        >
+          <ExportButtonForInBound formData={formData} />
+        </Modal>
+      </ConfigProvider>
+
+      <CustomTable
+        isFetching={isFetching}
+        marginTop={20}
+        title="Update Outbound"
+        scrollX={1800}
         columns={inbound_columns}
         dataSource={inboundsList?.map((inbound) => {
           return {
@@ -224,24 +371,24 @@ function InBound() {
             status: inbound.status,
             supplier: inbound.partnerId.code,
             supplierId: inbound.partnerId._id,
-            total_value: inbound.total,
-            creator: inbound.employeeId.code,
+            supplierCodeAndName:
+              inbound.partnerId.code + " - " + inbound.partnerId.name,
+            supplierName: inbound.partnerId.name,
+            total_value: Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(inbound.total),
+            creator: inbound.employeeId.code + " - " + inbound.employeeId.name,
+            creatorName: inbound.employeeId.name,
             trans_details: inbound.transactionDetails,
+            create_time: dayjs(inbound.createdAt).format("DD-MM-YYYY HH:mm:ss"),
+            update_time: dayjs(inbound.updatedAt).format("DD-MM-YYYY HH:mm:ss"),
           };
         })}
-        pagination={{
-          showQuickJumper: true,
-          total: inboundsList?.length,
-        }}
-        scroll={{
-          y: "60vh",
-        }}
+        onUpdateData={onUpdateData}
       />
     </div>
   );
-  const order = "In order";
-  const delivery = "In delivery";
-  const done = "Done";
 
   const onTabsChange = (key) => {
     console.log(key);

@@ -39,6 +39,8 @@ import {
 import {
   getCustomersStart,
   getCustomersSuccess,
+  getPartnersIncludeDeleteStart,
+  getPartnersIncludeDeleteSuccess,
   getSuppliersStart,
   getSuppliersSuccess,
 } from "./partnerSlice";
@@ -47,6 +49,8 @@ import {
   getInboundsSuccess,
   getOutboundsStart,
   getOutboundsSuccess,
+  getProductsIncludeDeleteStart,
+  getProductsIncludeDeleteSuccess,
   getProductsStart,
   getProductsSuccess,
 } from "./productSlice";
@@ -360,6 +364,34 @@ export const getAllInbound = async (dispatch, warehouseId) => {
   );
 
   dispatch(getInboundsSuccess(res.data));
+};
+
+export const getAllPartnersIncludeDelete = async (dispatch) => {
+  dispatch(getPartnersIncludeDeleteStart());
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/partner/`
+  );
+  dispatch(getPartnersIncludeDeleteSuccess(res.data));
+};
+
+export const getProductById = async (productId) => {
+  return await axios.get(
+    `https://warehousemanagement.onrender.com/api/product/${productId}`
+  );
+};
+
+export const getAllProductsIncludeDelete = async (dispatch) => {
+  dispatch(getProductsIncludeDeleteStart());
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/product/`
+  );
+  dispatch(getProductsIncludeDeleteSuccess(res.data));
+};
+
+export const getWarehouseById = async (warehouseId) => {
+  return await axios.get(
+    `https://warehousemanagement.onrender.com/api/warehouse/${warehouseId}`
+  );
 };
 
 export const updateStatus = async (transactionId, status) => {

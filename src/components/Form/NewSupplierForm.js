@@ -3,39 +3,11 @@ import { Form, Input, Button, Modal, Space, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import CustomForm from "../CustomForm";
+import SubmitButton from "../SubmitButton";
+import "./style.css";
 
 const { TextArea } = Input;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 function NewSupplierForm({
   onUpdateData,
@@ -82,7 +54,83 @@ function NewSupplierForm({
   };
   return (
     <>
-      <Modal
+      <CustomForm
+        form={
+          <Form
+            className="formLabel"
+            form={form}
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 12 }}
+            layout="horizontal"
+            onFinish={handleFinish}
+          >
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your supplier name!",
+                },
+              ]}
+              label={<p>Supplier Name</p>}
+              name="supplierName"
+            >
+              <Input placeholder="Supplier Name" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your supplier name!",
+                },
+              ]}
+              label={<p>Address</p>}
+              name="supplierAddress"
+            >
+              <TextArea placeholder="Supplier Address" rows={4} />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your supplier name!",
+                },
+              ]}
+              label={<p>Phone Number</p>}
+              name="supplierPhoneNumber"
+            >
+              <Input placeholder="Supplier Phone Number" type="phone" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your supplier name!",
+                },
+              ]}
+              label={<p>Email</p>}
+              name="supplierEmail"
+            >
+              <Input placeholder="Supplier Email" type="email" />
+            </Form.Item>
+            <Form.Item {...tailLayout}>
+              <Space>
+                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
+                  Ok
+                </SubmitButton>
+              </Space>
+            </Form.Item>
+          </Form>
+        }
+        handleCancelButton={handleCancelButton}
+        isModalOpen={isModalOpen}
+        marginTop={100}
+        title="New Supplier"
+      />
+      {/* <Modal
         open={isModalOpen}
         width="500px"
         height="300px"
@@ -159,7 +207,7 @@ function NewSupplierForm({
             </Form.Item>
           </Form>
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 }

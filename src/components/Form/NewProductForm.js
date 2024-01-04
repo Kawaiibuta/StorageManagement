@@ -14,39 +14,11 @@ import {
 import { useForm } from "antd/es/form/Form";
 import { useSelector } from "react-redux";
 import { addProduct } from "../../redux/apiRequest";
+import CustomForm from "../CustomForm";
+import "./style.css";
+import SubmitButton from "../SubmitButton";
 
 const { TextArea } = Input;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 function NewProductForm({
   onUpdateData,
@@ -54,7 +26,7 @@ function NewProductForm({
   handleOkButton,
   handleCancelButton,
 }) {
-  const [form] = useForm();
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const tailLayout = {
     wrapperCol: {
@@ -65,9 +37,7 @@ function NewProductForm({
   const suppliersList = useSelector(
     (state) => state.partner.supplier?.allSuppliers
   );
-  const warehouseList = useSelector(
-    (state) => state.warehouse.warehouse?.allWarehouses
-  );
+
   const userWarehouseId = useSelector(
     (state) => state.auth.login?.currentUser.employeeId.warehouseId
   );
@@ -89,6 +59,7 @@ function NewProductForm({
   const handleFinish = async (values) => {
     console.log(values);
     try {
+      console.log("whid", userWarehouseId);
       setIsLoading(true);
 
       const formData = new FormData();
@@ -126,17 +97,10 @@ function NewProductForm({
   };
   return (
     <>
-      <Modal
-        open={isModalOpen}
-        width="500px"
-        height="300px"
-        onOk={handleOkButton}
-        onCancel={handleCancelButton}
-        footer={null}
-      >
-        <div>
-          <h1>New Product</h1>
+      <CustomForm
+        form={
           <Form
+            className="formLabel"
             onFinish={handleFinish}
             form={form}
             labelCol={{ span: 10 }}
@@ -144,76 +108,82 @@ function NewProductForm({
             layout="horizontal"
           >
             <Form.Item
+              labelAlign="left"
               rules={[
                 {
                   required: true,
                   message: "Please input your product name!",
                 },
               ]}
-              label="Product Name:"
+              label={<p>Product Name</p>}
               name="productName"
             >
               <Input placeholder="Product Name" />
             </Form.Item>
             <Form.Item
+              labelAlign="left"
               rules={[
                 {
                   required: true,
                   message: "Please input your product Maximum Quantity!",
                 },
               ]}
-              label="Maximum Quantity:"
+              label={<p>Maximun Quantity</p>}
               name="productMaxQuantity"
             >
               <InputNumber min={1} placeholder="Product Maximum Quantity" />
             </Form.Item>
             <Form.Item
+              labelAlign="left"
               rules={[
                 {
                   required: true,
                   message: "Please input your supplier !",
                 },
               ]}
-              label="Supplier Code"
+              label={<p>Supplier</p>}
               name="supplierCode"
             >
               <Select
-                placeholder="Select Supplier Code"
+                placeholder="Select Supplier"
                 options={suppliersList?.map((supplier) => {
                   return {
                     value: supplier._id,
-                    label: supplier.code,
+                    label: supplier.code + " - " + supplier.name,
                   };
                 })}
               ></Select>
             </Form.Item>
             <Form.Item
+              labelAlign="left"
               rules={[
                 {
                   required: true,
                   message: "Please input your product price!",
                 },
               ]}
-              label="Price:"
+              label={<p>Price</p>}
               name="productPrice"
             >
               <InputNumber min={0} placeholder="Product Price" />
             </Form.Item>
             <Form.Item
+              labelAlign="left"
               rules={[
                 {
                   required: true,
                   message: "Please input your product unit!",
                 },
               ]}
-              label="Unit:"
+              label={<p>Unit</p>}
               name="productUnit"
             >
               <Input placeholder="Product Unit" />
             </Form.Item>
             <Form.Item
+              labelAlign="left"
               name="productImage"
-              label="Product Image"
+              label={<p>Product Image</p>}
               rules={[
                 {
                   required: true,
@@ -232,13 +202,14 @@ function NewProductForm({
             </Form.Item>
 
             <Form.Item
+              labelAlign="left"
               rules={[
                 {
                   required: true,
                   message: "Please input your product specification!",
                 },
               ]}
-              label="Specification"
+              label={<p>Specification</p>}
               name="productSpecification"
             >
               <TextArea placeholder="Product Specification" rows={4} />
@@ -265,17 +236,18 @@ function NewProductForm({
             </Form.Item> */}
             <Form.Item {...tailLayout}>
               <Space>
-                <Button htmlType="button" onClick={handleCancelButton}>
-                  Cancel
-                </Button>
-                <SubmitButton form={form} isLoading={isLoading}>
+                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
                   Ok
                 </SubmitButton>
               </Space>
             </Form.Item>
           </Form>
-        </div>
-      </Modal>
+        }
+        handleCancelButton={handleCancelButton}
+        isModalOpen={isModalOpen}
+        marginTop={20}
+        title="New Product"
+      />
     </>
   );
 }

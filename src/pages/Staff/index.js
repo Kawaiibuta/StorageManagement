@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import TabView from "../../components/Button Header/TabView";
 import {
   Button,
+  ConfigProvider,
   Input,
   Modal,
   Popconfirm,
@@ -15,7 +16,8 @@ import {
 import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
 import { FaRegUser, FaUser } from "react-icons/fa";
 import ToolBar from "../../components/ToolBar/toolbar.js";
-import { SearchOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
 import {
   deleteEmployee,
   deleteUser,
@@ -33,6 +35,7 @@ import { MdAssignmentInd } from "react-icons/md";
 import managerIcon from "../../assets/images/manager_icon.png";
 import managerIconActive from "../../assets/images/manager_icon_active.png";
 import { LuUser2 } from "react-icons/lu";
+import CustomTable from "../../components/Table/index.js";
 
 function Staff() {
   const [isFetching, setIsFetching] = useState(false);
@@ -224,31 +227,26 @@ function Staff() {
   const employee_columns = [
     {
       title: "Code",
-      fixed: "left",
+
       dataIndex: "code",
       key: "code",
       width: 90,
       ...getColumnSearchProps("code"),
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Full Name",
-      width: 200,
+      width: 180,
       dataIndex: "name",
       key: "name",
-      fixed: "left",
       ...getColumnSearchProps("name"),
     },
-    {
-      title: "Employee Type",
-      dataIndex: "type",
-      key: "6",
-      width: 150,
-    },
+
     {
       title: "Address",
       dataIndex: "address",
       key: "6",
-      width: 150,
+      width: 200,
       ...getColumnSearchProps("address"),
     },
     {
@@ -267,10 +265,10 @@ function Staff() {
     },
     {
       title: "Warehouse",
-      dataIndex: "warehouse_code",
+      dataIndex: "warehouseCodeAndName",
       key: "6",
       width: 200,
-      ...getColumnSearchProps("warehouse_code"),
+      ...getColumnSearchProps("warehouseCodeAndName"),
     },
     {
       title: "Start Time",
@@ -287,7 +285,7 @@ function Staff() {
         <>
           <Tooltip title="Edit" key="edit">
             <a onClick={() => edit(record)}>
-              {<RiEditBoxLine size={20} color="purple" />}
+              {<RiEditBoxLine size={24} color="purple" />}
             </a>
           </Tooltip>
           <Tooltip title="Delete" key="delete">
@@ -295,7 +293,7 @@ function Staff() {
               title="Sure to delete staff"
               onConfirm={() => handleDelete(record.key)}
             >
-              <a>{<RiDeleteBin6Line size={20} />}</a>
+              <a>{<RiDeleteBin6Line size={24} color="red" />}</a>
             </Popconfirm>
           </Tooltip>
         </>
@@ -309,28 +307,33 @@ function Staff() {
       dataIndex: "id",
       key: "id",
       width: 60,
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Employee",
       dataIndex: "employee_name",
       key: "employee_name",
       ...getColumnSearchProps("employee_name"),
+      width: 200,
     },
     {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      width: 150,
     },
     {
       title: "Username",
       dataIndex: "user_name",
       key: "user_name",
+      width: 150,
     },
 
     {
       title: "Action",
       key: "operation",
       fixed: "right",
+      width: 150,
 
       render: (_, record) => (
         <>
@@ -339,7 +342,7 @@ function Staff() {
               title="Sure to delete user"
               onConfirm={() => handleDeleteUser(record.key)}
             >
-              <a>{<RiDeleteBin6Line size={20} />}</a>
+              <a>{<RiDeleteBin6Line size={24} color="red" />}</a>
             </Popconfirm>
           </Tooltip>
         </>
@@ -350,7 +353,21 @@ function Staff() {
   const staff_user = (
     <div style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"user"}></ToolBar>
-      <Modal
+      <CustomTable
+        columns={user_columns}
+        dataSource={usersList?.map((user, index) => {
+          return {
+            key: user._id,
+            id: index + 1,
+            employee_name: user.employeeId.name,
+            role: user.isEmployee ? "Employee" : "Manager",
+            user_name: user.username,
+          };
+        })}
+        isFetching={isFetching}
+        onUpdateData={onUpdateData}
+      />
+      {/* <Modal
         footer={null}
         open={isModalOpen}
         onOk={handleOk}
@@ -384,7 +401,7 @@ function Staff() {
         scroll={{
           y: "60vh",
         }}
-      />
+      /> */}
     </div>
   );
 
@@ -400,24 +417,99 @@ function Staff() {
         type={2}
         page={"employee"}
       ></ToolBar>
-      <Modal
-        footer={null}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+      {/* <ConfigProvider
+        theme={{
+          components: {
+            Table: {
+              headerBg: "#6c7ae0",
+              headerColor: "white",
+              rowHoverBg: "#bae0ff",
+            },
+            Modal: {
+              titleFontSize: 24,
+              headerBg: "rgba(156, 188, 235, 1)",
+              paddingLG: 0,
+              padding: 0,
+            },
+          },
+        }}
       >
-        <UpdateEmployeeForm
-          isModalOpen={isModalOpen}
-          handleCancelButton={handleCancel}
-          handleOkButton={handleOk}
-          onUpdateData={onUpdateData}
-          formData={formData}
+        <Modal
+          style={{
+            top: 20,
+          }}
+          title={
+            <p
+              style={{
+                marginLeft: "24px",
+                fontWeight: 500,
+                fontSize: 24,
+                padding: "16px 0px",
+              }}
+            >
+              Update Warehouse
+            </p>
+          }
+          closeIcon={
+            <CloseOutlined
+              style={{
+                fontSize: "25px",
+                paddingTop: "20px",
+                paddingRight: "20px",
+                color: "white",
+              }}
+            />
+          }
+          footer={null}
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <UpdateEmployeeForm
+            isModalOpen={isModalOpen}
+            handleCancelButton={handleCancel}
+            handleOkButton={handleOk}
+            onUpdateData={onUpdateData}
+            formData={formData}
+          />
+        </Modal>
+        <Table
+          bordered
+          loading={isFetching}
+          style={{ marginTop: "10px", maxWidth: "85vw" }}
+          columns={employee_columns}
+          dataSource={managersList?.map((employee) => {
+            return {
+              key: employee._id,
+              code: employee.code,
+              name: employee.name,
+              type: employee.position,
+              address: employee.contactId.address,
+              phone_num: employee.contactId.phone_num,
+              email: employee.contactId.email,
+              idCard: employee.idCard,
+              gender: employee.gender,
+              avatar: employee.imageUrl,
+              warehouse_code: employee.warehouseId?.code,
+              warehouse_id: employee.warehouseId?._id,
+              start_time: employee.startDate,
+              birthday: employee.birthday,
+            };
+          })}
+          pagination={{
+            showQuickJumper: true,
+            total: managersList?.length,
+          }}
+          scroll={{
+            x: 2000,
+            y: "60vh",
+          }}
         />
-      </Modal>
-      <Table
-        bordered
-        loading={isFetching}
-        style={{ marginTop: "10px", maxWidth: "85vw" }}
+      </ConfigProvider> */}
+      <CustomTable
+        marginTop={5}
+        scrollX={1800}
+        title="Update Manager"
         columns={employee_columns}
         dataSource={managersList?.map((employee) => {
           return {
@@ -433,18 +525,26 @@ function Staff() {
             avatar: employee.imageUrl,
             warehouse_code: employee.warehouseId?.code,
             warehouse_id: employee.warehouseId?._id,
-            start_time: employee.startDate,
+            warehouseCodeAndName:
+              employee.warehouseId?.code + " - " + employee.warehouseId?.name,
+            start_time: dayjs(employee.startDate).format("DD-MM-YYYY HH:mm:ss"),
             birthday: employee.birthday,
           };
         })}
-        pagination={{
-          showQuickJumper: true,
-          total: managersList?.length,
-        }}
-        scroll={{
-          x: 2000,
-          y: "60vh",
-        }}
+        form={
+          <UpdateEmployeeForm
+            isModalOpen={isModalOpen}
+            handleCancelButton={handleCancel}
+            handleOkButton={handleOk}
+            onUpdateData={onUpdateData}
+            formData={formData}
+          />
+        }
+        handleCancel={handleCancel}
+        handleOk={handleOk}
+        isFetching={isFetching}
+        isModalOpen={isModalOpen}
+        onUpdateData={onUpdateData}
       />
     </div>
   );
@@ -461,7 +561,47 @@ function Staff() {
         type={2}
         page={"employee"}
       ></ToolBar>
-      <Modal
+      <CustomTable
+        marginTop={5}
+        columns={employee_columns}
+        dataSource={employeeList?.map((employee) => {
+          return {
+            key: employee._id,
+            code: employee.code,
+            name: employee.name,
+            type: employee.position,
+            address: employee.contactId.address,
+            phone_num: employee.contactId.phone_num,
+            email: employee.contactId.email,
+            idCard: employee.idCard,
+            gender: employee.gender,
+            avatar: employee.imageUrl,
+            warehouse_name: employee.warehouseId?.name,
+            warehouse_code: employee.warehouseId?.code,
+            warehouseCodeAndName:
+              employee.warehouseId?.code + " - " + employee.warehouseId?.name,
+            warehouse_id: employee.warehouseId?._id,
+            start_time: dayjs(employee.startDate).format("DD-MM-YYYY HH:mm:ss"),
+            birthday: employee.birthday,
+          };
+        })}
+        form={
+          <UpdateEmployeeForm
+            isModalOpen={isModalOpen}
+            handleCancelButton={handleCancel}
+            handleOkButton={handleOk}
+            onUpdateData={onUpdateData}
+            formData={formData}
+          />
+        }
+        handleCancel={handleCancel}
+        handleOk={handleOk}
+        isFetching={isFetching}
+        isModalOpen={isModalOpen}
+        onUpdateData={onUpdateData}
+        title="Update Employee"
+      />
+      {/* <Modal
         footer={null}
         open={isModalOpen}
         onOk={handleOk}
@@ -507,7 +647,7 @@ function Staff() {
           x: 1800,
           y: "60vh",
         }}
-      />
+      /> */}
     </div>
   );
 

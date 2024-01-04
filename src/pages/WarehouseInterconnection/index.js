@@ -3,8 +3,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
 import warehouseset from "../../assets/images/warehouseset-active.png";
 import Highlighter from "react-highlight-words";
+import "./styles.css";
 
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
 
 import {
   Table,
@@ -16,6 +17,7 @@ import {
   Input,
   Space,
   Button,
+  ConfigProvider,
 } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import {
@@ -25,8 +27,8 @@ import {
 } from "../../redux/apiRequest.js";
 import { useDispatch, useSelector } from "react-redux";
 import UpdateWarehouseForm from "../../components/Form/UpdateWarehouseForm.js";
-
 import TabPane from "antd/es/tabs/TabPane.js";
+import CustomTable from "../../components/Table/index.js";
 
 function WarehouseInterconnection() {
   const [isUpdateData, setIsUpdateData] = useState(false);
@@ -193,18 +195,18 @@ function WarehouseInterconnection() {
   const columns = [
     {
       title: "Code",
-      fixed: "left",
       dataIndex: "code",
       key: "code",
       width: 80,
       ...getColumnSearchProps("code"),
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Warehouse Name",
       width: 200,
       dataIndex: "name",
       key: "name",
-      fixed: "left",
+      // fixed: "left",
       ...getColumnSearchProps("name"),
     },
     {
@@ -218,18 +220,20 @@ function WarehouseInterconnection() {
       title: "Warehouse Contact",
       dataIndex: "phone_num",
       key: "phone_num",
+      width: 130,
       ...getColumnSearchProps("phone_num"),
     },
     {
       title: "Warehouse Manager",
-      dataIndex: "managerCode",
-      key: "managerCode",
+      dataIndex: "managerCodeAndName",
+      key: "managerCodeAndName",
       width: 200,
     },
     {
       title: "Warehouse Capacity",
       dataIndex: "capacity",
       key: "capacity",
+      width: 130,
       sorter: (a, b) => a.capacity - b.capacity,
     },
 
@@ -243,12 +247,12 @@ function WarehouseInterconnection() {
       title: "Action",
       key: "operation",
       fixed: "right",
-      width: 140,
+      width: 100,
       render: (_, record) => (
         <>
           <Tooltip title="Edit" key="edit">
             <a onClick={() => edit(record)}>
-              {<RiEditBoxLine size={20} color="purple" />}
+              {<RiEditBoxLine size={24} color="purple" />}
             </a>
           </Tooltip>
           <Tooltip title="Delete" key="delete">
@@ -260,7 +264,8 @@ function WarehouseInterconnection() {
               <a>
                 <RiDeleteBin6Line
                   // onClick={() => handleDelete(record.key)}
-                  size={20}
+                  size={24}
+                  color="red"
                 />
               </a>
             </Popconfirm>
@@ -278,28 +283,109 @@ function WarehouseInterconnection() {
         type={2}
         page={"warehouseinter"}
       ></ToolBar>
-      <Modal
-        footer={null}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <UpdateWarehouseForm
-          managersList={managersList}
-          handleCancelButton={handleCancel}
-          handleOkButton={handleOk}
-          onUpdateData={onUpdateData}
-          formData={formData}
-        />
-      </Modal>
-
-      <Table
-        bordered
-        loading={isFetching}
-        style={{
-          marginTop: "10px",
-          maxWidth: "85vw",
+      {/* <ConfigProvider
+        theme={{
+          components: {
+            Table: {
+              headerBg: "#6c7ae0",
+              headerColor: "white",
+              rowHoverBg: "#bae0ff",
+              filterDropdownBgL: "white",
+              fixedHeaderSortActiveBg: "white",
+            },
+            Modal: {
+              titleFontSize: 24,
+              headerBg: "rgba(156, 188, 235, 1)",
+              paddingLG: 0,
+              padding: 0,
+            },
+          },
         }}
+      >
+        <Modal
+          style={{
+            top: 20,
+          }}
+          title={
+            <p
+              style={{
+                marginLeft: "24px",
+                fontWeight: 500,
+                fontSize: 24,
+                padding: "16px 0px",
+              }}
+            >
+              Update Warehouse
+            </p>
+          }
+          closeIcon={
+            <CloseOutlined
+              style={{
+                fontSize: "25px",
+                paddingTop: "20px",
+                paddingRight: "20px",
+                color: "white",
+              }}
+            />
+          }
+          footer={null}
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <UpdateWarehouseForm
+            managersList={managersList}
+            handleCancelButton={handleCancel}
+            handleOkButton={handleOk}
+            onUpdateData={onUpdateData}
+            formData={formData}
+          />
+        </Modal>
+        <Table
+          bordered
+          loading={isFetching}
+          style={{
+            marginTop: "10px",
+            maxWidth: "85vw",
+          }}
+          rowClassName={(_, index) => (index % 2 === 1 ? "colorTable" : "")}
+          columns={columns}
+          dataSource={allWarehouseList?.map((wh) => {
+            return {
+              key: wh._id,
+              code: wh.code,
+              name: wh.name,
+              address: wh.contactId.address,
+              phone_num: wh.contactId.phone_num,
+              email: wh.contactId.email,
+              managerCode: wh.managerId?.code,
+              managerCodeAndName:
+                wh.managerId?.code + " - " + wh.managerId?.name,
+              managerId: wh.managerId?._id,
+              capacity: wh.capacity.toLocaleString(),
+              capacityNumber: wh.capacity,
+              description: wh.description,
+              createTime: wh.createdAt,
+              updateTime: wh.updatedAt,
+            };
+          })}
+          pagination={{
+            showQuickJumper: true,
+            total: allWarehouseList?.length,
+          }}
+          scroll={{
+            x: 1800,
+            y: "55vh",
+          }}
+        />
+      </ConfigProvider> */}
+      <CustomTable
+        marginTop={10}
+        scrollX={1800}
+        title="Update Warehouse"
+        handleCancel={handleCancel}
+        handleOk={handleOk}
+        isModalOpen={isModalOpen}
         columns={columns}
         dataSource={allWarehouseList?.map((wh) => {
           return {
@@ -310,21 +396,26 @@ function WarehouseInterconnection() {
             phone_num: wh.contactId.phone_num,
             email: wh.contactId.email,
             managerCode: wh.managerId?.code,
+            managerCodeAndName: wh.managerId?.code + " - " + wh.managerId?.name,
             managerId: wh.managerId?._id,
-            capacity: wh.capacity,
+            capacity: wh.capacity.toLocaleString(),
+            capacityNumber: wh.capacity,
             description: wh.description,
             createTime: wh.createdAt,
             updateTime: wh.updatedAt,
           };
         })}
-        pagination={{
-          showQuickJumper: true,
-          total: allWarehouseList?.length,
-        }}
-        scroll={{
-          x: 1800,
-          y: "55vh",
-        }}
+        form={
+          <UpdateWarehouseForm
+            managersList={managersList}
+            handleCancelButton={handleCancel}
+            handleOkButton={handleOk}
+            onUpdateData={onUpdateData}
+            formData={formData}
+          />
+        }
+        isFetching={isFetching}
+        onUpdateData={onUpdateData}
       />
     </div>
   );

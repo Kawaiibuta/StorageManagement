@@ -14,39 +14,10 @@ import {
 import { useForm } from "antd/es/form/Form";
 import { useSelector } from "react-redux";
 import { addProduct, updateProduct } from "../../redux/apiRequest";
+import "./style.css";
+import SubmitButton from "../SubmitButton";
 
 const { TextArea } = Input;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 function UpdateProductForm({
   onUpdateData,
@@ -54,7 +25,7 @@ function UpdateProductForm({
   handleCancelButton,
   formData,
 }) {
-  const [form] = useForm();
+  const [form] = Form.useForm();
   console.log("formdata", formData);
   const [isLoading, setIsLoading] = useState(false);
   const tailLayout = {
@@ -100,17 +71,12 @@ function UpdateProductForm({
       formDt.append("maximumQuantity", values.productMaxQuantity);
       formDt.append("price", values.productPrice);
       formDt.append("unit", values.productUnit);
-      formDt.append(
-        "warehouseId",
-        values.warehouseCode.length <= 10
-          ? formData.warehouse_id
-          : values.warehouseCode
-      );
+
       formDt.append("specification", values.productSpecification);
 
       formDt.append(
         "supplierId",
-        values.supplierCode.length <= 10
+        values.supplierCode.includes("-")
           ? formData.supplier_id
           : values.supplierCode
       );
@@ -150,8 +116,8 @@ function UpdateProductForm({
       productPrice: formData.price,
       productUnit: formData.unit,
       productSpecification: formData.specification,
-      warehouseCode: formData.warehouse_name,
-      supplierCode: formData.supplier_name,
+      warehouseCode: formData.warehouseCodeAndName,
+      supplierCode: formData.supplierCodeAndName,
     });
     setFileList([
       {
@@ -166,8 +132,8 @@ function UpdateProductForm({
   return (
     <>
       <div>
-        <h1>Update Product</h1>
         <Form
+          className="formLabel"
           onFinish={handleFinish}
           form={form}
           labelCol={{ span: 10 }}
@@ -175,74 +141,83 @@ function UpdateProductForm({
           layout="horizontal"
         >
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your product name!",
               },
             ]}
-            label="Product Name:"
+            label={<p>Product Name</p>}
             name="productName"
           >
             <Input placeholder="Product Name" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your product Maximum Quantity!",
               },
             ]}
-            label="Maximum Quantity:"
+            label={<p>Maximum Quantity</p>}
             name="productMaxQuantity"
           >
             <InputNumber placeholder="Product Maximum Quantity" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your supplier !",
               },
             ]}
-            label="Supplier Code"
+            label={<p>Supplier</p>}
             name="supplierCode"
           >
             <Select
-              placeholder="Select Supplier Code"
+              placeholder="Select Supplier"
               options={suppliersList?.map((supplier) => {
                 return {
                   value: supplier._id,
-                  label: supplier.code,
+                  label: supplier.code + " - " + supplier.name,
                 };
               })}
             ></Select>
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your product price!",
               },
             ]}
-            label="Price:"
+            label={<p>Price</p>}
             name="productPrice"
           >
             <Input placeholder="Product Price" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your product unit!",
               },
             ]}
-            label="Unit:"
+            label={<p>Unit</p>}
             name="productUnit"
           >
             <Input placeholder="Product Unit" />
           </Form.Item>
-          <Form.Item name="productImage" label="Product Image">
+          <Form.Item
+            labelAlign="left"
+            name="productImage"
+            label={<p>&nbsp;Product Image</p>}
+          >
             <Upload
               action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
               listType="picture-circle"
@@ -255,43 +230,22 @@ function UpdateProductForm({
           </Form.Item>
 
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your product specification!",
               },
             ]}
-            label="Specification"
+            label={<p>Specification</p>}
             name="productSpecification"
           >
             <TextArea placeholder="Product Specification" rows={4} />
           </Form.Item>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Please input warehouse!",
-              },
-            ]}
-            label="Warehouse"
-            name="warehouseCode"
-          >
-            <Select
-              placeholder="Select warehouse code"
-              options={warehouseList?.map((wh) => {
-                return {
-                  value: wh._id,
-                  label: wh.code,
-                };
-              })}
-            ></Select>
-          </Form.Item>
+
           <Form.Item {...tailLayout}>
             <Space>
-              <Button htmlType="button" onClick={handleCancelButton}>
-                Cancel
-              </Button>
-              <SubmitButton form={form} isLoading={isLoading}>
+              <SubmitButton Form={Form} form={form} isLoading={isLoading}>
                 Ok
               </SubmitButton>
             </Space>
