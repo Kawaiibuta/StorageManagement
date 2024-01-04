@@ -11,44 +11,14 @@ import {
   Space,
   message,
   DatePicker,
+  ConfigProvider,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useSelector } from "react-redux";
 import { updateEmployee } from "../../redux/apiRequest";
 import moment from "moment";
+import SubmitButton from "../SubmitButton";
 const { Option } = Select;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 function UpdateProductForm({
   onUpdateData,
@@ -98,7 +68,7 @@ function UpdateProductForm({
       if (values.employeeWarehouse) {
         formDt.append(
           "warehouseId",
-          values.employeeWarehouse.length < 10
+          values.employeeWarehouse.includes("-")
             ? formData.warehouse_id
             : values.employeeWarehouse
         );
@@ -157,7 +127,7 @@ function UpdateProductForm({
       employeePhoneNumber: formData.phone_num,
       employeePosition: formData.type,
       employeeStartDate: dayjs(formData.start_time),
-      employeeWarehouse: formData.warehouse_code,
+      employeeWarehouse: formData.warehouseCodeAndName,
     });
     setFileList([
       {
@@ -172,32 +142,34 @@ function UpdateProductForm({
   return (
     <>
       <div>
-        <h1>Update Employee</h1>
         <Form
           onFinish={handleFinish}
           form={form}
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 12 }}
           layout="horizontal"
+          className="formLabel"
         >
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
               },
             ]}
-            label="Name:"
+            label={<p>Name</p>}
             name="employeeName"
           >
             <Input placeholder="Employee Name" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
               },
             ]}
-            label="Position"
+            label={<p>Position</p>}
             name="employeePosition"
           >
             <Select placeholder="Select Employee Position">
@@ -206,8 +178,9 @@ function UpdateProductForm({
             </Select>
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeeGender"
-            label="Gender"
+            label={<p>Gender</p>}
             rules={[
               {
                 required: true,
@@ -220,7 +193,8 @@ function UpdateProductForm({
             </Select>
           </Form.Item>
           <Form.Item
-            label="Id Card:"
+            labelAlign="left"
+            label={<p>Id Card</p>}
             name="employeeIdCard"
             rules={[
               {
@@ -231,8 +205,9 @@ function UpdateProductForm({
             <Input placeholder="Employe Id Card Number" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeeBirthday"
-            label="Birthday"
+            label={<p>Birthday</p>}
             rules={[
               {
                 required: true,
@@ -245,8 +220,9 @@ function UpdateProductForm({
             />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeeAddress"
-            label="Address:"
+            label={<p>Address</p>}
             rules={[
               {
                 required: true,
@@ -256,8 +232,9 @@ function UpdateProductForm({
             <Input placeholder="Employee Address" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeePhoneNumber"
-            label="Phone Number:"
+            label={<p>Phone Number</p>}
             rules={[
               {
                 required: true,
@@ -267,8 +244,9 @@ function UpdateProductForm({
             <Input placeholder="Employee Phone Number" type="phone" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeeEmail"
-            label="Email:"
+            label={<p>Email</p>}
             rules={[
               {
                 required: true,
@@ -278,7 +256,8 @@ function UpdateProductForm({
             <Input placeholder="Employee Email" type="email" />
           </Form.Item>
           <Form.Item
-            label="Warehouse"
+            labelAlign="left"
+            label={<p>&nbsp;Warehouse</p>}
             name="employeeWarehouse"
             rules={[
               {
@@ -290,7 +269,7 @@ function UpdateProductForm({
               allowClear
               options={warehouseList?.map((warehouse) => {
                 return {
-                  label: warehouse.code,
+                  label: warehouse.code + " - " + warehouse.name,
                   value: warehouse._id,
                 };
               })}
@@ -298,8 +277,9 @@ function UpdateProductForm({
             ></Select>
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeeStartDate"
-            label="Start Date"
+            label={<p>Start Date</p>}
             rules={[
               {
                 required: true,
@@ -309,8 +289,9 @@ function UpdateProductForm({
             <DatePicker format={"DD/MM/YYYY"} />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="employeeAvatar"
-            label="Avatar"
+            label={<p>&nbsp;Avatar</p>}
             rules={[
               {
                 required: false,
@@ -329,10 +310,7 @@ function UpdateProductForm({
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Space>
-              <Button htmlType="button" onClick={handleCancelButton}>
-                Cancel
-              </Button>
-              <SubmitButton form={form} isLoading={isLoading}>
+              <SubmitButton Form={Form} form={form} isLoading={isLoading}>
                 Ok
               </SubmitButton>
             </Space>

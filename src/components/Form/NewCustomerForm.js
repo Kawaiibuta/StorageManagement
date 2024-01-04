@@ -3,39 +3,11 @@ import { Form, Input, Button, Modal, Space, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import "./style.css";
+import CustomForm from "../CustomForm";
+import SubmitButton from "../SubmitButton";
 
 const { TextArea } = Input;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 const tailLayout = {
   wrapperCol: {
@@ -83,7 +55,83 @@ function NewCustomerForm({
 
   return (
     <>
-      <Modal
+      <CustomForm
+        form={
+          <Form
+            className="formLabel"
+            onFinish={handleFinish}
+            form={form}
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 12 }}
+            layout="horizontal"
+          >
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your customer name!",
+                },
+              ]}
+              label={<p>Customer Name</p>}
+              name="customerName"
+            >
+              <Input placeholder="Customer Name" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your customer name!",
+                },
+              ]}
+              label={<p>Address</p>}
+              name="customerAddress"
+            >
+              <TextArea placeholder="Customer Address" rows={4} />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your customer name!",
+                },
+              ]}
+              label={<p>Phone Number</p>}
+              name="customerPhoneNumber"
+            >
+              <Input placeholder="Customer Phone Number" type="phone" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your customer name!",
+                },
+              ]}
+              label={<p>Email</p>}
+              name="customerEmail"
+            >
+              <Input placeholder="Customer Email" type="email" />
+            </Form.Item>
+            <Form.Item {...tailLayout}>
+              <Space>
+                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
+                  Ok
+                </SubmitButton>
+              </Space>
+            </Form.Item>
+          </Form>
+        }
+        handleCancelButton={handleCancelButton}
+        isModalOpen={isModalOpen}
+        marginTop={100}
+        title="New Customer"
+      />
+      {/* <Modal
         open={isModalOpen}
         width="500px"
         height="300px"
@@ -161,7 +209,7 @@ function NewCustomerForm({
             </Form.Item>
           </Form>
         </div>
-      </Modal>
+      </Modal> */}
     </>
   );
 }

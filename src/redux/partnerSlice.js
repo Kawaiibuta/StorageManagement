@@ -5,11 +5,13 @@ const partnerSlice = createSlice({
   initialState: {
     supplier: {
       allSuppliers: null,
+      allPartnersIncludeDelete: null,
       isFetching: false,
       error: false,
     },
     customer: {
       allCustomers: null,
+
       isFetching: false,
     },
   },
@@ -34,6 +36,14 @@ const partnerSlice = createSlice({
       state.customer.allCustomers = action.payload;
       state.customer.error = false;
     },
+    getPartnersIncludeDeleteStart: (state) => {
+      state.supplier.isFetching = true;
+    },
+    getPartnersIncludeDeleteSuccess: (state, action) => {
+      state.supplier.isFetching = false;
+      state.supplier.allPartnersIncludeDelete = action.payload;
+      state.supplier.error = false;
+    },
   },
 });
 
@@ -43,6 +53,8 @@ export const {
   getSuppliersSuccess,
   getCustomersStart,
   getCustomersSuccess,
+  getPartnersIncludeDeleteStart,
+  getPartnersIncludeDeleteSuccess,
 } = partnerSlice.actions;
 
 export default partnerSlice.reducer;

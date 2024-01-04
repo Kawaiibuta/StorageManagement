@@ -1,10 +1,12 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table, Tabs } from "antd";
+import { Table, Tabs, Tooltip } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import { PiEyeBold } from "react-icons/pi";
 import {
+  getAllProductsIncludeDelete,
   getGoodsListByWarehouseId,
   getInventoryReport,
 } from "../../redux/apiRequest.js";
@@ -14,6 +16,10 @@ import inventoryIcon from "../../assets/images/inventory_icon.png";
 import inventoryIconActive from "../../assets/images/inventory_icon_active.png";
 import invenReportIcon from "../../assets/images/inventory_report_icon.png";
 import invenReportIconActive from "../../assets/images/inventory_report_icon_active.png";
+import CustomTable from "../../components/Table/index.js";
+import dayjs from "dayjs";
+import { RiPrinterLine } from "react-icons/ri";
+import InventoryReport from "../../components/Form/InventoryReport.js";
 
 function inventory_item(
   product_id,
@@ -105,58 +111,6 @@ const inventory_columns = [
     key: "6",
   },
 ];
-const report_columns = [
-  {
-    title: "Code",
-    fixed: "left",
-    dataIndex: "code",
-    key: "code",
-    width: 150,
-  },
-  {
-    title: "Total Actual Quantity",
-    dataIndex: "totalActualQuantity",
-    key: "totalActualQuantity",
-    width: 200,
-  },
-  {
-    title: "Total Difference Quantity",
-    dataIndex: "totalDiffQuantity",
-    key: "totalDiffQuantity",
-    width: 200,
-  },
-  {
-    title: "Increase Quantity",
-    dataIndex: "increaseQuantity",
-    key: "increaseQuantity",
-    width: 200,
-  },
-  {
-    title: "Decrease Quantity",
-    dataIndex: "decreaseQuantity",
-    key: "decreaseQuantity",
-    width: 200,
-  },
-  {
-    title: "Created At",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    width: 200,
-  },
-  {
-    title: "Updated At",
-    dataIndex: "updatedAt",
-    key: "updatedAt",
-    width: 200,
-  },
-  {
-    title: "Action",
-    key: "operation",
-    fixed: "right",
-    width: 230,
-    render: () => <ActionBar numActions={"report"} />,
-  },
-];
 
 const inventory_product = (
   <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
@@ -182,12 +136,101 @@ function Inventory() {
   const [dataSource, setDataSource] = useState([]);
   const [currentTab, setCurrentTab] = useState("1");
   const [hoveredTab, setHoveredTab] = useState(null);
+  const [formData, setFormData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
   const dispatch = useDispatch();
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
   }
+
+  const viewInventoryReport = (record) => {
+    setFormData(record);
+    showModal();
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+    onUpdateData();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const report_columns = [
+    {
+      title: "Code",
+
+      dataIndex: "code",
+      width: 150,
+      key: "code",
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
+    },
+    {
+      title: "Total Actual Quantity",
+      dataIndex: "totalActualQuantity",
+      key: "totalActualQuantity",
+      width: 200,
+    },
+    {
+      title: "Total Difference Quantity",
+      dataIndex: "totalDiffQuantity",
+      key: "totalDiffQuantity",
+      width: 200,
+    },
+    {
+      title: "Increase Quantity",
+      dataIndex: "increaseQuantity",
+      key: "increaseQuantity",
+      width: 200,
+    },
+    {
+      title: "Decrease Quantity",
+      dataIndex: "decreaseQuantity",
+      key: "decreaseQuantity",
+      width: 200,
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: 200,
+    },
+    {
+      title: "Updated At",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      width: 200,
+    },
+    {
+      title: "Action",
+      key: "operation",
+      fixed: "right",
+      width: 150,
+      render: (_, record) => {
+        return (
+          <>
+            <Tooltip key="view" title="View">
+              <a
+                onClick={() => {
+                  viewInventoryReport(record);
+                }}
+              >
+                {<PiEyeBold size={24} color="#85dcea" />}
+              </a>
+            </Tooltip>
+            <Tooltip key="print" title="Print">
+              <a>{<RiPrinterLine size={24} color="#1ba79b" />}</a>
+            </Tooltip>
+          </>
+        );
+      },
+    },
+  ];
 
   const inventory_report = (
     <div
@@ -196,7 +239,31 @@ function Inventory() {
       }}
     >
       <ToolBar onUpdateData={onUpdateData} type={2} page={"report"}></ToolBar>
-      <Table
+      <InventoryReport
+        isModalOpen={isModalOpen}
+        handleCancelButton={handleCancel}
+        handleOkButton={handleOk}
+        onUpdateData={onUpdateData}
+        formData={formData}
+      ></InventoryReport>
+      <CustomTable
+        columns={report_columns}
+        dataSource={dataSource?.map((report) => {
+          return {
+            key: report._id,
+            code: report.code,
+            totalActualQuantity: report.totalActualQuantity,
+            totalDiffQuantity: report.totalDiffQuantity,
+            increaseQuantity: report.increaseQuantity,
+            decreaseQuantity: report.decreaseQuantity,
+            createdAt: dayjs(report.createdAt).format("DD-MM-YYYY HH:mm:ss"),
+            updatedAt: dayjs(report.updatedAt).format("DD-MM-YYYY HH:mm:ss"),
+            reportDetails: report.reportDetails,
+          };
+        })}
+        isFetching={isFetching}
+      />
+      {/* <Table
         bordered
         loading={isFetching}
         style={{ marginTop: "10px", maxWidth: "85vw" }}
@@ -220,7 +287,7 @@ function Inventory() {
         scroll={{
           x: 1800,
         }}
-      />
+      /> */}
     </div>
   );
 
@@ -230,6 +297,7 @@ function Inventory() {
       try {
         const data = await getInventoryReport(userWarehouseId);
         getGoodsListByWarehouseId(dispatch, userWarehouseId);
+        getAllProductsIncludeDelete(dispatch);
         setDataSource(data);
       } catch (e) {
         console.log(e);
