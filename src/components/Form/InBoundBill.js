@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
-import { Table } from "antd";
+import { ConfigProvider, Table } from "antd";
+import { useSelector } from "react-redux";
+import { getWarehouseById } from "../../redux/apiRequest";
 
 function inbound_detail_item(num, name, quantity, price) {
   this.num = num;
@@ -42,93 +44,179 @@ const inbound_detail_columns = [
   },
 ];
 
-function InBoundBill() {
-  return (
-    <>
-      <div className="Header">
-        <span style={{ fontSize: "28px" }} className="fs-32 bold">
-          INBOUND1
-        </span>
-        <span className=" italic fs-14">Order/Delivery/Done</span>
-      </div>
-      <div className="Info">
-        <div className="TransactionInfo">
-          <span className="fs-16 bold">Order at: </span>
-          <span className="fs-14 italic">{}</span>
-          <br></br>
-          <span className="fs-16 bold">Finish at:</span>
-          <span className="fs-14 italic"> {}</span>
-          <br></br>
-          <span className="fs-16 bold italic">Prepared by {}</span>
-        </div>
-        <div className="WarehouseInfo">
-          <span className="fs-20 bold">Warehouse: {}</span>
-          <br></br>
-          <span className="fs-12 italic">123 ABC Street, State 1{}</span>
-          <br></br>
-          <span className="fs-12 italic">
-            0900109001-warehouse1@gmail.com{}
-            {}
-          </span>
-        </div>
-        <div className="PartnerInfo">
-          <span className="fs-20 bold">Supplier: {}</span>
-          <br></br>
-          <span className="fs-12 italic">123 ABC Street, State 1{}</span>
-          <br></br>
-          <span className="fs-12 italic">
-            0900109001-supplier1@gmail.com{}
-            {}
-          </span>
-        </div>
-      </div>
+const InBoundBill = React.forwardRef(({ formData }, ref) => {
+  const [warehouse, setWarehouse] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+  console.log("formData?bill", formData);
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
 
-      <div className="TransactionDetail">
+  const goodsList = useSelector(
+    (state) => state.product.goodsList?.allProductsIncludeDelete
+  );
+
+  const partners = useSelector(
+    (state) => state.partner.supplier?.allPartnersIncludeDelete
+  );
+  console.log("userwh", userWarehouseId);
+
+  let supplier;
+  let supplierContactId;
+
+  console.log("suppliers", partners);
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsFetching(true);
+      try {
+        const res = await getWarehouseById(userWarehouseId);
+        console.log("res", res);
+        setWarehouse(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setIsFetching(false);
+    }
+    fetchData();
+  }, [userWarehouseId]);
+
+  if (partners && formData && warehouse) {
+    supplier = partners?.find((sup) => sup._id === formData.supplierId);
+    supplierContactId = supplier.contactId;
+  }
+  console.log("warehouse", warehouse);
+  if (isFetching) {
+    return null;
+  }
+
+  return (
+    <div ref={ref}>
+      <div style={{ margin: "16px" }}>
         <div>
-          <Table
-            style={{
-              marginTop: "10px",
-              maxWidth: "80vw",
-            }}
-            columns={inbound_detail_columns}
-            dataSource={inbound_detail_dataSource}
-            pagination={false}
-          />
-        </div>
-      </div>
-      <div className="TotalPrice">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "flex-end",
-          }}
-        >
-          <span className="fs-24 bold" style={{ marginRight: "10px" }}>
-            Total:
+          <span style={{ fontSize: "28px" }} className="fs-32 bold">
+            INBOUND
           </span>
+          <span className=" italic fs-14">{formData?.status}</span>
+        </div>
+        <div className="Info">
+          <div className="TransactionInfo">
+            <span className="fs-16 bold">Order at: </span>
+            <span className="fs-14 italic">{formData?.create_time}</span>
+            <br></br>
+            <span className="fs-16 bold">Finish at:</span>
+            <span className="fs-14 italic"> {formData?.update_time}</span>
+            <br></br>
+            <span className="fs-16 bold italic">
+              Prepared by {formData?.creatorName}
+            </span>
+          </div>
+          <div className="WarehouseInfo">
+            <span className="fs-20 bold">
+              Warehouse: {warehouse ? warehouse.name : ""}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {warehouse ? warehouse.contactId.address : ""}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {warehouse
+                ? warehouse.contactId.phone_num +
+                  " - " +
+                  warehouse.contactId.email
+                : ""}
+            </span>
+          </div>
+          <div className="PartnerInfo">
+            <span className="fs-20 bold">
+              Supplier: {formData?.supplierName}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {supplierContactId ? supplierContactId.address : ""}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {supplierContactId
+                ? supplierContactId.phone_num + " - " + supplierContactId.email
+                : ""}
+              {}
+            </span>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "center" }} className="TransactionDetail">
+          <div>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Table: {
+                    borderColor: "black",
+                  },
+                },
+              }}
+            >
+              <Table
+                bordered
+                style={{
+                  marginTop: "10px",
+                  maxWidth: "80vw",
+                  textAlign: "center",
+                }}
+                columns={inbound_detail_columns}
+                dataSource={formData?.trans_details.map((detail, i) => {
+                  const product = goodsList.find(
+                    (goods) => goods._id === detail.productId
+                  );
+                  return {
+                    id: i + 1,
+                    name: product.name,
+                    quantity: detail.quantity,
+                    price: Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(detail.total),
+                  };
+                })}
+                pagination={false}
+              />
+            </ConfigProvider>
+          </div>
+        </div>
+        <div className="TotalPrice">
           <div
             style={{
-              width: "200px",
-              height: "40px",
-              fontSize: "32px",
-              backgroundColor: "lightgray",
-              borderRadius: "10px",
-              display: "inline",
-              fontWeight: "bold",
-              fontStyle: "italic",
-              textAlign: "right",
-              paddingRight: "10px",
-              paddingBottom: "5px",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "flex-end",
             }}
           >
-            4.500.000{}
+            <span className="fs-24 bold" style={{ marginRight: "10px" }}>
+              Total:
+            </span>
+            <div
+              style={{
+                width: "200px",
+                height: "40px",
+                fontSize: "32px",
+                backgroundColor: "lightgray",
+                borderRadius: "10px",
+                display: "inline",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                textAlign: "right",
+                paddingRight: "10px",
+                paddingBottom: "5px",
+              }}
+            >
+              {formData?.total_value}
+            </div>
           </div>
-          <span className="fs-16 bold">VNĐ</span>
         </div>
       </div>
-    </>
+    </div>
   );
-}
+});
 
 export default InBoundBill;

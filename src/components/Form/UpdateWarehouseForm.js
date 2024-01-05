@@ -1,9 +1,20 @@
 import React, { useEffect, useSelector, useState } from "react";
 
 import axios from "axios";
-import { Form, Input, Button, Modal, Space, message, Select } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Modal,
+  Space,
+  message,
+  Select,
+  ConfigProvider,
+} from "antd";
 import { editWarehouse } from "../../redux/apiRequest";
 import { useDispatch } from "react-redux";
+import { CloseOutlined } from "@ant-design/icons";
+import "./style.css";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -28,14 +39,28 @@ const SubmitButton = ({ form, isLoading }) => {
       );
   }, [values]);
   return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
+    <ConfigProvider
+      theme={{
+        components: {
+          Button: {
+            textHoverBg: "white",
+            defaultBg: "rgba(156, 188, 235, 1)",
+            defaultColor: "white",
+            fontWeight: "500",
+          },
+        },
+      }}
     >
-      Submit
-    </Button>
+      <Button
+        style={{ padding: "0px 50px", marginBottom: "24px" }}
+        type="default"
+        htmlType="submit"
+        size="large"
+        loading={isLoading}
+      >
+        SUBMIT
+      </Button>
+    </ConfigProvider>
   );
 };
 
@@ -54,9 +79,11 @@ function UpdateWarehouseForm({
 
   const handleFinish = async (values) => {
     let data;
-    if (values.warehouseManager !== formData.managerCode) {
+    if (values.warehouseManager) {
       data = {
-        managerId: values.warehouseManager,
+        managerId: values.warehouseManager.includes("-")
+          ? formData.managerId
+          : values.warehouseManager,
         name: values.warehouseName,
         capacity: values.warehouseCapacity,
         description: values.warehouseDescription,
@@ -84,7 +111,11 @@ function UpdateWarehouseForm({
       handleOkButton();
     } catch (e) {
       console.log(e);
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };
@@ -98,21 +129,20 @@ function UpdateWarehouseForm({
 
   useEffect(() => {
     form.setFieldsValue({
-      warehouseManager: formData?.managerCode,
+      warehouseManager: formData?.managerCodeAndName,
       warehouseName: formData.name,
-      warehouseCapacity: formData.capacity,
+      warehouseCapacity: formData.capacityNumber,
       warehouseDescription: formData.description,
       warehouseContactEmail: formData.email,
       warehouseContactPhoneNum: formData.phone_num,
       warehouseAddress: formData.address,
     });
   }, [formData, form]);
-
   return (
     <>
       <div>
-        <h1>Update Warehouse</h1>
         <Form
+          className="formLabel"
           onFinish={handleFinish}
           form={form}
           autoComplete="off"
@@ -122,44 +152,48 @@ function UpdateWarehouseForm({
           layout="horizontal"
         >
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your warehouse name!",
               },
             ]}
-            label="Name:"
+            label={<p>Name</p>}
             name="warehouseName"
           >
             <Input placeholder="Warehouse Name" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your warehouse address!",
               },
             ]}
-            label="Address: "
+            label={<p>Address</p>}
             name="warehouseAddress"
           >
             <TextArea placeholder="Warehouse Addresss" rows={4} />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your warehouse capacity!",
               },
             ]}
-            label="Capacity:"
+            label={<p>Capacity</p>}
             name="warehouseCapacity"
           >
             <Input placeholder="Warehouse Capacity" type="number" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             name="warehouseManager"
-            label="Manager"
+            label={<p>&nbsp;Manager</p>}
             rules={[
               {
                 // required: false,
@@ -168,48 +202,51 @@ function UpdateWarehouseForm({
             ]}
           >
             <Select
-              allowClear
-              placeholder="Select Manager for Warehouse"
               options={managersList?.map((manager) => {
                 return {
                   value: manager._id,
-                  label: manager.code,
+                  label: manager.code + " - " + manager.name,
                 };
               })}
+              allowClear
+              placeholder="Select Manager for Warehouse"
             ></Select>
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your warehouse contact email!",
               },
             ]}
-            label="Email:"
+            label={<p>Email</p>}
             name="warehouseContactEmail"
           >
             <Input placeholder="Warehouse Email" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your warehouse contact phone number!",
               },
             ]}
-            label="Phone Number:"
+            label={<p>Phone Number</p>}
             name="warehouseContactPhoneNum"
           >
             <Input placeholder="Warehouse Phone Number" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your warehouse description!",
               },
             ]}
-            label="Description:"
+            label={<p>Description</p>}
             name="warehouseDescription"
           >
             <TextArea
@@ -222,15 +259,6 @@ function UpdateWarehouseForm({
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Space>
-              <Button
-                htmlType="button"
-                onClick={() => {
-                  handleCancelButton();
-                  form.resetFields();
-                }}
-              >
-                Cancel
-              </Button>
               <SubmitButton form={form} isLoading={isLoading}>
                 Ok
               </SubmitButton>

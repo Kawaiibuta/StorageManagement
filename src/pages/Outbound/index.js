@@ -1,7 +1,19 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table, message } from "antd";
+
+import {
+  Button,
+  ConfigProvider,
+  Modal,
+  Popconfirm,
+  Table,
+  Tabs,
+  Tag,
+  Tooltip,
+  message,
+} from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -9,8 +21,13 @@ import {
   deleteTransaction,
   getAllCustomer,
   getAllOutbound,
+  getAllPartnersIncludeDelete,
+  getAllProductsIncludeDelete,
   getAllSupplier,
+  getAllWarehouses,
   getGoodsList,
+  getGoodsListByWarehouseId,
+  updateStatus,
 } from "../../redux/apiRequest.js";
 import {
   RiDeleteBin6Line,
@@ -20,21 +37,60 @@ import {
 } from "react-icons/ri";
 import { PiEyeBold } from "react-icons/pi";
 import OutBoundForm from "../../components/Form/OutBoundForm.js";
+import dnIcon from "../../assets/images/dn_icon.png";
+import dnIconActive from "../../assets/images/dn_icon_active.png";
+import orderIcon from "../../assets/images/order_outbound_icon.png";
+import orderIconActive from "../../assets/images/order_outbound_icon_active.png";
+import doneIcon from "../../assets/images/outbound_done_icon.png";
+import doneIconActive from "../../assets/images/outbound_done_icon_active.png";
+import TabPane from "antd/es/tabs/TabPane.js";
+import CustomTable from "../../components/Table/index.js";
+import dayjs from "dayjs";
+import OutBoundBill from "../../components/Form/OutBoundBill.js";
+import { useReactToPrint } from "react-to-print";
+import { ExportButton } from "../../components/Print/index.js";
+
+const PrintButton = ({ record }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+  return (
+    <>
+      <div style={{ display: "none" }}>
+        <OutBoundBill formData={record} ref={componentRef} />
+      </div>
+      <Tooltip title="Print" key="print">
+        {
+          <RiPrinterLine
+            onClick={() => {
+              handlePrint();
+            }}
+            size={24}
+            color="#1ba79b"
+          />
+        }
+      </Tooltip>
+    </>
+  );
+};
 
 function Outbound() {
   const dispatch = useDispatch();
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalViewOpen, setIsModalViewOpen] = useState(false);
   const [formData, setFormData] = useState();
+  const [currentTab, setCurrentTab] = useState("1");
+  const [hoveredTab, setHoveredTab] = useState(null);
 
   const outboundsList = useSelector(
     (state) => state.product.outbound?.allOutbounds
   );
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId?.warehouseId;
 
-  const order = "In order";
-  const delivery = "In delivery";
-  const done = "Done";
   const edit = (record) => {
     setFormData(record);
     showModal();
@@ -50,17 +106,31 @@ function Outbound() {
     setIsModalOpen(false);
   };
 
+  const showModalView = (record) => {
+    setIsModalViewOpen(true);
+    setFormData(record);
+  };
+  const handleOkView = () => {
+    setIsModalViewOpen(false);
+  };
+  const handleCancelView = () => {
+    setIsModalViewOpen(false);
+  };
+
   const handleDelete = async (key) => {
     console.log("key", key);
     try {
       await deleteTransaction(key);
 
       onUpdateData();
-      message.success("Delete partner success");
+      message.success("Delete outbound success");
     } catch (e) {
       console.log(e);
-      // message.error("Something went wrong");
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
   };
 
@@ -68,14 +138,36 @@ function Outbound() {
     setIsUpdateData(!isUpdateData);
   }
 
+  const handleEditStatus = async (key) => {
+    console.log("key", key);
+    try {
+      console.log("updatestatus");
+      await updateStatus(key, {
+        status: "Done",
+      });
+      onUpdateData();
+      message.success("Update outbound status success!");
+    } catch (e) {
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       setIsFetching(true);
 
       try {
-        await getAllOutbound(dispatch);
-        getGoodsList(dispatch);
+        await getAllOutbound(dispatch, userWarehouseId);
+        getAllWarehouses(dispatch);
+        getGoodsListByWarehouseId(dispatch, userWarehouseId);
         getAllCustomer(dispatch);
+        getAllPartnersIncludeDelete(dispatch);
+        getAllProductsIncludeDelete(dispatch);
       } catch (e) {
         console.log(e);
       }
@@ -83,49 +175,62 @@ function Outbound() {
       setIsFetching(false);
     }
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, isUpdateData]);
   const outbound_columns = [
     {
       title: "DN",
-      fixed: "left",
       dataIndex: "DN",
       key: "DN",
-      // width: 60,
+      width: 100,
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Status",
-      fixed: "left",
+
       dataIndex: "status",
       key: "status",
-      // width: 60,
+      width: 80,
+      defaultFilteredValue:
+        currentTab === "2" ? ["Order"] : currentTab === "3" ? ["Done"] : [""],
+      onFilter: (value, record) => record.status.indexOf(value) === 0,
+      render: (status) => {
+        let color;
+        if (status === "Order") color = "geekblue";
+        else if (status === "Done") color = "green";
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
     },
     {
       title: "Customer",
-      dataIndex: "customer",
-      key: "customer",
+      dataIndex: "customerCodeAndName",
+      key: "customerCodeAndName",
+      width: 200,
     },
     {
       title: "Total Value",
       dataIndex: "total_value",
       key: "total_value",
+      width: 150,
     },
     {
       title: "Creator",
       dataIndex: "creator",
       key: "creator",
+      width: 200,
     },
 
     {
       title: "Create Time",
       dataIndex: "create_time",
       key: "create_time",
-      // width: 300,
+      width: 200,
     },
     {
       title: "Update Time",
       dataIndex: "update_time",
       key: "update_time",
-      // width: 300,
+      width: 200,
     },
 
     // {
@@ -139,17 +244,69 @@ function Outbound() {
       title: "Action",
       key: "operation",
       fixed: "right",
-      width: 230,
+      width: 200,
       render: (_, record) => {
         return (
           <>
-            <a>{<PiEyeBold />}</a>
-            <a>{<RiCheckboxLine />}</a>
-            <a>{<RiPrinterLine />}</a>
-            <a onClick={() => edit(record)}>{<RiEditBoxLine />}</a>
-            <a onClick={() => handleDelete(record.key)}>
-              {<RiDeleteBin6Line />}
+            <Tooltip key="view" title="View">
+              <a
+                onClick={() => {
+                  showModalView(record);
+                }}
+              >
+                {<PiEyeBold size={24} color="#85dcea" />}
+              </a>
+            </Tooltip>
+            <a>
+              {
+                <RiCheckboxLine
+                  color={record.status === "Done" ? "gray" : ""}
+                  size={24}
+                  onClick={
+                    record.status === "Done"
+                      ? null
+                      : () => handleEditStatus(record.key)
+                  }
+                />
+              }
             </a>
+
+            <a
+              onClickCapture={() => {
+                setFormData(record);
+              }}
+            >
+              <PrintButton key={record._id} record={formData} />
+            </a>
+            <Tooltip title="Edit" key="edit">
+              <a onClick={record.status === "Done" ? null : () => edit(record)}>
+                {
+                  <RiEditBoxLine
+                    size={24}
+                    color={record.status === "Done" ? "gray" : "purple"}
+                  />
+                }
+              </a>
+            </Tooltip>
+            <Tooltip title="Delete" key="delete">
+              <Popconfirm
+                title="Sure to delete?"
+                onConfirm={
+                  record.status === "Done"
+                    ? null
+                    : () => handleDelete(record.key)
+                }
+              >
+                <a>
+                  {
+                    <RiDeleteBin6Line
+                      size={24}
+                      color={record.status === "Done" ? "gray" : "red"}
+                    />
+                  }
+                </a>
+              </Popconfirm>
+            </Tooltip>
           </>
         );
       },
@@ -166,46 +323,172 @@ function Outbound() {
         onUpdateData={onUpdateData}
         formData={formData}
       />
-      <Table
-        bordered
-        loading={isFetching}
-        style={{ marginTop: "10px", maxWidth: "85vw" }}
+      <ConfigProvider
+        theme={{
+          components: {
+            Modal: {
+              titleFontSize: 24,
+              headerBg: "rgba(156, 188, 235, 1)",
+              paddingLG: 0,
+              padding: 0,
+            },
+          },
+        }}
+      >
+        <Modal
+          style={{
+            top: 20,
+          }}
+          title=" &nbsp;"
+          width={700}
+          footer={null}
+          open={isModalViewOpen}
+          onOk={handleOkView}
+          onCancel={handleCancelView}
+          closeIcon={
+            <CloseOutlined
+              style={{
+                fontSize: "25px",
+                paddingTop: "10px",
+                paddingRight: "20px",
+                color: "white",
+              }}
+            />
+          }
+        >
+          {/* <OutBoundBill formData={formData} /> */}
+          <ExportButton type="Outbound" formData={formData} />
+        </Modal>
+      </ConfigProvider>
+
+      <CustomTable
+        isFetching={isFetching}
+        marginTop={20}
+        title="Update Outbound"
+        scrollX={1800}
         columns={outbound_columns}
         dataSource={outboundsList?.map((outbound) => {
           return {
             key: outbound._id,
             DN: outbound.code,
             status: outbound.status,
-            customer: outbound.partnerId.code,
+            customer: outbound.partnerId?.code,
+            customerName: outbound.partnerId?.name,
+            customerCodeAndName:
+              outbound.partnerId?.code + " - " + outbound.partnerId?.name,
             customerId: outbound.partnerId._id,
-            total_value: outbound.total,
-            creator: outbound.employeeId.code,
+
+            total_value: Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(outbound.total),
+            creator:
+              outbound.employeeId?.code + " - " + outbound.employeeId?.name,
+            creatorName: outbound.employeeId?.name,
             trans_details: outbound.transactionDetails,
-            // create_time: outbound.updateAt.format("DD-MM-YY HH:MM:SS"),
-            // update_time: outbound.updateAt.format("DD-MM-YY HH:MM:SS"),
+            create_time: dayjs(outbound.createdAt).format(
+              "DD-MM-YYYY HH:mm:ss"
+            ),
+            update_time: dayjs(outbound.updatedAt).format(
+              "DD-MM-YYYY HH:mm:ss"
+            ),
           };
         })}
-        pagination={{
-          showQuickJumper: true,
-          total: outboundsList?.length,
-        }}
-        scroll={{
-          y: "60vh",
-        }}
+        onUpdateData={onUpdateData}
       />
     </div>
   );
 
+  const onTabsChange = (key) => {
+    console.log(key);
+    setCurrentTab(key);
+  };
+
   return (
-    <div>
-      <TabView
-        tabs={[
-          { name: "ALL", content: all },
-          { name: "Order", content: order },
-          { name: "Delivery", content: delivery },
-          { name: "Done", content: done },
-        ]}
-      />
+    <div style={{ margin: "0px 16px" }}>
+      <Tabs onChange={onTabsChange} size="large" defaultActiveKey="1">
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onMouseEnter={() => setHoveredTab("1")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <img
+                src={
+                  currentTab === "1" || hoveredTab === "1"
+                    ? dnIconActive
+                    : dnIcon
+                }
+                alt=""
+                style={{ width: "30px", height: "30px" }}
+              />
+              DN
+            </span>
+          }
+          key="1"
+        >
+          {all}
+        </TabPane>
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onMouseEnter={() => setHoveredTab("2")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <img
+                src={
+                  currentTab === "2" || hoveredTab === "2"
+                    ? orderIconActive
+                    : orderIcon
+                }
+                alt=""
+                style={{ width: "30px", height: "30px" }}
+              />
+              ORDER
+            </span>
+          }
+          key="2"
+        >
+          {all}
+        </TabPane>
+        <TabPane
+          tab={
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+              onMouseEnter={() => setHoveredTab("3")}
+              onMouseLeave={() => setHoveredTab(null)}
+            >
+              <img
+                src={
+                  currentTab === "3" || hoveredTab === "3"
+                    ? doneIconActive
+                    : doneIcon
+                }
+                alt=""
+                style={{ width: "30px", height: "30px" }}
+              />
+              DONE
+            </span>
+          }
+          key="3"
+        >
+          {all}
+        </TabPane>
+      </Tabs>
     </div>
   );
 }

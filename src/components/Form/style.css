@@ -35,7 +35,6 @@
 .Info {
   display: flex;
   border-radius: 0px 0px 10px 10px;
-  background-color: #d5dcff;
 }
 .TransactionInfo {
   padding-left: 10px;
@@ -57,6 +56,51 @@
 .TotalPrice {
   padding: 15px 20px;
   border-radius: 10px;
-  background-color: #d5dcff;
+
   vertical-align: middle;
+}
+
+:where(.css-dev-only-do-not-override-1w3obg2) .ant-modal .ant-modal-content {
+  padding: 0;
+}
+
+p {
+  font-weight: 500;
+}
+
+@media print {
+  html,
+  body {
+    height: 100vh; /* Use 100% here to support printing more than a single page*/
+    /* margin: 0 !important;
+    padding: 0 !important; */
+    overflow: hidden;
+  }
+}
+
+.ant-modal {
+  border-color: "black";
+}
+.formLabel {
+  margin-left: 16px;
+}
+
+.ant-select-disabled:where(
+    .css-dev-only-do-not-override-1w3obg2
+  ).ant-select:not(.ant-select-customize-input)
+  .ant-select-selector {
+  color: black;
+  background-color: white;
+}
+
+:where(.css-dev-only-do-not-override-1w3obg2).ant-input-number-disabled,
+:where(.css-dev-only-do-not-override-1w3obg2).ant-input-number[disabled] {
+  color: black;
+  background-color: white;
+}
+
+:where(.css-dev-only-do-not-override-1w3obg2).ant-input-disabled,
+:where(.css-dev-only-do-not-override-1w3obg2).ant-input[disabled] {
+  color: black;
+  background-color: white;
 }

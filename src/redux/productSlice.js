@@ -5,6 +5,7 @@ const productSlice = createSlice({
   initialState: {
     goodsList: {
       allProducts: null,
+      allProductsIncludeDelete: null,
       isFetching: false,
       allOutbounds: null,
     },
@@ -39,6 +40,13 @@ const productSlice = createSlice({
       state.inbound.isFetching = false;
       state.inbound.allInBounds = action.payload;
     },
+    getProductsIncludeDeleteStart: (state) => {
+      state.goodsList.isFetching = true;
+    },
+    getProductsIncludeDeleteSuccess: (state, action) => {
+      state.goodsList.isFetching = false;
+      state.goodsList.allProductsIncludeDelete = action.payload;
+    },
   },
 });
 
@@ -49,6 +57,8 @@ export const {
   getOutboundsSuccess,
   getInboundsStart,
   getInboundsSuccess,
+  getProductsIncludeDeleteStart,
+  getProductsIncludeDeleteSuccess,
 } = productSlice.actions;
 
 export default productSlice.reducer;

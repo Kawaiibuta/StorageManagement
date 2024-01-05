@@ -1,7 +1,19 @@
 import React, { useSelector, useState } from "react";
 
 import axios from "axios";
-import { Form, Input, Button, Modal, Space, message, Select } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Modal,
+  Space,
+  message,
+  Select,
+  ConfigProvider,
+} from "antd";
+import "./style.css";
+import { CloseOutlined } from "@ant-design/icons";
+import CustomForm from "../CustomForm";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -26,14 +38,28 @@ const SubmitButton = ({ form, isLoading }) => {
       );
   }, [values]);
   return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
+    <ConfigProvider
+      theme={{
+        components: {
+          Button: {
+            textHoverBg: "white",
+            defaultBg: "rgba(156, 188, 235, 1)",
+            defaultColor: "white",
+            fontWeight: "500",
+          },
+        },
+      }}
     >
-      Submit
-    </Button>
+      <Button
+        style={{ padding: "0px 50px", marginBottom: "24px" }}
+        type="default"
+        htmlType="submit"
+        size="large"
+        loading={isLoading}
+      >
+        SUBMIT
+      </Button>
+    </ConfigProvider>
   );
 };
 
@@ -49,14 +75,11 @@ function NewWarehouseForm({
   const [form] = Form.useForm();
 
   const handleFinish = async (values) => {
-    let manager = managersList?.find(
-      (manager) => manager.code === values.warehouseManager
-    );
-    console.log("manager", manager);
     let data;
-    if (manager) {
+    console.log("values", values);
+    if (values.warehouseManager) {
       data = {
-        managerId: manager._id,
+        managerId: values.warehouseManager,
         name: values.warehouseName,
         capacity: values.warehouseCapacity,
         description: values.warehouseDescription,
@@ -75,6 +98,7 @@ function NewWarehouseForm({
       };
     }
     setIsLoading(true);
+    console.log("data", data);
 
     try {
       await axios.post(
@@ -82,13 +106,17 @@ function NewWarehouseForm({
         data
       );
 
-      message.success("Your warehouse has been added successfully.");
-      onUpdateData();
       handleOkButton();
+      await onUpdateData();
+      message.success("Your warehouse has been added successfully.");
       form.resetFields();
     } catch (e) {
       console.log(e);
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };
@@ -101,142 +129,313 @@ function NewWarehouseForm({
   };
 
   return (
-    <Modal
-      open={isModalOpen}
-      width="500px"
-      height="300px"
-      // onOk={handleOkButton}
-      onCancel={handleCancelButton}
-      footer={null}
-    >
-      <>
-        <div>
-          <h1>New Warehouse</h1>
-          <Form
-            onFinish={handleFinish}
-            form={form}
-            autoComplete="off"
-            name="newWarehouse"
-            labelCol={{ span: 10 }}
-            wrapperCol={{ span: 12 }}
-            layout="horizontal"
+    <CustomForm
+      marginTop={20}
+      title="New Warehouse"
+      handleCancelButton={handleCancelButton}
+      isModalOpen={isModalOpen}
+      form={
+        <Form
+          onFinish={handleFinish}
+          form={form}
+          autoComplete="off"
+          name="newWarehouse"
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 12 }}
+          layout="horizontal"
+          className="formLabel"
+        >
+          <Form.Item
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: "Please input your warehouse name!",
+              },
+            ]}
+            label={<p>Name</p>}
+            name="warehouseName"
           >
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your warehouse name!",
-                },
-              ]}
-              label="Name:"
-              name="warehouseName"
-            >
-              <Input placeholder="Warehouse Name" />
-            </Form.Item>
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your warehouse address!",
-                },
-              ]}
-              label="Address: "
-              name="warehouseAddress"
-            >
-              <TextArea placeholder="Warehouse Addresss" rows={4} />
-            </Form.Item>
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your warehouse capacity!",
-                },
-              ]}
-              label="Capacity:"
-              name="warehouseCapacity"
-            >
-              <Input placeholder="Warehouse Capacity" type="number" />
-            </Form.Item>
-            <Form.Item
-              name="warehouseManager"
-              label="Manager"
-              rules={[
-                {
-                  // required: false,
-                  // message: "Please select warehoue manager!",
-                },
-              ]}
-            >
-              <Select allowClear placeholder="Select Manager for Warehouse">
-                {managersList?.map((manager) => {
-                  return (
-                    <Option key={manager._id} value={manager.code}></Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your warehouse contact email!",
-                },
-              ]}
-              label="Email:"
-              name="warehouseContactEmail"
-            >
-              <Input placeholder="Warehouse Email" />
-            </Form.Item>
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your warehouse contact phone number!",
-                },
-              ]}
-              label="Phone Number:"
-              name="warehouseContactPhoneNum"
-            >
-              <Input placeholder="Warehouse Phone Number" />
-            </Form.Item>
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your warehouse description!",
-                },
-              ]}
-              label="Description:"
-              name="warehouseDescription"
-            >
-              <TextArea
-                placeholder="Warehouse Description"
-                rows={4}
-                onChange={(e) => {
-                  // setWarehouseDescription(e.target.value);
-                }}
-              />
-            </Form.Item>
-            <Form.Item {...tailLayout}>
-              <Space>
-                <Button
-                  htmlType="button"
-                  onClick={() => {
-                    handleCancelButton();
-                    form.resetFields();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <SubmitButton form={form} isLoading={isLoading}>
-                  Ok
-                </SubmitButton>
-              </Space>
-            </Form.Item>
-          </Form>
-        </div>
-      </>
-    </Modal>
+            <Input placeholder="Warehouse Name" />
+          </Form.Item>
+          <Form.Item
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: "Please input your warehouse address!",
+              },
+            ]}
+            label={<p>Address</p>}
+            name="warehouseAddress"
+          >
+            <TextArea placeholder="Warehouse Addresss" rows={4} />
+          </Form.Item>
+          <Form.Item
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: "Please input your warehouse capacity!",
+              },
+            ]}
+            label={<p>Capacity</p>}
+            name="warehouseCapacity"
+          >
+            <Input placeholder="Warehouse Capacity" type="number" />
+          </Form.Item>
+          <Form.Item
+            labelAlign="left"
+            name="warehouseManager"
+            label={<p>&nbsp; Manager</p>}
+            rules={[
+              {
+                // required: false,
+                // message: "Please select warehoue manager!",
+              },
+            ]}
+          >
+            <Select
+              options={managersList?.map((manager) => {
+                return {
+                  value: manager._id,
+                  label: manager.code + " - " + manager.name,
+                };
+              })}
+              allowClear
+              placeholder="Select Manager for Warehouse"
+            ></Select>
+          </Form.Item>
+          <Form.Item
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: "Please input your warehouse contact email!",
+              },
+            ]}
+            label={<p>Email</p>}
+            name="warehouseContactEmail"
+          >
+            <Input placeholder="Warehouse Email" />
+          </Form.Item>
+          <Form.Item
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: "Please input your warehouse contact phone number!",
+              },
+            ]}
+            label={<p>Phone Number</p>}
+            name="warehouseContactPhoneNum"
+          >
+            <Input placeholder="Warehouse Phone Number" />
+          </Form.Item>
+          <Form.Item
+            labelAlign="left"
+            rules={[
+              {
+                required: true,
+                message: "Please input your warehouse description!",
+              },
+            ]}
+            label={<p>Description</p>}
+            name="warehouseDescription"
+          >
+            <TextArea
+              placeholder="Warehouse Description"
+              rows={4}
+              onChange={(e) => {
+                // setWarehouseDescription(e.target.value);
+              }}
+            />
+          </Form.Item>
+          <Form.Item {...tailLayout}>
+            <Space>
+              <SubmitButton form={form} isLoading={isLoading}>
+                Ok
+              </SubmitButton>
+            </Space>
+          </Form.Item>
+        </Form>
+      }
+    />
+    // <ConfigProvider
+    //   theme={{
+    //     components: {
+    //       Modal: {
+    //         titleFontSize: 24,
+    //         headerBg: "rgba(156, 188, 235, 1)",
+    //         paddingLG: 0,
+    //         padding: 0,
+    //       },
+    //     },
+    //   }}
+    // >
+    //   <Modal
+    //     style={{
+    //       top: 20,
+    //     }}
+    //     title={
+    //       <p
+    //         style={{
+    //           marginLeft: "24px",
+    //           fontWeight: 500,
+    //           fontSize: 24,
+    //           padding: "16px 0px",
+    //         }}
+    //       >
+    //         New Warehouse
+    //       </p>
+    //     }
+    //     closeIcon={
+    //       <CloseOutlined
+    //         style={{
+    //           fontSize: "25px",
+    //           paddingTop: "20px",
+    //           paddingRight: "20px",
+    //           color: "white",
+    //         }}
+    //       />
+    //     }
+    //     open={isModalOpen}
+    //     width="500px"
+    //     height="300px"
+    //     onCancel={handleCancelButton}
+    //     footer={null}
+    //   >
+    //     <>
+    //       <div>
+    //         <Form
+    //           onFinish={handleFinish}
+    //           form={form}
+    //           autoComplete="off"
+    //           name="newWarehouse"
+    //           labelCol={{ span: 10 }}
+    //           wrapperCol={{ span: 12 }}
+    //           layout="horizontal"
+    //           className="formLabel"
+    //         >
+    //           <Form.Item
+    //             labelAlign="left"
+    //             rules={[
+    //               {
+    //                 required: true,
+    //                 message: "Please input your warehouse name!",
+    //               },
+    //             ]}
+    //             label={<p>Name</p>}
+    //             name="warehouseName"
+    //           >
+    //             <Input placeholder="Warehouse Name" />
+    //           </Form.Item>
+    //           <Form.Item
+    //             labelAlign="left"
+    //             rules={[
+    //               {
+    //                 required: true,
+    //                 message: "Please input your warehouse address!",
+    //               },
+    //             ]}
+    //             label={<p>Address</p>}
+    //             name="warehouseAddress"
+    //           >
+    //             <TextArea placeholder="Warehouse Addresss" rows={4} />
+    //           </Form.Item>
+    //           <Form.Item
+    //             labelAlign="left"
+    //             rules={[
+    //               {
+    //                 required: true,
+    //                 message: "Please input your warehouse capacity!",
+    //               },
+    //             ]}
+    //             label={<p>Capacity</p>}
+    //             name="warehouseCapacity"
+    //           >
+    //             <Input placeholder="Warehouse Capacity" type="number" />
+    //           </Form.Item>
+    //           <Form.Item
+    //             labelAlign="left"
+    //             name="warehouseManager"
+    //             label={<p>&nbsp; Manager</p>}
+    //             rules={[
+    //               {
+    //                 // required: false,
+    //                 // message: "Please select warehoue manager!",
+    //               },
+    //             ]}
+    //           >
+    //             <Select
+    //               options={managersList?.map((manager) => {
+    //                 return {
+    //                   value: manager._id,
+    //                   label: manager.code + " - " + manager.name,
+    //                 };
+    //               })}
+    //               allowClear
+    //               placeholder="Select Manager for Warehouse"
+    //             ></Select>
+    //           </Form.Item>
+    //           <Form.Item
+    //             labelAlign="left"
+    //             rules={[
+    //               {
+    //                 required: true,
+    //                 message: "Please input your warehouse contact email!",
+    //               },
+    //             ]}
+    //             label={<p>Email</p>}
+    //             name="warehouseContactEmail"
+    //           >
+    //             <Input placeholder="Warehouse Email" />
+    //           </Form.Item>
+    //           <Form.Item
+    //             labelAlign="left"
+    //             rules={[
+    //               {
+    //                 required: true,
+    //                 message:
+    //                   "Please input your warehouse contact phone number!",
+    //               },
+    //             ]}
+    //             label={<p>Phone Number</p>}
+    //             name="warehouseContactPhoneNum"
+    //           >
+    //             <Input placeholder="Warehouse Phone Number" />
+    //           </Form.Item>
+    //           <Form.Item
+    //             labelAlign="left"
+    //             rules={[
+    //               {
+    //                 required: true,
+    //                 message: "Please input your warehouse description!",
+    //               },
+    //             ]}
+    //             label={<p>Description</p>}
+    //             name="warehouseDescription"
+    //           >
+    //             <TextArea
+    //               placeholder="Warehouse Description"
+    //               rows={4}
+    //               onChange={(e) => {
+    //                 // setWarehouseDescription(e.target.value);
+    //               }}
+    //             />
+    //           </Form.Item>
+    //           <Form.Item {...tailLayout}>
+    //             <Space>
+    //               <SubmitButton form={form} isLoading={isLoading}>
+    //                 Ok
+    //               </SubmitButton>
+    //             </Space>
+    //           </Form.Item>
+    //         </Form>
+    //       </div>
+    //     </>
+    //   </Modal>
+    // </ConfigProvider>
   );
 }
 

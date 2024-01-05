@@ -1,4 +1,5 @@
-import { Typography } from "antd";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import { Checkbox, Typography, message } from "antd";
 import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
 import { useState } from "react";
@@ -16,6 +17,7 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [stateType, setStateType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   // const navigate = useNavigate();
@@ -27,9 +29,17 @@ function Login() {
       username: username,
       password: password,
     };
-    await loginUser(newUser, dispatch);
+    try {
+      await loginUser(newUser, dispatch);
+    } catch (e) {
+      console.log(e);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
+    }
     setIsLoading(false);
-    // navigate("/dashboard");
   };
 
   return (
@@ -77,7 +87,18 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Item>
-
+        <Form.Item>
+          <a
+            onClick={() => {
+              setStateType("type email");
+            }}
+            style={{ color: "white", fontSize: "16px" }}
+            className="login-form-forgot"
+            href=""
+          >
+            Forgot password
+          </a>
+        </Form.Item>
         <Form.Item>
           <ConfigProvider
             theme={{

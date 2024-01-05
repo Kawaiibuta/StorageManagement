@@ -2,39 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Select, Form, InputNumber, Button, Modal, Space, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { addTransaction } from "../../redux/apiRequest";
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
+import { addTransaction, updateTransaction } from "../../redux/apiRequest";
+import CustomForm from "../CustomForm";
+import SubmitButton from "../SubmitButton";
+import "./style.css";
 
 const tailLayout = {
   wrapperCol: {
@@ -50,9 +21,11 @@ function InBoundForm({
   handleCancelButton,
   formData,
 }) {
+  console.log("formdata", formData);
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId?.warehouseId;
   const suppliersList = useSelector(
     (state) => state.partner.supplier?.allSuppliers
   );
@@ -62,7 +35,9 @@ function InBoundForm({
 
   let totalProducts = 0;
 
-  const totalForEachProduct = (products) => {
+  const calculateTotal = (products) => {
+    totalProducts = 0;
+    console.log("products", products);
     return products.map((product) => {
       let total = 0;
       let goods = goodsList?.find((good) => good._id === product.productId);
@@ -71,6 +46,7 @@ function InBoundForm({
       return {
         ...product,
         total: total,
+        action: product.id ? "update" : "new",
       };
     });
   };
@@ -80,24 +56,43 @@ function InBoundForm({
     setIsLoading(true);
 
     try {
-      const details = totalForEachProduct(values.products);
-      const data = {
-        type: "Inbound",
-        employeeId: user.employeeId,
-        partnerId: values.supplier,
-        warehouseId: "657c678f72304d206a0fd13f",
-        details: details,
-        total: totalProducts,
-      };
-      console.log("data", data);
+      if (!formData) {
+        const details = calculateTotal(values.products);
+        const data = {
+          type: "Inbound",
+          employeeId: user.employeeId,
+          partnerId: values.supplier,
+          warehouseId: userWarehouseId,
+          details: details,
+          total: totalProducts,
+        };
+        console.log("data", data);
 
-      await addTransaction(data);
-      message.success("Add Inbound success");
-      totalProducts = 0;
-      onUpdateData();
+        await addTransaction(data);
+
+        message.success("Add Inbound success");
+        form.resetFields();
+      } else {
+        const partner_id = values.supplier.includes("-")
+          ? formData.supplierId
+          : values.supplier;
+        const data = {
+          details: calculateTotal(values.products),
+          total: totalProducts,
+          partnerId: partner_id,
+        };
+        console.log("data", data);
+        await updateTransaction(formData.key, data);
+        message.success("Update Inbound success");
+      }
       handleOkButton();
+      onUpdateData();
     } catch (e) {
-      // message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
       console.log(e);
     }
     setIsLoading(false);
@@ -106,8 +101,9 @@ function InBoundForm({
   useEffect(() => {
     if (formData) {
       form.setFieldsValue({
-        supplier: formData.supplier,
+        supplier: formData.supplierCodeAndName,
         products: formData.trans_details.map((e) => ({
+          key: e._id,
           id: e._id,
           action: "update",
           productId: e.productId,
@@ -119,20 +115,15 @@ function InBoundForm({
 
   return (
     <>
-      <Modal
-        open={isModalOpen}
-        width="500px"
-        height="300px"
-        onOk={handleOkButton}
-        onCancel={handleCancelButton}
-        footer={null}
-      >
-        <div>
-          <h1>InBound</h1>
+      <CustomForm
+        form={
           <Form
+            style={{ marginRight: "16px" }}
+            labelAlign="left"
+            className="formLabel"
             form={form}
-            labelCol={{ span: 10 }}
-            wrapperCol={{ span: 12 }}
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}
             onFinish={handleFinish}
             layout="horizontal"
           >
@@ -143,20 +134,21 @@ function InBoundForm({
                   message: "Please input your product name!",
                 },
               ]}
-              label="Supplier Code"
+              label={<p>Supplier</p>}
               name="supplier"
             >
               <Select
+                placeholder="Select Supplier"
                 options={suppliersList?.map((sup) => {
                   return {
                     value: sup._id,
-                    label: sup.code,
+                    label: sup.code + " - " + sup.name,
                   };
                 })}
               ></Select>
             </Form.Item>
 
-            <Form.Item label="Products">
+            <Form.Item label={<p>&nbsp; Products</p>}>
               <Form.List name={["products"]}>
                 {(subFields, subOpt) => (
                   <div
@@ -167,7 +159,14 @@ function InBoundForm({
                     }}
                   >
                     {subFields.map((subField) => (
-                      <Space key={subField.key}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: 8,
+                        }}
+                        key={subField.key}
+                      >
                         <Form.Item
                           noStyle
                           rules={[
@@ -180,14 +179,15 @@ function InBoundForm({
                         >
                           <Select
                             placeholder="SKU Code"
-                            options={goodsList?.map((goods) => {
+                            options={goodsList.map((goods) => {
                               return {
                                 value: goods._id,
-                                label: goods.skuCode,
+                                label: goods.skuCode + " - " + goods.name,
                               };
                             })}
                           />
                         </Form.Item>
+                        <div style={{ width: "10px" }} />
                         <Form.Item
                           noStyle
                           rules={[
@@ -201,11 +201,12 @@ function InBoundForm({
                           <InputNumber min={1} placeholder="Quantity" />
                         </Form.Item>
                         <CloseOutlined
+                          style={{ marginLeft: 8 }}
                           onClick={() => {
                             subOpt.remove(subField.name);
                           }}
                         />
-                      </Space>
+                      </div>
                     ))}
                     <Button type="dashed" onClick={() => subOpt.add()} block>
                       + Add Sub Item
@@ -216,17 +217,18 @@ function InBoundForm({
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Space>
-                <Button htmlType="button" onClick={handleCancelButton}>
-                  Cancel
-                </Button>
-                <SubmitButton form={form} isLoading={isLoading}>
+                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
                   Ok
                 </SubmitButton>
               </Space>
             </Form.Item>
           </Form>
-        </div>
-      </Modal>
+        }
+        handleCancelButton={handleCancelButton}
+        isModalOpen={isModalOpen}
+        marginTop={20}
+        title="New Inbound"
+      />
     </>
   );
 }

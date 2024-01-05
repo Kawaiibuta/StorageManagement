@@ -1,134 +1,211 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Button, ConfigProvider, Modal, Table } from "antd";
+import { useSelector } from "react-redux";
+import { CloseOutlined } from "@ant-design/icons";
+
 import "./style.css";
-import { Table } from "antd";
+import { getWarehouseById } from "../../redux/apiRequest";
 
-function outbound_detail_item(num, name, quantity, price) {
-  this.num = num;
-  this.name = name;
-  this.quantity = quantity;
-  this.price = price;
-}
-const outbound_detail_dataSource = [
-  new outbound_detail_item(1, "Product1", 2, "600.000"),
-  new outbound_detail_item(2, "Product2", 3, "900.000"),
-  new outbound_detail_item(3, "Product3", 1, "300.000"),
-  new outbound_detail_item(4, "Product4", 5, "1.500.000"),
-  new outbound_detail_item(5, "Product5", 4, "1.200.000"),
-];
-const outbound_detail_columns = [
-  {
-    title: "No.",
-    dataIndex: "id",
-    key: "id",
-    width: 60,
-  },
-  {
-    title: "Product Name",
-    width: 250,
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
-    width: 100,
-  },
-  {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
-    width: 100,
-  },
-];
+const OutBoundBill = React.forwardRef(({ formData }, ref) => {
+  console.log("formData?bill", formData);
+  const [warehouse, setWarehouse] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
 
-function OutBoundBill() {
+  const goodsList = useSelector(
+    (state) => state.product.goodsList?.allProductsIncludeDelete
+  );
+  const partners = useSelector(
+    (state) => state.partner.supplier?.allPartnersIncludeDelete
+  );
+
+  let customer;
+  let customerContactId;
+
+  console.log("userwh", userWarehouseId);
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsFetching(true);
+      try {
+        const res = await getWarehouseById(userWarehouseId);
+        console.log("res", res);
+        setWarehouse(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+
+      setIsFetching(false);
+    }
+    fetchData();
+  }, [userWarehouseId]);
+
+  if (partners && formData && warehouse) {
+    customer = partners?.find((cus) => cus._id === formData.customerId);
+    customerContactId = customer.contactId;
+  }
+  console.log("warehouse", warehouse);
+  if (isFetching) {
+    return null;
+  }
+
+  const outbound_detail_columns = [
+    {
+      title: "No.",
+      dataIndex: "id",
+      key: "id",
+      width: 60,
+    },
+    {
+      title: "Product Name",
+      width: 250,
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: 100,
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      width: 100,
+    },
+  ];
+
   return (
-    <>
-      <div className="Header">
-        <span style={{ fontSize: "28px" }} className="fs-32 bold">
-          OUTBOUND1
-        </span>
-        <span className=" italic fs-14">Order/Delivery/Done</span>
-      </div>
-      <div className="Info">
-        <div className="TransactionInfo">
-          <span className="fs-16 bold">Order at: </span>
-          <span className="fs-14 italic">{}</span>
-          <br></br>
-          <span className="fs-16 bold">Finish at:</span>
-          <span className="fs-14 italic"> {}</span>
-          <br></br>
-          <span className="fs-16 bold italic">Prepared by {}</span>
-        </div>
-        <div className="WarehouseInfo">
-          <span className="fs-20 bold">Warehouse: {}</span>
-          <br></br>
-          <span className="fs-12 italic">123 ABC Street, State 1{}</span>
-          <br></br>
-          <span className="fs-12 italic">
-            0900109001-warehouse1@gmail.com{}
-            {}
-          </span>
-        </div>
-        <div className="PartnerInfo">
-          <span className="fs-20 bold">Customer: {}</span>
-          <br></br>
-          <span className="fs-12 italic">123 ABC Street, State 1{}</span>
-          <br></br>
-          <span className="fs-12 italic">
-            0900109001-customer1@gmail.com{}
-            {}
-          </span>
-        </div>
-      </div>
-
-      <div className="TransactionDetail">
+    <div ref={ref}>
+      <div style={{ margin: "16px" }}>
         <div>
-          <Table
-            style={{
-              marginTop: "10px",
-              maxWidth: "80vw",
-            }}
-            columns={outbound_detail_columns}
-            dataSource={outbound_detail_dataSource}
-            pagination={false}
-          />
-        </div>
-      </div>
-      <div className="TotalPrice">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "end",
-            alignItems: "flex-end",
-          }}
-        >
-          <span className="fs-24 bold" style={{ marginRight: "10px" }}>
-            Total:
+          <span style={{ fontSize: "28px" }} className="fs-32 bold">
+            OUTBOUND
           </span>
+          <span className=" italic fs-14">{formData?.status}</span>
+        </div>
+        <div className="Info">
+          <div className="TransactionInfo">
+            <span className="fs-16 bold">Order at: </span>
+            <span className="fs-14 italic">{formData?.create_time}</span>
+            <br></br>
+            <span className="fs-16 bold">Finish at:</span>
+            <span className="fs-14 italic"> {formData?.update_time}</span>
+            <br></br>
+            <span className="fs-16 bold italic">
+              Prepared by {formData?.creatorName}
+            </span>
+          </div>
+          <div className="WarehouseInfo">
+            <span className="fs-20 bold">
+              Warehouse: {warehouse ? warehouse.name : ""}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {warehouse ? warehouse.contactId.address : ""}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {warehouse
+                ? warehouse.contactId.phone_num +
+                  " - " +
+                  warehouse.contactId.email
+                : ""}
+            </span>
+          </div>
+          <div className="PartnerInfo">
+            <span className="fs-20 bold">
+              Customer: {formData?.customerName}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {customerContactId ? customerContactId.address : ""}
+            </span>
+            <br></br>
+            <span className="fs-12 italic">
+              {customerContactId
+                ? customerContactId.phone_num + " - " + customerContactId.email
+                : ""}
+              {}
+            </span>
+          </div>
+        </div>
+
+        <div style={{ textAlign: "center" }} className="TransactionDetail">
+          <div>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Table: {
+                    borderColor: "black",
+                  },
+                },
+              }}
+            >
+              <Table
+                bordered
+                style={{
+                  marginTop: "10px",
+                  maxWidth: "80vw",
+                  textAlign: "center",
+                }}
+                columns={outbound_detail_columns}
+                dataSource={formData?.trans_details.map((detail, i) => {
+                  const product = goodsList.find(
+                    (goods) => goods._id === detail.productId
+                  );
+                  return {
+                    id: i + 1,
+                    name: product.name,
+                    quantity: detail.quantity,
+                    price: Intl.NumberFormat("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(detail.total),
+                  };
+                })}
+                pagination={false}
+              />
+            </ConfigProvider>
+          </div>
+        </div>
+        <div className="TotalPrice">
           <div
             style={{
-              width: "200px",
-              height: "40px",
-              fontSize: "32px",
-              backgroundColor: "lightgray",
-              borderRadius: "10px",
-              display: "inline",
-              fontWeight: "bold",
-              fontStyle: "italic",
-              textAlign: "right",
-              paddingRight: "10px",
-              paddingBottom: "5px",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "flex-end",
             }}
           >
-            4.500.000{}
+            <span className="fs-24 bold" style={{ marginRight: "10px" }}>
+              Total:
+            </span>
+            <div
+              style={{
+                width: "200px",
+                height: "40px",
+                fontSize: "32px",
+                backgroundColor: "lightgray",
+                borderRadius: "10px",
+                display: "inline",
+                fontWeight: "bold",
+                fontStyle: "italic",
+                textAlign: "right",
+                paddingRight: "10px",
+                paddingBottom: "5px",
+              }}
+            >
+              {formData?.total_value}
+            </div>
           </div>
-          <span className="fs-16 bold">VNĐ</span>
         </div>
       </div>
-    </>
+    </div>
+    //   </Modal>
+    // </ConfigProvider>
   );
-}
+});
 
 export default OutBoundBill;

@@ -3,40 +3,10 @@ import { Form, Input, Button, Space, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 
 import { updateSupplier } from "../../redux/apiRequest";
+import SubmitButton from "../SubmitButton";
+import "./style.css";
 
 const { TextArea } = Input;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 function UpdateSupplierForm({
   onUpdateData,
@@ -70,7 +40,11 @@ function UpdateSupplierForm({
       form.resetFields();
       message.success("Add Supplier Success");
     } catch (e) {
-      message.error(e.response.data);
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
   };
@@ -87,8 +61,8 @@ function UpdateSupplierForm({
   return (
     <>
       <div>
-        <h1>Update Supplier</h1>
         <Form
+          className="formLabel"
           form={form}
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 12 }}
@@ -96,59 +70,60 @@ function UpdateSupplierForm({
           onFinish={handleFinish}
         >
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your supplier name!",
               },
             ]}
-            label="Supplier Name:"
+            label={<p>Supplier Name</p>}
             name="supplierName"
           >
             <Input placeholder="Supplier Name" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your supplier name!",
               },
             ]}
-            label="Address: "
+            label={<p>Address</p>}
             name="supplierAddress"
           >
             <TextArea placeholder="Supplier Address" rows={4} />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your supplier name!",
               },
             ]}
-            label="PhoneNumber:"
+            label={<p>Phone Number</p>}
             name="supplierPhoneNumber"
           >
             <Input placeholder="Supplier Phone Number" type="phone" />
           </Form.Item>
           <Form.Item
+            labelAlign="left"
             rules={[
               {
                 required: true,
                 message: "Please input your supplier name!",
               },
             ]}
-            label="Email:"
+            label={<p>Email</p>}
             name="supplierEmail"
           >
             <Input placeholder="Supplier Email" type="email" />
           </Form.Item>
           <Form.Item {...tailLayout}>
             <Space>
-              <Button htmlType="button" onClick={handleCancelButton}>
-                Cancel
-              </Button>
-              <SubmitButton form={form} isLoading={isLoading}>
+              <SubmitButton Form={Form} form={form} isLoading={isLoading}>
                 Ok
               </SubmitButton>
             </Space>

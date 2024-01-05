@@ -12,7 +12,13 @@ import NewSupplierForm from "../Form/NewSupplierForm.js";
 import NewUserForm from "../Form/NewUserForm.js";
 import NewWarehouseForm from "../Form/NewWarehouseForm.js";
 
-const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
+const CustomButton = ({
+  managersList,
+  onUpdateData,
+  numButtons,
+  page,
+  position,
+}) => {
   const buttons = [];
   const form = [];
 
@@ -131,6 +137,7 @@ const CustomButton = ({ managersList, onUpdateData, numButtons, page }) => {
           isModalOpen={isModalOpen}
           handleOkButton={handleOk}
           handleCancelButton={handleCancel}
+          position={position}
         />
       );
 

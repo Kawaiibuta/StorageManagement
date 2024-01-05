@@ -39,6 +39,8 @@ import {
 import {
   getCustomersStart,
   getCustomersSuccess,
+  getPartnersIncludeDeleteStart,
+  getPartnersIncludeDeleteSuccess,
   getSuppliersStart,
   getSuppliersSuccess,
 } from "./partnerSlice";
@@ -47,23 +49,21 @@ import {
   getInboundsSuccess,
   getOutboundsStart,
   getOutboundsSuccess,
+  getProductsIncludeDeleteStart,
+  getProductsIncludeDeleteSuccess,
   getProductsStart,
   getProductsSuccess,
 } from "./productSlice";
 
 export const loginUser = async (user, dispatch) => {
   dispatch(loginStart());
-  try {
-    const res = await axios.post(
-      "https://warehousemanagement.onrender.com/api/auth/login",
-      user
-    );
-    dispatch(loginSuccess(res.data));
-    // navigate("/dashboard");
-  } catch (err) {
-    console.log(err);
-    dispatch(loginError());
-  }
+
+  const res = await axios.post(
+    "https://warehousemanagement.onrender.com/api/auth/login",
+    user
+  );
+  dispatch(loginSuccess(res.data));
+  // navigate("/dashboard");
 };
 
 export const logoutUser = async (id, accessToken, dispatch, axiosJWT) => {
@@ -94,17 +94,13 @@ export const logoutUser = async (id, accessToken, dispatch, axiosJWT) => {
 
 export const registerEmployeeUser = async (employeeId, dispatch) => {
   dispatch(registerStart());
-  try {
-    const res = await axios.post(
-      "https://warehousemanagement.onrender.com/api/auth/register",
-      employeeId
-    );
-    dispatch(registerSuccess(res.data));
-    // navigate("/dashboard");
-  } catch (err) {
-    console.log(err);
-    dispatch(registerFailed());
-  }
+
+  const res = await axios.post(
+    "https://warehousemanagement.onrender.com/api/auth/register",
+    employeeId
+  );
+  dispatch(registerSuccess(res.data));
+  // navigate("/dashboard");
 };
 
 export const onGetAllManagers = async (dispatch) => {
@@ -143,21 +139,33 @@ export const addStaff = async (dispatch, staff) => {
     dispatch(addStaffSuccess());
   } catch (e) {
     console.log(e);
-    dispatch(addStaffFailed(e.response.data));
+    dispatch(
+      addStaffFailed(
+        e.response.data instanceof String
+          ? e.response.data
+          : "Something went wrong!"
+      )
+    );
   }
 };
 
-export const getAllEmployees = async (dispatch) => {
+export const getAllEmployeesByWarehouseId = async (dispatch, warehouseId) => {
   dispatch(getEmployeesStart());
   try {
     const res = await axios.get(
-      "https://warehousemanagement.onrender.com/api/employee/staff"
+      `https://warehousemanagement.onrender.com/api/employee/staff/byWarehouse/${warehouseId}`
     );
     dispatch(getEmployeesSuccess(res.data));
     // console.log("hihi");
   } catch (e) {
     console.log(e);
-    dispatch(getEmployeesError(e.response.data));
+    dispatch(
+      getEmployeesError(
+        e.response.data instanceof String
+          ? e.response.data
+          : "Something went wrong!"
+      )
+    );
   }
 };
 
@@ -171,7 +179,13 @@ export const getAllStaffs = async (dispatch) => {
     // console.log("hihi");
   } catch (e) {
     console.log(e);
-    dispatch(getStaffsError(e.response.data));
+    dispatch(
+      getStaffsError(
+        e.response.data instanceof String
+          ? e.response.data
+          : "Something went wrong!"
+      )
+    );
   }
 };
 
@@ -187,9 +201,20 @@ export const updateEmployee = async (employeeId, formData) => {
   );
 };
 
-export const deleteEmployee = async (employeeId) => {
+export const deleteEmployee = async (employeeId, accessToken) => {
   await axios.delete(
-    `https://warehousemanagement.onrender.com/api/employee/${employeeId}`
+    `https://warehousemanagement.onrender.com/api/employee/${employeeId}`,
+    {
+      headers: {
+        token: `Bearer ${accessToken}`,
+      },
+    }
+  );
+};
+
+export const deleteUser = async (userId) => {
+  await axios.delete(
+    `https://warehousemanagement.onrender.com/api/user/${userId}`
   );
 };
 
@@ -262,11 +287,11 @@ export const getAllCustomer = async (dispatch) => {
   dispatch(getCustomersSuccess(res.data));
 };
 
-export const getGoodsList = async (dispatch) => {
+export const getGoodsListByWarehouseId = async (dispatch, warehouseId) => {
   dispatch(getProductsStart());
 
   const res = await axios.get(
-    `https://warehousemanagement.onrender.com/api/product`
+    `https://warehousemanagement.onrender.com/api/product/byWarehouse/${warehouseId}`
   );
   dispatch(getProductsSuccess(res.data));
 };
@@ -308,11 +333,11 @@ export const addTransaction = async (transactionData) => {
   );
 };
 
-export const getAllOutbound = async (dispatch) => {
+export const getAllOutbound = async (dispatch, warehouseId) => {
   dispatch(getOutboundsStart());
 
   const res = await axios.get(
-    `https://warehousemanagement.onrender.com/api/transaction/outbound`
+    `https://warehousemanagement.onrender.com/api/transaction/outbound/byWarehouse/${warehouseId}`
   );
 
   dispatch(getOutboundsSuccess(res.data));
@@ -331,14 +356,63 @@ export const deleteTransaction = async (transactionId) => {
   );
 };
 
-export const getAllInbound = async (dispatch) => {
+export const getAllInbound = async (dispatch, warehouseId) => {
   dispatch(getInboundsStart());
 
   const res = await axios.get(
-    `https://warehousemanagement.onrender.com/api/transaction/inbound`
+    `https://warehousemanagement.onrender.com/api/transaction/inbound/byWarehouse/${warehouseId}`
   );
 
   dispatch(getInboundsSuccess(res.data));
+};
+
+export const getAllPartnersIncludeDelete = async (dispatch) => {
+  dispatch(getPartnersIncludeDeleteStart());
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/partner/`
+  );
+  dispatch(getPartnersIncludeDeleteSuccess(res.data));
+};
+
+export const getProductById = async (productId) => {
+  return await axios.get(
+    `https://warehousemanagement.onrender.com/api/product/${productId}`
+  );
+};
+
+export const getAllProductsIncludeDelete = async (dispatch) => {
+  dispatch(getProductsIncludeDeleteStart());
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/product/`
+  );
+  dispatch(getProductsIncludeDeleteSuccess(res.data));
+};
+
+export const getWarehouseById = async (warehouseId) => {
+  return await axios.get(
+    `https://warehousemanagement.onrender.com/api/warehouse/${warehouseId}`
+  );
+};
+
+export const updateStatus = async (transactionId, status) => {
+  await axios.put(
+    `https://warehousemanagement.onrender.com/api/transaction/status/${transactionId}`,
+    status
+  );
+};
+
+export const getInventoryReport = async (warehouseId) => {
+  const res = await axios.get(
+    `https://warehousemanagement.onrender.com/api/report/byWarehouse/${warehouseId}`
+  );
+  return res.data;
+};
+
+export const addInventoryReport = async (data) => {
+  await axios.post(
+    `https://warehousemanagement.onrender.com/api/report/`,
+    data
+  );
 };
 
 // export const deleteUser = async (userId) => {

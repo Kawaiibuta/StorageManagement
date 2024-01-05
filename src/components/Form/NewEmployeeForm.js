@@ -10,47 +10,21 @@ import {
   Button,
   Upload,
   message,
+  ConfigProvider,
 } from "antd";
+import "./style.css";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import CustomForm from "../CustomForm";
+import SubmitButton from "../SubmitButton";
 const { Option } = Select;
-
-const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(true);
-
-  // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-  }, [values]);
-  return (
-    <Button
-      type="primary"
-      htmlType="submit"
-      disabled={!submittable}
-      loading={isLoading}
-    >
-      Submit
-    </Button>
-  );
-};
 
 function NewEmployeeForm({
   onUpdateData,
   isModalOpen,
   handleOkButton,
   handleCancelButton,
+  position,
 }) {
   const [isLoading, setIsLoading] = useState(false);
   //antd
@@ -90,7 +64,7 @@ function NewEmployeeForm({
 
       const formData = new FormData();
       formData.append("name", values.employeeName);
-      formData.append("position", values.employeePosition);
+      formData.append("position", position);
       formData.append(
         "startDate",
         values.employeeStartDate.format("DD/MM/YYYY")
@@ -124,14 +98,17 @@ function NewEmployeeForm({
       success();
       onUpdateData();
       form.resetFields();
-
+      setFileList([]);
       handleOkButton();
     } catch (e) {
       console.log(e);
-      error();
+      message.error(
+        typeof e.response.data === "string"
+          ? e.response.data
+          : "Something went wrong!"
+      );
     }
     setIsLoading(false);
-    // await addStaff(dispatch, data);
   };
 
   const warehouses = useSelector(
@@ -148,36 +125,33 @@ function NewEmployeeForm({
   return (
     <>
       {contextHolder}
-      <Modal
-        open={isModalOpen}
-        width="500px"
-        height="300px"
-        onOk={handleOkButton}
-        onCancel={handleCancelButton}
-        footer={null}
-      >
-        <>
-          <div>
-            <h1>New Employee</h1>
-            <Form
-              onFinish={handleFinish}
-              labelCol={{ span: 10 }}
-              wrapperCol={{ span: 12 }}
-              layout="horizontal"
-              form={form}
+      <CustomForm
+        marginTop={5}
+        title={"New " + position}
+        handleCancelButton={handleCancelButton}
+        isModalOpen={isModalOpen}
+        form={
+          <Form
+            className="formLabel"
+            onFinish={handleFinish}
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 12 }}
+            layout="horizontal"
+            form={form}
+          >
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              label={<p>Name</p>}
+              name="employeeName"
             >
-              <Form.Item
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-                label="Name:"
-                name="employeeName"
-              >
-                <Input placeholder="Employee Name" />
-              </Form.Item>
-              <Form.Item
+              <Input placeholder="Employee Name" />
+            </Form.Item>
+            {/* <Form.Item
                 rules={[
                   {
                     required: true,
@@ -190,140 +164,145 @@ function NewEmployeeForm({
                   <Select.Option value="Manager">Manager</Select.Option>
                   <Select.Option value="Employee">Employee</Select.Option>
                 </Select>
-              </Form.Item>
-              <Form.Item
-                name="employeeGender"
-                label="Gender"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
+              </Form.Item> */}
+            <Form.Item
+              labelAlign="left"
+              name="employeeGender"
+              label={<p>Gender</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select placeholder="Select Employee Gender">
+                <Option value="male">Male</Option>
+                <Option value="female">Female</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              label={<p>Id Card</p>}
+              name="employeeIdCard"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input placeholder="Employe Id Card Number" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              name="employeeBirthday"
+              label={<p>Birthday</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <DatePicker format="DD/MM/YYYY" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              name="employeeAddress"
+              label={<p>Address</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input placeholder="Employee Address" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              name="employeePhoneNumber"
+              label={<p>Phone Number</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input placeholder="Employee Phone Number" type="phone" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              name="employeeEmail"
+              label={<p>Email</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input placeholder="Employee Email" type="email" />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              label={<p>&nbsp;Warehouse</p>}
+              name="employeeWarehouse"
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            >
+              <Select
+                allowClear
+                options={warehouses?.map((warehouse) => {
+                  return {
+                    label: warehouse.code + " - " + warehouse.name,
+                    value: warehouse._id,
+                  };
+                })}
+                placeholder="Select Warehouse where Employee work"
+              ></Select>
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              name="employeeStartDate"
+              label={<p>Start Date</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <DatePicker format={"DD/MM/YYYY"} />
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              name="employeeAvatar"
+              label={<p>Avatar</p>}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Upload
+                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                listType="picture-circle"
+                fileList={fileList}
+                onChange={handleChange}
+                maxCount={1}
               >
-                <Select placeholder="Select Employee Gender">
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Id Card:"
-                name="employeeIdCard"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input placeholder="Employe Id Card Number" />
-              </Form.Item>
-              <Form.Item
-                name="employeeBirthday"
-                label="Birthday"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <DatePicker format="DD/MM/YYYY" />
-              </Form.Item>
-              <Form.Item
-                name="employeeAddress"
-                label="Address:"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input placeholder="Employee Address" />
-              </Form.Item>
-              <Form.Item
-                name="employeePhoneNumber"
-                label="Phone Number:"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input placeholder="Employee Phone Number" type="phone" />
-              </Form.Item>
-              <Form.Item
-                name="employeeEmail"
-                label="Email:"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input placeholder="Employee Email" type="email" />
-              </Form.Item>
-              <Form.Item
-                label="Warehouse"
-                name="employeeWarehouse"
-                rules={[
-                  {
-                    required: false,
-                  },
-                ]}
-              >
-                <Select
-                  allowClear
-                  options={warehouses?.map((warehouse) => {
-                    return {
-                      label: warehouse.code,
-                      value: warehouse._id,
-                    };
-                  })}
-                  placeholder="Select Warehouse where Employee work"
-                ></Select>
-              </Form.Item>
-              <Form.Item
-                name="employeeStartDate"
-                label="Start Date"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <DatePicker format={"DD/MM/YYYY"} />
-              </Form.Item>
-              <Form.Item
-                name="employeeAvatar"
-                label="Avatar"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Upload
-                  action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                  listType="picture-circle"
-                  fileList={fileList}
-                  onChange={handleChange}
-                  maxCount={1}
-                >
-                  {uploadButton}
-                </Upload>
-              </Form.Item>
-              <Form.Item {...tailLayout}>
-                <Space>
-                  <Button htmlType="button" onClick={handleCancelButton}>
-                    Cancel
-                  </Button>
-                  <SubmitButton form={form} isLoading={isLoading}>
-                    Ok
-                  </SubmitButton>
-                </Space>
-              </Form.Item>
-            </Form>
-          </div>
-        </>
-      </Modal>
+                {uploadButton}
+              </Upload>
+            </Form.Item>
+            <Form.Item {...tailLayout}>
+              <Space>
+                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
+                  Ok
+                </SubmitButton>
+              </Space>
+            </Form.Item>
+          </Form>
+        }
+      />
     </>
   );
 }
