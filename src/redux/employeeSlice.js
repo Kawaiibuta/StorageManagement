@@ -5,6 +5,7 @@ const employeeSlice = createSlice({
   initialState: {
     employee: {
       allEmployees: null,
+      allEmployeesIncludeDelete: null,
       isFetching: false,
       error: false,
     },
@@ -96,6 +97,14 @@ const employeeSlice = createSlice({
       state.user.error = true;
       state.user.success = false;
     },
+    getEmployeesIncludeDeleteStart: (state) => {
+      state.employee.isFetching = true;
+    },
+    getEmployeesIncludeDeleteSuccess: (state, action) => {
+      state.employee.isFetching = false;
+      state.employee.allEmployeesIncludeDelete = action.payload;
+      state.employee.error = false;
+    },
   },
 });
 
@@ -115,6 +124,8 @@ export const {
   getStaffsError,
   getStaffsStart,
   getStaffsSuccess,
+  getEmployeesIncludeDeleteStart,
+  getEmployeesIncludeDeleteSuccess,
 } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

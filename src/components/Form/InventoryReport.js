@@ -11,11 +11,15 @@ import {
   InputNumber,
   Modal,
   message,
+  ConfigProvider,
 } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import { addInventoryReport } from "../../redux/apiRequest";
+import {
+  addInventoryReport,
+  updateReportApproved,
+} from "../../redux/apiRequest";
 import CustomForm from "../CustomForm";
 import SubmitButton from "../SubmitButton";
 import "./style.css";
@@ -28,6 +32,124 @@ const tailLayout = {
     span: 16,
   },
 };
+const tailLayoutTwoButton = {
+  wrapperCol: {
+    offset: 2,
+    span: 22,
+  },
+};
+
+const ApprovedAndRejectButton = ({
+  Form,
+  form,
+  title,
+  id,
+  onUpdateData,
+  handleOkButton,
+}) => {
+  const [loading, setLoading] = React.useState(false);
+
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Button: {
+            textHoverBg: "white",
+            defaultBg:
+              title === "REJECT" ? "crimson" : "rgba(156, 188, 235, 1)",
+            defaultColor: "white",
+            fontWeight: "500",
+          },
+        },
+      }}
+    >
+      <Button
+        onClick={async () => {
+          setLoading(true);
+          try {
+            await updateReportApproved(id, {
+              isApproved: title === "REJECT" ? false : true,
+            });
+            handleOkButton();
+            onUpdateData();
+            message.success("Update transfer success");
+          } catch (e) {
+            console.log(e);
+            message.error(
+              typeof e.response.data === "string"
+                ? e.response.data
+                : "Something went wrong!"
+            );
+          }
+
+          setLoading(false);
+        }}
+        style={{
+          padding: "0px 50px",
+          marginBottom: "24px",
+          width: "200px",
+        }}
+        type="default"
+        size="large"
+        loading={loading}
+      >
+        {title}
+      </Button>
+    </ConfigProvider>
+  );
+};
+
+// const ApprovedButton = ({ id, onUpdateData, handleOkButton }) => {
+//   const [loading, setLoading] = React.useState(false);
+
+//   return (
+//     <ConfigProvider
+//       theme={{
+//         components: {
+//           Button: {
+//             textHoverBg: "white",
+//             defaultBg: "rgba(156, 188, 235, 1)",
+//             defaultColor: "white",
+//             fontWeight: "500",
+//           },
+//         },
+//       }}
+//     >
+//       <Button
+//         onClick={async () => {
+//           setLoading(true);
+//           try {
+//             await updateReportApproved(id, {
+//               isApproved: true,
+//             });
+//             handleOkButton();
+//             onUpdateData();
+//             message.success("Update report success");
+//           } catch (e) {
+//             console.log(e);
+//             message.error(
+//               typeof e.response.data === "string"
+//                 ? e.response.data
+//                 : "Something went wrong!"
+//             );
+//           }
+
+//           setLoading(false);
+//         }}
+//         style={{
+//           padding: "0px 50px",
+//           marginBottom: "24px",
+//           width: "200px",
+//         }}
+//         type="default"
+//         size="large"
+//         loading={loading}
+//       >
+//         APPROVED
+//       </Button>
+//     </ConfigProvider>
+//   );
+// };
 
 function InventoryReport({
   onUpdateData,
@@ -45,6 +167,7 @@ function InventoryReport({
   );
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
+  const isManager = user.employeeId.position === "Manager";
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -124,7 +247,6 @@ function InventoryReport({
         marginTop={10}
         form={
           <Form
-            disabled={formData ? true : false}
             className="formLabel"
             style={{ marginRight: "16px" }}
             form={form}
@@ -133,7 +255,7 @@ function InventoryReport({
             wrapperCol={{ span: 12 }}
             layout="horizontal"
           >
-            <Form.List name="items">
+            <Form.List disabled={formData ? true : false} name="items">
               {(fields, { add, remove }) => (
                 <div
                   style={{
@@ -158,6 +280,7 @@ function InventoryReport({
                       }
                     >
                       <Form.Item
+                        style={{ marginTop: "10px" }}
                         rules={[
                           {
                             required: true,
@@ -276,187 +399,45 @@ function InventoryReport({
                 </div>
               )}
             </Form.List>
-            {formData ? null : (
-              <Form.Item {...tailLayout}>
-                <Space>
+
+            <Form.Item {...(formData ? tailLayoutTwoButton : tailLayout)}>
+              <Space>
+                {formData && isManager ? (
+                  <div style={{ marginTop: "10px" }}>
+                    {" "}
+                    <Space>
+                      <ApprovedAndRejectButton
+                        title="REJECT"
+                        id={formData.key}
+                        handleOkButton={handleOkButton}
+                        onUpdateData={onUpdateData}
+                      >
+                        Ok
+                      </ApprovedAndRejectButton>
+                      <ApprovedAndRejectButton
+                        title="APPROVED"
+                        Z
+                        id={formData.key}
+                        handleOkButton={handleOkButton}
+                        onUpdateData={onUpdateData}
+                      >
+                        Ok
+                      </ApprovedAndRejectButton>
+                    </Space>
+                  </div>
+                ) : formData ? null : (
                   <SubmitButton Form={Form} form={form} isLoading={loading}>
                     Ok
                   </SubmitButton>
-                </Space>
-              </Form.Item>
-            )}
+                )}
+              </Space>
+            </Form.Item>
           </Form>
         }
         handleCancelButton={handleCancelButton}
         isModalOpen={isModalOpen}
         title="Inventory Report"
       />
-      {/* <Modal
-        open={isModalOpen}
-        width="500px"
-        height="300px"
-        onOk={handleOkButton}
-        onCancel={handleCancelButton}
-        footer={null}
-        labelCol={{ span: 10 }}
-        wrapperCol={{ span: 12 }}
-      >
-        <div>
-          <h1> InventoryReport</h1>
-          <Form
-            form={form}
-            onFinish={handleFinish}
-            labelCol={{ span: 10 }}
-            wrapperCol={{ span: 12 }}
-            layout="horizontal"
-          >
-            <Form.List name="items">
-              {(fields, { add, remove }) => (
-                <div
-                  style={{
-                    display: "flex",
-                    rowGap: 16,
-                    flexDirection: "column",
-                  }}
-                >
-                  {fields.map((field) => (
-                    <Card
-                      size="small"
-                      title={`Item ${field.name + 1}`}
-                      key={field.key}
-                      extra={
-                        <CloseOutlined
-                          onClick={() => {
-                            remove(field.name);
-                          }}
-                        />
-                      }
-                    >
-                      <Form.Item
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input your sku code!",
-                          },
-                        ]}
-                        label="Sku Code"
-                        name={[field.name, "productId"]}
-                      >
-                        <Select
-                          onChange={() => {
-                            const formValues = form.getFieldValue([["items"]]);
-                            console.log("fvalue", formValues);
-                            form.setFieldsValue({
-                              items: formValues.map((item, i) => {
-                                if (i === field.name) {
-                                  const product = goodsList.find(
-                                    (goods) => goods._id === item.productId
-                                  );
-                                  return {
-                                    ...item,
-                                    quantity: product.quantity,
-                                  };
-                                }
-                                return item;
-                              }),
-                            }); // Corrected
-                            console.log("field", field);
-                          }}
-                          options={goodsList?.map((goods) => {
-                            return {
-                              value: goods._id,
-                              label: goods.skuCode,
-                            };
-                          })}
-                        ></Select>
-                      </Form.Item>
-                      <Form.Item
-                        label="Quantity"
-                        name={[field.name, "quantity"]}
-                      >
-                        <InputNumber disabled></InputNumber>
-                      </Form.Item>
-
-                      <Form.Item
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input your actual quantity!",
-                          },
-                        ]}
-                        onChange={() => {
-                          const formValues = form.getFieldValue([["items"]]);
-                          console.log("fvalue", formValues);
-                          form.setFieldsValue({
-                            items: formValues.map((item, i) => {
-                              if (i === field.name) {
-                                return {
-                                  ...item,
-                                  differenceQuantity:
-                                    item.actualQuantity - item.quantity,
-                                };
-                              }
-                              return item;
-                            }),
-                          }); // Corrected
-                          console.log("field", field);
-                        }}
-                        label="Actual Quantity"
-                        name={[field.name, "actualQuantity"]}
-                      >
-                        <InputNumber min={0}></InputNumber>
-                      </Form.Item>
-                      <Form.Item
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input your difference quantity!",
-                          },
-                        ]}
-                        label="Difference Quantity"
-                        name={[field.name, "differenceQuantity"]}
-                      >
-                        <InputNumber disabled></InputNumber>
-                      </Form.Item>
-                      <Form.Item
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please input your description!",
-                          },
-                        ]}
-                        label="Description"
-                        name={[field.name, "description"]}
-                      >
-                        <TextArea></TextArea>
-                      </Form.Item>
-                    </Card>
-                  ))}
-
-                  <Button
-                    style={{ marginBottom: 15 }}
-                    type="dashed"
-                    onClick={() => add()}
-                    block
-                  >
-                    + Add Item
-                  </Button>
-                </div>
-              )}
-            </Form.List>
-            <Form.Item {...tailLayout}>
-              <Space>
-                <Button htmlType="button" onClick={handleCancelButton}>
-                  Cancel
-                </Button>
-                <SubmitButton form={form} isLoading={loading}>
-                  Ok
-                </SubmitButton>
-              </Space>
-            </Form.Item>
-          </Form>
-        </div>
-      </Modal> */}
     </>
   );
 }

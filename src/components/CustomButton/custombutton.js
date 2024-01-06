@@ -11,6 +11,9 @@ import NewProductForm from "../Form/NewProductForm.js";
 import NewSupplierForm from "../Form/NewSupplierForm.js";
 import NewUserForm from "../Form/NewUserForm.js";
 import NewWarehouseForm from "../Form/NewWarehouseForm.js";
+import { BiTransfer } from "react-icons/bi";
+import EmployeeTransferForm from "../Form/EmployeeTransferForm.js";
+import ProductTransferForm from "../Form/ProductTransferForm.js";
 
 const CustomButton = ({
   managersList,
@@ -18,11 +21,14 @@ const CustomButton = ({
   numButtons,
   page,
   position,
+  employeeSelectionList,
+  productSelectionList,
 }) => {
   const buttons = [];
   const form = [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalTransferOpen, setIsModalTransferOpen] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -36,31 +42,25 @@ const CustomButton = ({
     setIsModalOpen(false);
   };
 
-  //Test
-  /*const [isModal2Open, setIsModal2Open] = useState(false);
-  const showModal2 = () => {
-    setIsModal2Open(true);
+  const showModalTransfer = () => {
+    setIsModalTransferOpen(true);
+  };
+  const handleOkTransfer = () => {
+    setIsModalTransferOpen(false);
+    onUpdateData();
+  };
+  const handleCancelTransfer = () => {
+    setIsModalTransferOpen(false);
   };
 
-  const handleOk2 = () => {
-    setIsModal2Open(false);
-  };
-
-  const handleCancel2 = () => {
-    setIsModal2Open(false);
-  };
-
-  //End Test
-*/
   const handleButtonClick = (buttonType) => {
     if (buttonType === "NEW") {
       showModal();
     } else if (buttonType === "REFRESH") {
-      // Chức năng refresh lại trang
-      //Test
-      //showModal2();
-      //End Test
       onUpdateData();
+    } else {
+      console.log("trans", employeeSelectionList);
+      showModalTransfer();
     }
   };
   switch (page) {
@@ -99,12 +99,20 @@ const CustomButton = ({
       break;
     case "product":
       form.push(
-        <NewProductForm
-          onUpdateData={onUpdateData}
-          isModalOpen={isModalOpen}
-          handleOkButton={handleOk}
-          handleCancelButton={handleCancel}
-        />
+        <>
+          <NewProductForm
+            onUpdateData={onUpdateData}
+            isModalOpen={isModalOpen}
+            handleOkButton={handleOk}
+            handleCancelButton={handleCancel}
+          />
+          <ProductTransferForm
+            productList={productSelectionList}
+            handleCancelButton={handleCancelTransfer}
+            handleOkButton={handleOkTransfer}
+            isModalOpen={isModalTransferOpen}
+          />
+        </>
       );
 
       break;
@@ -132,13 +140,21 @@ const CustomButton = ({
       break;
     case "employee":
       form.push(
-        <NewEmployeeForm
-          onUpdateData={onUpdateData}
-          isModalOpen={isModalOpen}
-          handleOkButton={handleOk}
-          handleCancelButton={handleCancel}
-          position={position}
-        />
+        <>
+          <NewEmployeeForm
+            onUpdateData={onUpdateData}
+            isModalOpen={isModalOpen}
+            handleOkButton={handleOk}
+            handleCancelButton={handleCancel}
+            position={position}
+          />
+          <EmployeeTransferForm
+            employeeList={employeeSelectionList}
+            handleCancelButton={handleCancelTransfer}
+            handleOkButton={handleOkTransfer}
+            isModalOpen={isModalTransferOpen}
+          />
+        </>
       );
 
       break;
@@ -194,6 +210,32 @@ const CustomButton = ({
         >
           <MdAutorenew className="icon" />
           REFRESH
+        </Button>
+      );
+      break;
+    case 3:
+      buttons.push(
+        <Button className="two-one" onClick={() => handleButtonClick("NEW")}>
+          <MdAdd className="icon" />
+          NEW
+        </Button>
+      );
+      buttons.push(
+        <Button
+          className="two-two"
+          onClick={() => handleButtonClick("REFRESH")}
+        >
+          <MdAutorenew className="icon" />
+          REFRESH
+        </Button>
+      );
+      buttons.push(
+        <Button
+          className="two-three"
+          onClick={() => handleButtonClick("TRANSFER")}
+        >
+          <BiTransfer className="icon" />
+          TRANSFER
         </Button>
       );
       break;

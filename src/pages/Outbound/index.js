@@ -5,15 +5,17 @@ import TabView from "../../components/Button Header/TabView";
 import {
   Button,
   ConfigProvider,
+  Input,
   Modal,
   Popconfirm,
+  Space,
   Table,
   Tabs,
   Tag,
   Tooltip,
   message,
 } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -49,6 +51,7 @@ import dayjs from "dayjs";
 import OutBoundBill from "../../components/Form/OutBoundBill.js";
 import { useReactToPrint } from "react-to-print";
 import { ExportButton } from "../../components/Print/index.js";
+import Highlighter from "react-highlight-words";
 
 const PrintButton = ({ record }) => {
   const componentRef = useRef();
@@ -90,6 +93,111 @@ function Outbound() {
   );
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId?.warehouseId;
+
+  //search function
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: "#ffc069",
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
+  //end search
 
   const edit = (record) => {
     setFormData(record);
@@ -183,6 +291,7 @@ function Outbound() {
       dataIndex: "DN",
       key: "DN",
       width: 100,
+      ...getColumnSearchProps("DN"),
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
@@ -194,6 +303,7 @@ function Outbound() {
       defaultFilteredValue:
         currentTab === "2" ? ["Order"] : currentTab === "3" ? ["Done"] : [""],
       onFilter: (value, record) => record.status.indexOf(value) === 0,
+
       render: (status) => {
         let color;
         if (status === "Order") color = "geekblue";
@@ -206,6 +316,7 @@ function Outbound() {
       dataIndex: "customerCodeAndName",
       key: "customerCodeAndName",
       width: 200,
+      ...getColumnSearchProps("customerCodeAndName"),
     },
     {
       title: "Total Value",
@@ -217,6 +328,7 @@ function Outbound() {
       title: "Creator",
       dataIndex: "creator",
       key: "creator",
+      ...getColumnSearchProps("creator"),
       width: 200,
     },
 

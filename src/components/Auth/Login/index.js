@@ -17,7 +17,7 @@ const onFinishFailed = (errorInfo) => {
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [stateType, setStateType] = useState("");
+  const [stateType, setStateType] = useState("Login");
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   // const navigate = useNavigate();
@@ -70,7 +70,7 @@ function Login() {
             marginBottom: 10,
           }}
         >
-          Login
+          {stateType}
         </Typography>
         <Form.Item label={<p className="label">Username</p>} name="username">
           <Input
@@ -90,7 +90,7 @@ function Login() {
         <Form.Item>
           <a
             onClick={() => {
-              setStateType("type email");
+              setStateType("Type email");
             }}
             style={{ color: "white", fontSize: "16px" }}
             className="login-form-forgot"
