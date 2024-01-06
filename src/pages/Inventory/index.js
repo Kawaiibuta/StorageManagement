@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table, Tabs, Tooltip } from "antd";
+import { Table, Tabs, Tag, Tooltip } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import { PiEyeBold } from "react-icons/pi";
@@ -63,72 +63,6 @@ for (let i = 1; i < 100; i++) {
     new report_item(i, "Employee Name " + i.toString(), "00:00:00 12/11/2023")
   );
 }
-const inventory_columns = [
-  {
-    title: "Product ID",
-    fixed: "left",
-    dataIndex: "product_id",
-    key: "id",
-    width: 100,
-  },
-  {
-    title: "Product Name",
-    width: 250,
-    dataIndex: "product_name",
-    key: "name",
-    fixed: "left",
-  },
-  {
-    title: "Detail",
-    dataIndex: "product_detail",
-    key: "product_detail",
-    width: 100,
-    fixed: "left",
-    render: () => (
-      <div>
-        <a>{<PiEyeBold />}</a>
-      </div>
-    ),
-  },
-  {
-    title: "Total",
-    dataIndex: "total_quantity",
-    key: "6",
-  },
-  {
-    title: "On Hand",
-    dataIndex: "onhand",
-    key: "6",
-  },
-  {
-    title: "Inbound Stock",
-    dataIndex: "inbound_stock",
-    key: "6",
-  },
-  {
-    title: "Outbound Stock",
-    dataIndex: "outbound_stock",
-    key: "6",
-  },
-];
-
-const inventory_product = (
-  <div style={{ maxWidth: "80%", width: "100%", minWidth: "90%" }}>
-    <ToolBar type={1}></ToolBar>
-    <Table
-      style={{ marginTop: "10px", maxWidth: "80vw" }}
-      columns={inventory_columns}
-      dataSource={inventory_dataSource}
-      pagination={{
-        showQuickJumper: true,
-        total: inventory_dataSource.length,
-      }}
-      scroll={{
-        x: 1659,
-      }}
-    />
-  </div>
-);
 
 function Inventory() {
   const [isFetching, setIsFetching] = useState(false);
@@ -139,6 +73,9 @@ function Inventory() {
   const [formData, setFormData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
+  const goodsList = useSelector(
+    (state) => state.product.goodsList?.allProducts
+  );
   const userWarehouseId = user.employeeId.warehouseId;
   const dispatch = useDispatch();
   function onUpdateData() {
@@ -169,6 +106,22 @@ function Inventory() {
       width: 150,
       key: "code",
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+
+      render: (status) => {
+        let color;
+        if (status === "Waiting") color = "geekblue";
+        else if (status === "Approved") color = "green";
+        else {
+          color = "red";
+        }
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
     },
     {
       title: "Total Actual Quantity",
@@ -249,9 +202,18 @@ function Inventory() {
       <CustomTable
         columns={report_columns}
         dataSource={dataSource?.map((report) => {
+          let status;
+          if (report.isApproved === true) {
+            status = "Approved";
+          } else if (report.isApproved === false) {
+            status = "Reject";
+          } else {
+            status = "Waiting";
+          }
           return {
             key: report._id,
             code: report.code,
+            status: status,
             totalActualQuantity: report.totalActualQuantity,
             totalDiffQuantity: report.totalDiffQuantity,
             increaseQuantity: report.increaseQuantity,
@@ -288,6 +250,59 @@ function Inventory() {
           x: 1800,
         }}
       /> */}
+    </div>
+  );
+
+  const inventory_columns = [
+    {
+      title: "SKU",
+      width: 110,
+      dataIndex: "sku_code",
+      key: "sku_code",
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
+    },
+    {
+      title: "Full Name",
+      width: 200,
+      dataIndex: "name",
+      key: "name",
+    },
+
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: 150,
+      sorter: (a, b) => a.maximum_quantity - b.maximum_quantity,
+    },
+
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      width: 170,
+      render: (text, _) => (
+        <img src={text} style={{ width: "70px" }} alt="product"></img>
+      ),
+    },
+  ];
+
+  const inventory_product = (
+    <div style={{ width: "100%" }}>
+      <ToolBar onUpdateData={onUpdateData} type={1}></ToolBar>
+      <CustomTable
+        isFetching={isFetching}
+        columns={inventory_columns}
+        dataSource={goodsList?.map((goods) => {
+          return {
+            key: goods?._id,
+            name: goods.name,
+            sku_code: goods.skuCode,
+            quantity: goods.quantity,
+            image: goods.imageUrl,
+          };
+        })}
+      />
     </div>
   );
 

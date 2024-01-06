@@ -10,6 +10,8 @@ const ToolBar = ({
   type,
   page,
   position,
+  employeeSelectionList,
+  productSelectionList,
 }) => {
   const toolbar = [];
   switch (type) {
@@ -18,7 +20,12 @@ const ToolBar = ({
     case 1:
       toolbar.push(
         <div>
-          <CustomButton className="left" numButtons={1} page={page} />
+          <CustomButton
+            onUpdateData={onUpdateData}
+            className="left"
+            numButtons={1}
+            page={page}
+          />
         </div>
       );
       break;
@@ -38,7 +45,21 @@ const ToolBar = ({
       );
       break;
     case 3:
-      toolbar.push(<div></div>);
+      toolbar.push(
+        <div>
+          <CustomButton
+            position={position}
+            managersList={managersList}
+            onUpdateData={onUpdateData}
+            onLoadingChange={onLoadingChange}
+            className="left"
+            numButtons={3}
+            page={page}
+            employeeSelectionList={employeeSelectionList}
+            productSelectionList={productSelectionList}
+          />
+        </div>
+      );
       break;
     default:
       toolbar.push(

@@ -10,10 +10,11 @@ import {
   Space,
   Table,
   Tabs,
+  Tag,
   Tooltip,
   message,
 } from "antd";
-import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
+import { RiDeleteBin6Line, RiEditBoxLine, RiPrinterLine } from "react-icons/ri";
 import { FaRegUser, FaUser } from "react-icons/fa";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import dayjs from "dayjs";
@@ -21,8 +22,10 @@ import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
 import {
   deleteEmployee,
   deleteUser,
+  getAllEmployeeIncludeDelete,
   getAllEmployeesByWarehouseId,
   getAllStaffs,
+  getAllTransfer,
   getAllUsersAccount,
   getAllWarehouses,
   onGetAllManagers,
@@ -31,19 +34,27 @@ import { useDispatch, useSelector } from "react-redux";
 import UpdateEmployeeForm from "../../components/Form/UpdateEmployeeForm.js";
 import TabPane from "antd/es/tabs/TabPane.js";
 import Highlighter from "react-highlight-words";
-import { MdAssignmentInd } from "react-icons/md";
+import { MdAssignmentInd, MdCallReceived, MdSend } from "react-icons/md";
 import managerIcon from "../../assets/images/manager_icon.png";
 import managerIconActive from "../../assets/images/manager_icon_active.png";
 import { LuUser2 } from "react-icons/lu";
 import CustomTable from "../../components/Table/index.js";
+import { PiEyeBold } from "react-icons/pi";
+import EmployeeTransferForm from "../../components/Form/EmployeeTransferForm.js";
 
 function Staff() {
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState();
+  const [formDataTransfer, setFormDataTransfer] = useState();
   const [currentTab, setCurrentTab] = useState();
   const [hoveredTab, setHoveredTab] = useState(null);
+  const [selectedRow, setSelectedRow] = useState([]);
+  const [isModalViewTransferOpen, setIsModalViewTransferOpen] = useState(false);
+  const [selectTransferId, setSelectTransferId] = useState(null);
+  const [selectTransferStatus, setSelectTransferStatus] = useState(null);
+
   const dispatch = useDispatch();
   const employeeList = useSelector(
     (state) => state.employee.employee?.allEmployees
@@ -51,9 +62,20 @@ function Staff() {
   const managersList = useSelector(
     (state) => state.employee.manager?.allManagers
   );
+  const allEmployeonAllWarehouses = useSelector(
+    (state) => state.employee.staff?.allStaffs
+  );
   const usersList = useSelector((state) => state.employee.user?.allUsers);
+  const transfersList = useSelector(
+    (state) => state.warehouse.warehouse?.transfers
+  );
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
+  console.log("transferList", transfersList);
+
+  const isAdmin = !user.isEmployee;
+  const isManager = user.employeeId.position === "Manager";
+  console.log("ismanager", isManager);
 
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
@@ -63,6 +85,33 @@ function Staff() {
     setFormData(record);
     showModal();
   };
+
+  const viewTransfer = (record) => {
+    setFormDataTransfer(record);
+    showModalViewTransfer();
+  };
+
+  //select row
+  const onSelectChange = (newSelectedRow) => {
+    console.log("selectedRowKeys changed: ", newSelectedRow);
+    if (selectedRow.find((row) => row.key === newSelectedRow.key)) {
+      setSelectedRow(
+        selectedRow.filter((row) => row.key !== newSelectedRow.key)
+      );
+    } else {
+      setSelectedRow([...selectedRow, newSelectedRow]);
+    }
+  };
+
+  const rowSelection = {
+    // selectedRowKeys,
+    onSelect: (record) => {
+      console.log("record", record);
+      onSelectChange(record);
+    },
+  };
+  const hasSelected = selectedRow.length > 0;
+  //end select row
 
   const handleDelete = async (key) => {
     try {
@@ -105,6 +154,17 @@ function Staff() {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const showModalViewTransfer = () => {
+    setIsModalViewTransferOpen(true);
+  };
+  const handleOkViewTransfer = () => {
+    setIsModalViewTransferOpen(false);
+    onUpdateData();
+  };
+  const handleCancelViewTransfer = () => {
+    setIsModalViewTransferOpen(false);
   };
 
   //search function
@@ -230,7 +290,7 @@ function Staff() {
 
       dataIndex: "code",
       key: "code",
-      width: 90,
+      width: 110,
       ...getColumnSearchProps("code"),
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
@@ -272,7 +332,7 @@ function Staff() {
     },
     {
       title: "Start Time",
-      dataIndex: "start_time",
+      dataIndex: "start_time_format",
       key: "6",
       width: 200,
     },
@@ -298,6 +358,79 @@ function Staff() {
           </Tooltip>
         </>
       ),
+    },
+  ];
+
+  const transfer_columns = [
+    {
+      title: "Code",
+
+      dataIndex: "code",
+      key: "code",
+      width: 110,
+      ...getColumnSearchProps("code"),
+      render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 80,
+
+      render: (status) => {
+        let color;
+        if (status === "Waiting") color = "geekblue";
+        else if (status === "Approved") color = "green";
+        else {
+          color = "red";
+        }
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
+    },
+    {
+      title: "From Warehouse",
+      dataIndex: "fromWarehouse",
+      key: "6",
+      width: 200,
+      ...getColumnSearchProps("fromWarehouse"),
+    },
+
+    {
+      title: "To Warehouse",
+      dataIndex: "toWarehouse",
+      key: "6",
+      width: 200,
+      ...getColumnSearchProps("toWarehouse"),
+    },
+
+    {
+      title: "Create At",
+      dataIndex: "createAt",
+      key: "6",
+      width: 200,
+    },
+    {
+      title: "Action",
+      key: "operation",
+      fixed: "right",
+      width: 120,
+      render: (_, record) => {
+        return (
+          <>
+            <Tooltip key="view" title="View">
+              <a
+                onClick={() => {
+                  viewTransfer(record.employeeList);
+                  setSelectTransferId(record.key);
+                  setSelectTransferStatus(record.status);
+                }}
+              >
+                {<PiEyeBold size={24} color="#85dcea" />}
+              </a>
+            </Tooltip>
+          </>
+        );
+      },
     },
   ];
 
@@ -367,41 +500,73 @@ function Staff() {
         isFetching={isFetching}
         onUpdateData={onUpdateData}
       />
-      {/* <Modal
-        footer={null}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <UpdateEmployeeForm
-          isModalOpen={isModalOpen}
-          handleCancelButton={handleCancel}
-          handleOkButton={handleOk}
-          onUpdateData={onUpdateData}
-        />
-      </Modal>
-      <Table
-        bordered
-        loading={isFetching}
-        style={{ marginTop: "10px", maxWidth: "85vw" }}
-        columns={user_columns}
-        dataSource={usersList?.map((user, index) => {
-          return {
-            key: user._id,
-            id: index + 1,
-            employee_name: user.employeeId.name,
-            role: user.isEmployee ? "Employee" : "Manager",
-            user_name: user.username,
-          };
-        })}
-        pagination={{
-          showQuickJumper: true,
-          total: usersList?.length,
-        }}
-        scroll={{
-          y: "60vh",
-        }}
-      /> */}
+    </div>
+  );
+
+  const transfer_send = (
+    <div
+      style={{
+        width: "100%",
+      }}
+    >
+      <EmployeeTransferForm
+        isModalOpen={isModalViewTransferOpen}
+        employeeList={formDataTransfer}
+        handleCancelButton={handleCancelViewTransfer}
+        handleOkButton={handleOkViewTransfer}
+        onUpdateData={onUpdateData}
+        type="view"
+        transferId={selectTransferId}
+        isTransferSendScreen={
+          currentTab === "4" || selectTransferStatus !== "Waiting"
+            ? true
+            : false
+        }
+      />
+      <CustomTable
+        isFetching={isFetching}
+        marginTop={5}
+        title="View Transfer"
+        columns={transfer_columns}
+        dataSource={transfersList
+          ?.filter((transfer) => {
+            if (currentTab === "4") {
+              return (
+                transfer.fromWarehouse._id === userWarehouseId &&
+                transfer.products.length === 0
+              );
+            } else
+              return (
+                transfer.toWarehouse._id === userWarehouseId &&
+                transfer.products.length === 0
+              );
+          })
+          .map((transfer) => {
+            let status;
+            if (transfer.isAccepted === true) {
+              status = "Approved";
+            } else if (transfer.isAccepted === false) {
+              status = "Reject";
+            } else {
+              status = "Waiting";
+            }
+
+            return {
+              key: transfer._id,
+              code: transfer.code,
+              status: status,
+
+              toWarehouse:
+                transfer.toWarehouse.code + " - " + transfer.toWarehouse.name,
+              employeeList: transfer.employees,
+              fromWarehouse:
+                transfer.fromWarehouse.code +
+                " - " +
+                transfer.fromWarehouse.name,
+              createAt: dayjs(transfer.createAt).format("DD-MM-YYYY HH:mm:ss"),
+            };
+          })}
+      />
     </div>
   );
 
@@ -417,95 +582,7 @@ function Staff() {
         type={2}
         page={"employee"}
       ></ToolBar>
-      {/* <ConfigProvider
-        theme={{
-          components: {
-            Table: {
-              headerBg: "#6c7ae0",
-              headerColor: "white",
-              rowHoverBg: "#bae0ff",
-            },
-            Modal: {
-              titleFontSize: 24,
-              headerBg: "rgba(156, 188, 235, 1)",
-              paddingLG: 0,
-              padding: 0,
-            },
-          },
-        }}
-      >
-        <Modal
-          style={{
-            top: 20,
-          }}
-          title={
-            <p
-              style={{
-                marginLeft: "24px",
-                fontWeight: 500,
-                fontSize: 24,
-                padding: "16px 0px",
-              }}
-            >
-              Update Warehouse
-            </p>
-          }
-          closeIcon={
-            <CloseOutlined
-              style={{
-                fontSize: "25px",
-                paddingTop: "20px",
-                paddingRight: "20px",
-                color: "white",
-              }}
-            />
-          }
-          footer={null}
-          open={isModalOpen}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        >
-          <UpdateEmployeeForm
-            isModalOpen={isModalOpen}
-            handleCancelButton={handleCancel}
-            handleOkButton={handleOk}
-            onUpdateData={onUpdateData}
-            formData={formData}
-          />
-        </Modal>
-        <Table
-          bordered
-          loading={isFetching}
-          style={{ marginTop: "10px", maxWidth: "85vw" }}
-          columns={employee_columns}
-          dataSource={managersList?.map((employee) => {
-            return {
-              key: employee._id,
-              code: employee.code,
-              name: employee.name,
-              type: employee.position,
-              address: employee.contactId.address,
-              phone_num: employee.contactId.phone_num,
-              email: employee.contactId.email,
-              idCard: employee.idCard,
-              gender: employee.gender,
-              avatar: employee.imageUrl,
-              warehouse_code: employee.warehouseId?.code,
-              warehouse_id: employee.warehouseId?._id,
-              start_time: employee.startDate,
-              birthday: employee.birthday,
-            };
-          })}
-          pagination={{
-            showQuickJumper: true,
-            total: managersList?.length,
-          }}
-          scroll={{
-            x: 2000,
-            y: "60vh",
-          }}
-        />
-      </ConfigProvider> */}
+
       <CustomTable
         marginTop={5}
         scrollX={1800}
@@ -527,7 +604,10 @@ function Staff() {
             warehouse_id: employee.warehouseId?._id,
             warehouseCodeAndName:
               employee.warehouseId?.code + " - " + employee.warehouseId?.name,
-            start_time: dayjs(employee.startDate).format("DD-MM-YYYY HH:mm:ss"),
+            start_time: employee.startDate,
+            start_time_format: dayjs(employee.startDate).format(
+              "DD-MM-YYYY HH:mm:ss"
+            ),
             birthday: employee.birthday,
           };
         })}
@@ -549,6 +629,9 @@ function Staff() {
     </div>
   );
 
+  console.log("allEmployeonAllWarehouses", allEmployeonAllWarehouses);
+
+  const staff_data = isAdmin ? allEmployeonAllWarehouses : employeeList;
   const staff_employee = (
     <div
       style={{
@@ -558,13 +641,16 @@ function Staff() {
       <ToolBar
         position="Employee"
         onUpdateData={onUpdateData}
-        type={2}
+        type={isManager && !isAdmin ? 3 : 2}
         page={"employee"}
+        employeeSelectionList={selectedRow}
       ></ToolBar>
       <CustomTable
+        scrollX={1500}
+        rowSelection={isAdmin ? null : rowSelection}
         marginTop={5}
         columns={employee_columns}
-        dataSource={employeeList?.map((employee) => {
+        dataSource={staff_data?.map((employee) => {
           return {
             key: employee._id,
             code: employee.code,
@@ -581,7 +667,10 @@ function Staff() {
             warehouseCodeAndName:
               employee.warehouseId?.code + " - " + employee.warehouseId?.name,
             warehouse_id: employee.warehouseId?._id,
-            start_time: dayjs(employee.startDate).format("DD-MM-YYYY HH:mm:ss"),
+            start_time_format: dayjs(employee.startDate).format(
+              "DD-MM-YYYY HH:mm:ss"
+            ),
+            start_time: employee.startDate,
             birthday: employee.birthday,
           };
         })}
@@ -601,53 +690,6 @@ function Staff() {
         onUpdateData={onUpdateData}
         title="Update Employee"
       />
-      {/* <Modal
-        footer={null}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <UpdateEmployeeForm
-          isModalOpen={isModalOpen}
-          handleCancelButton={handleCancel}
-          handleOkButton={handleOk}
-          onUpdateData={onUpdateData}
-          formData={formData}
-        />
-      </Modal>
-      <Table
-        bordered
-        loading={isFetching}
-        style={{ marginTop: "10px", maxWidth: "85vw" }}
-        columns={employee_columns}
-        dataSource={employeeList?.map((employee) => {
-          return {
-            key: employee._id,
-            code: employee.code,
-            name: employee.name,
-            type: employee.position,
-            address: employee.contactId.address,
-            phone_num: employee.contactId.phone_num,
-            email: employee.contactId.email,
-            idCard: employee.idCard,
-            gender: employee.gender,
-            avatar: employee.imageUrl,
-            warehouse_name: employee.warehouseId?.name,
-            warehouse_code: employee.warehouseId?.code,
-            warehouse_id: employee.warehouseId?._id,
-            start_time: employee.startDate,
-            birthday: employee.birthday,
-          };
-        })}
-        pagination={{
-          showQuickJumper: true,
-          total: employeeList?.length,
-        }}
-        scroll={{
-          x: 1800,
-          y: "60vh",
-        }}
-      /> */}
     </div>
   );
 
@@ -660,6 +702,7 @@ function Staff() {
         getAllUsersAccount(user.accessToken, dispatch);
         getAllStaffs(dispatch);
         await getAllWarehouses(dispatch);
+        getAllTransfer(dispatch);
       } catch (e) {
         console.log(e);
       }
@@ -695,53 +738,97 @@ function Staff() {
         >
           {staff_employee}
         </TabPane>
-        <TabPane
-          tab={
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                width: "75.31px",
-              }}
-              onMouseEnter={() => setHoveredTab("2")}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <img
-                src={
-                  currentTab === "2" || hoveredTab === "2"
-                    ? managerIconActive
-                    : managerIcon
-                }
-                alt="warehouses"
-                // style={{ marginRight: 10 }}
-                style={{ width: "30px", height: "30px" }}
-              />
-              MANAGER
-            </span>
-          }
-          key="2"
-        >
-          {staff_manager}
-        </TabPane>
-        <TabPane
-          tab={
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                width: "75.31px",
-              }}
-            >
-              <FaUser size={28} />
-              USER
-            </span>
-          }
-          key="3"
-        >
-          {staff_user}
-        </TabPane>
+
+        {isAdmin ? (
+          <TabPane
+            tab={
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "75.31px",
+                }}
+                onMouseEnter={() => setHoveredTab("2")}
+                onMouseLeave={() => setHoveredTab(null)}
+              >
+                <img
+                  src={
+                    currentTab === "2" || hoveredTab === "2"
+                      ? managerIconActive
+                      : managerIcon
+                  }
+                  alt="warehouses"
+                  style={{ width: "30px", height: "30px" }}
+                />
+                MANAGER
+              </span>
+            }
+            key="2"
+          >
+            {staff_manager}
+          </TabPane>
+        ) : null}
+        {isAdmin ? (
+          <TabPane
+            tab={
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "75.31px",
+                }}
+              >
+                <FaUser size={28} />
+                USER
+              </span>
+            }
+            key="3"
+          >
+            {staff_user}
+          </TabPane>
+        ) : null}
+        {isManager && !isAdmin ? (
+          <TabPane
+            tab={
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  // width: "150px",
+                }}
+              >
+                <MdSend size={28} />
+                TRANSFER SEND
+              </span>
+            }
+            key="4"
+          >
+            {transfer_send}
+          </TabPane>
+        ) : null}
+        {isManager && !isAdmin ? (
+          <TabPane
+            tab={
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  // width: "150px",
+                }}
+              >
+                <MdCallReceived size={28} />
+                TRANSFER RECEIVED
+              </span>
+            }
+            key="5"
+          >
+            {transfer_send}
+          </TabPane>
+        ) : null}
       </Tabs>
     </div>
   );

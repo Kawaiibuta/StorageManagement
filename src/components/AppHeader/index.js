@@ -115,15 +115,6 @@ function AppHeader({ collapsed, setCollapsed }) {
             <Dropdown
               dropdownRender={(_) => (
                 <div style={contentStyle}>
-                  {/* <div class="columnLeft">
-                    <img src={keyIcon} width={80} alt=""></img>
-                    <h3>{user.username}</h3>
-                    <p style={{ fontWeight: "500" }}>
-                      Role:{" "}
-                      {user.isEmployee ? user.employeeId.position : "Admin"}
-                    </p>
-                  </div> */}
-                  {/* <div class="vertical-divider"></div> */}
                   <div class="columnLeft">
                     <h2>User Center</h2>
                     <ConfigProvider
@@ -165,12 +156,7 @@ function AppHeader({ collapsed, setCollapsed }) {
                         type="primary"
                         danger
                         onClick={() => {
-                          logoutUser(
-                            user.id,
-                            user.accessToken,
-                            dispatch,
-                            axiosJWT
-                          );
+                          logoutUser(id, accessToken, dispatch, axiosJWT);
                         }}
                         style={{
                           width: "160px",

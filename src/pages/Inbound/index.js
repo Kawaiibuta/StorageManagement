@@ -2,9 +2,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
 import {
+  Button,
   ConfigProvider,
+  Input,
   Modal,
   Popconfirm,
+  Space,
   Table,
   Tabs,
   Tag,
@@ -19,7 +22,7 @@ import {
   RiEditBoxLine,
   RiPrinterLine,
 } from "react-icons/ri";
-import { CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 import { PiEyeBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -46,6 +49,7 @@ import CustomTable from "../../components/Table/index.js";
 import dayjs from "dayjs";
 import InBoundBill from "../../components/Form/InBoundBill.js";
 import { useReactToPrint } from "react-to-print";
+import Highlighter from "react-highlight-words";
 
 const PrintButton = ({ record }) => {
   const componentRef = useRef();
@@ -89,6 +93,111 @@ function InBound() {
 
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId?.warehouseId;
+
+  //search function
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: "#ffc069",
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
+  //end search
 
   const edit = (record) => {
     setFormData(record);
@@ -177,6 +286,7 @@ function InBound() {
       dataIndex: "ASN",
       key: "ASN",
       width: 120,
+      ...getColumnSearchProps("ASN"),
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
@@ -199,6 +309,7 @@ function InBound() {
       title: "Supplier",
       dataIndex: "supplierCodeAndName",
       key: "supplierCodeAndName",
+      ...getColumnSearchProps("supplierCodeAndName"),
       width: 200,
     },
     {
@@ -211,6 +322,7 @@ function InBound() {
       title: "Creator",
       dataIndex: "creator",
       key: "creator",
+      ...getColumnSearchProps("creator"),
       width: 200,
     },
 
@@ -226,13 +338,6 @@ function InBound() {
       key: "update_time",
       width: 200,
     },
-
-    // {
-    //   title: "Finish at",
-    //   dataIndex: "finish_timestamp",
-    //   key: "finish_timestamp",
-    //   width: 300,
-    // },
 
     {
       title: "Action",
