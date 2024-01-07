@@ -22,9 +22,13 @@
 .italic {
   font-style: italic;
 }
+.flex-grow {
+  flex-grow: 1;
+}
 .v-al-bottom {
   vertical-align: text-bottom;
 }
+
 .Header {
   border-radius: 10px 10px 0px 0px;
   background-color: #d5dcff;
@@ -58,11 +62,29 @@
 .TransactionDetail {
   margin: 20px 0px;
 }
+.ConfirmationInformation {
+  display: flex;
+  flex-direction: row;
+}
+.Signature {
+  padding: 15px 20px;
+  border-radius: 10px;
+  vertical-align: middle;
+  flex-grow: 2;
+  display: flex;
+  flex-direction: row;
+  height: 250px;
+}
+.ASign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .TotalPrice {
   padding: 15px 20px;
   border-radius: 10px;
-
   vertical-align: middle;
+  flex-grow: 1;
 }
 
 :where(.css-dev-only-do-not-override-1w3obg2) .ant-modal .ant-modal-content {

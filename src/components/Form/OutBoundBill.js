@@ -148,7 +148,6 @@ const OutBoundBill = React.forwardRef(({ formData }, ref) => {
                 bordered
                 style={{
                   marginTop: "10px",
-                  maxWidth: "80vw",
                   textAlign: "center",
                 }}
                 columns={outbound_detail_columns}
@@ -171,33 +170,44 @@ const OutBoundBill = React.forwardRef(({ formData }, ref) => {
             </ConfigProvider>
           </div>
         </div>
-        <div className="TotalPrice">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "end",
-              alignItems: "flex-end",
-            }}
-          >
-            <span className="fs-24 bold" style={{ marginRight: "10px" }}>
-              Total:
-            </span>
+        <div className="ConfirmationInformation">
+          <div className="Signature">
+            <div className="flex-grow ASign">
+              <span className="fs-20 bold">Employee</span>
+              <span className="fs-14 italic">{"(Sign, full name)"}</span>
+            </div>
+            <div className="flex-grow ASign">
+              <span className="fs-20 bold">Customer</span>
+              <span className="fs-14 italic">{"(Sign, full name)"}</span>
+            </div>
+          </div>
+          <div className="TotalPrice">
             <div
               style={{
-                width: "200px",
-                height: "40px",
-                fontSize: "32px",
-                backgroundColor: "lightgray",
-                borderRadius: "10px",
-                display: "inline",
-                fontWeight: "bold",
-                fontStyle: "italic",
-                textAlign: "right",
-                paddingRight: "10px",
-                paddingBottom: "5px",
+                display: "flex",
+                justifyContent: "end",
               }}
             >
-              {formData?.total_value}
+              <span className="fs-20 bold" style={{ marginRight: "10px" }}>
+                Total:
+              </span>
+              <div
+                style={{
+                  width: "200px",
+                  height: "40px",
+                  fontSize: "32px",
+                  backgroundColor: "lightgray",
+                  borderRadius: "10px",
+                  display: "inline",
+                  fontWeight: "bold",
+                  fontStyle: "italic",
+                  textAlign: "right",
+                  paddingRight: "10px",
+                  paddingBottom: "5px",
+                }}
+              >
+                {formData?.total_value}
+              </div>
             </div>
           </div>
         </div>

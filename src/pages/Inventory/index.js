@@ -194,16 +194,13 @@ function Inventory() {
       }}
     >
       <ToolBar onUpdateData={onUpdateData} type={2} page={"report"}></ToolBar>
-      {/* <InventoryReport
+      <InventoryReport
         isModalOpen={isModalOpen}
         handleCancelButton={handleCancel}
         handleOkButton={handleOk}
         onUpdateData={onUpdateData}
         formData={formData}
-      ></InventoryReport> */}
-      <InventoryReportBill>
-        
-      </InventoryReportBill>
+      ></InventoryReport>
       <CustomTable
         columns={report_columns}
         dataSource={dataSource?.map((report) => {

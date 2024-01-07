@@ -4,54 +4,54 @@ import { ConfigProvider, Table } from "antd";
 import { useSelector } from "react-redux";
 import { getWarehouseById } from "../../redux/apiRequest";
 
-const report_columns = [
+const export_warehouses_columns = [
   {
     title: "Code",
-
     dataIndex: "code",
-    width: 150,
     key: "code",
+    width: 80,
     render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
   },
   {
-    title: "Total Actual Quantity",
-    dataIndex: "totalActualQuantity",
-    key: "totalActualQuantity",
+    title: "Warehouse Name",
+    width: 200,
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "Warehouse Address",
+    dataIndex: "address",
+    key: "address",
     width: 200,
   },
   {
-    title: "Total Difference Quantity",
-    dataIndex: "totalDiffQuantity",
-    key: "totalDiffQuantity",
+    title: "Warehouse Contact",
+    dataIndex: "phone_num",
+    key: "phone_num",
+    width: 150,
+  },
+  {
+    title: "Warehouse Manager",
+    dataIndex: "managerCodeAndName",
+    key: "managerCodeAndName",
     width: 200,
   },
   {
-    title: "Increase Quantity",
-    dataIndex: "increaseQuantity",
-    key: "increaseQuantity",
-    width: 200,
+    title: "Warehouse Capacity",
+    dataIndex: "capacity",
+    key: "capacity",
+    width: 150,
   },
+
   {
-    title: "Decrease Quantity",
-    dataIndex: "decreaseQuantity",
-    key: "decreaseQuantity",
-    width: 200,
-  },
-  {
-    title: "Created At",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    width: 200,
-  },
-  {
-    title: "Updated At",
-    dataIndex: "updatedAt",
-    key: "updatedAt",
+    title: "Warehouse Description",
+    dataIndex: "description",
+    key: "description",
     width: 200,
   },
 ];
 
-const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
+const ExportWarehouseList = React.forwardRef(({ formData }, ref) => {
   const [warehouse, setWarehouse] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   console.log("formData?bill", formData);
@@ -102,58 +102,23 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
       <div style={{ margin: "16px" }}>
         <div>
           <span style={{ fontSize: "28px" }} className="fs-32 bold">
-            INVENTORY REPORT
+            WAREHOUSE LIST
           </span>
           <span className=" italic fs-14">{formData?.status}</span>
         </div>
         <div className="Info">
           <div className="TransactionInfo">
-            <span className="fs-16 bold">Time of inventory: </span>
-            {/* Thời gian thực hiện kiểm kê - chỗ này để ghi?*/}
-            <br />
-            <span className="fs-16 bold">Created at: </span>
+            <span className="fs-16 bold">Export at: </span>
             <span className="fs-14 italic">{formData?.create_time}</span>
-            {/* Thời gian người tạo kiểm kê lên hệ thống? */}
             <br></br>
-            <span className="fs-16 bold italic">
-              Prepared by: {formData?.creatorName}
-            </span>
-            {/* Người tạo kiểm kê lên hệ thống? */}
-          </div>
-          <div className="WarehouseInfo">
-            <span className="fs-20 bold">
-              Warehouse: {warehouse ? warehouse.name : ""}
+            <span className="fs-16 bold">Export by: </span>
+            <span className="fs-14 italic">{formData?.currentUser}</span>
+            <br></br>
+            <span className="fs-16 bold">Warehouse Count:</span>
+            <span className="fs-14 italic">
+              {/* number of supplier (có bao nhiêu nhân viên ... */}
             </span>
             <br></br>
-            <span className="fs-12 italic">
-              {warehouse ? warehouse.id : ""}
-            </span>
-            <br></br>
-            <span className="fs-12 italic">
-              {warehouse ? warehouse.contactId.address : ""}
-            </span>
-            <br></br>
-            <span className="fs-12 italic">
-              {warehouse
-                ? warehouse.contactId.phone_num +
-                  " - " +
-                  warehouse.contactId.email
-                : ""}
-            </span>
-          </div>
-          <div className="EmployeeInfo">
-            <span className="fs-20 bold">
-              Inventory Employee:
-              {/* Nhân viên kiểm kê*/}
-            </span>
-            <br></br>
-            <span className="fs-12 italic">
-              {/*employee id - Mã nhân viên */}
-            </span>
-            <br></br>
-            <span className="fs-12 italic">
-              {/* employee phone_num + email - Thông tin liên lạc của nhân viên */}
-            </span>
           </div>
         </div>
 
@@ -174,7 +139,7 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
                   marginTop: "10px",
                   textAlign: "center",
                 }}
-                columns={report_columns}
+                columns={export_warehouses_columns}
                 dataSource={formData?.trans_details.map((detail, i) => {
                   const product = goodsList.find(
                     (goods) => goods._id === detail.productId
@@ -194,26 +159,9 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
             </ConfigProvider>
           </div>
         </div>
-        <div className="ConfirmationInformation">
-          <div className="Signature">
-            <div className="flex-grow ASign">
-              <span className="fs-16 bold">General Director</span>
-              <span className="fs-14">
-                {"(Opinions to  resolve the difference)"}
-              </span>
-              <span className="fs-14 italic">{"(Sign, full name)"}</span>
-            </div>
-            <div className="flex-grow ASign">
-              <span className="fs-16 bold">
-                Head of the inventory department
-              </span>
-              <span className="fs-14 italic">{"(Sign, full name)"}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
 });
 
-export default InventoryReportBill;
+export default ExportWarehouseList;
