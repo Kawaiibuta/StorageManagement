@@ -50,6 +50,11 @@
   padding-left: 10px;
   flex-grow: 1;
 }
+.EmployeeInfo {
+  border-left: 1px solid black;
+  padding-left: 10px;
+  flex-grow: 1;
+}
 .TransactionDetail {
   margin: 20px 0px;
 }

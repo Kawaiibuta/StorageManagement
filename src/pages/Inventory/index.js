@@ -20,6 +20,8 @@ import CustomTable from "../../components/Table/index.js";
 import dayjs from "dayjs";
 import { RiPrinterLine } from "react-icons/ri";
 import InventoryReport from "../../components/Form/InventoryReport.js";
+import InBoundBill from "../../components/Form/InBoundBill.js";
+import InventoryReportBill from "../../components/Form/InventoryReportBill.js";
 
 function inventory_item(
   product_id,
@@ -239,13 +241,16 @@ function Inventory() {
       }}
     >
       <ToolBar onUpdateData={onUpdateData} type={2} page={"report"}></ToolBar>
-      <InventoryReport
+      {/* <InventoryReport
         isModalOpen={isModalOpen}
         handleCancelButton={handleCancel}
         handleOkButton={handleOk}
         onUpdateData={onUpdateData}
         formData={formData}
-      ></InventoryReport>
+      ></InventoryReport> */}
+      <InventoryReportBill>
+        
+      </InventoryReportBill>
       <CustomTable
         columns={report_columns}
         dataSource={dataSource?.map((report) => {
