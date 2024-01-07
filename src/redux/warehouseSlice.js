@@ -7,6 +7,7 @@ const warehouseSlice = createSlice({
       allWarehouses: null,
       isFetching: false,
       error: false,
+      transfers: null,
     },
     msg: "",
   },
@@ -14,6 +15,7 @@ const warehouseSlice = createSlice({
     getAllWarehouseStart: (state) => {
       state.warehouse.isFetching = true;
     },
+
     getAllWarehouseSuccess: (state, action) => {
       state.warehouse.isFetching = false;
       state.warehouse.allWarehouses = action.payload;
@@ -49,6 +51,13 @@ const warehouseSlice = createSlice({
       state.warehouse.error = true;
       state.msg = action.payload;
     },
+    getAllTransferStart: (state) => {
+      state.warehouse.isFetching = true;
+    },
+    getAllTransferSuccess: (state, action) => {
+      state.warehouse.isFetching = false;
+      state.warehouse.transfers = action.payload;
+    },
   },
 });
 
@@ -62,6 +71,8 @@ export const {
   editWarehouseError,
   editWarehouseStart,
   editWarehouseSuccess,
+  getAllTransferStart,
+  getAllTransferSuccess,
 } = warehouseSlice.actions;
 
 export default warehouseSlice.reducer;

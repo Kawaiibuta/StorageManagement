@@ -18,6 +18,14 @@
   border-left: none;
   border-radius: 0px 10px 10px 0px;
 }
+
+.two-three {
+  width: 120px;
+  height: 40px;
+  background-color: white;
+  border-left: none;
+  border-radius: 0px 10px 10px 0px;
+}
 .two-one:hover,
 .two-two:hover,
 .one {

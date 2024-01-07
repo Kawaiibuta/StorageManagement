@@ -73,6 +73,10 @@ p {
   font-weight: 500;
 }
 
+:where(.css-dev-only-do-not-override-1w3obg2).ant-card .ant-card-body {
+  padding: 0 16px;
+}
+
 @media print {
   html,
   body {

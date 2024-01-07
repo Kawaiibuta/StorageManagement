@@ -15,6 +15,8 @@ function CustomTable({
   title,
   scrollX,
   marginTop,
+  rowSelection,
+  button,
 }) {
   return (
     <ConfigProvider
@@ -71,6 +73,7 @@ function CustomTable({
         {form}
       </Modal>
       <Table
+        rowSelection={rowSelection}
         bordered
         loading={isFetching}
         style={{

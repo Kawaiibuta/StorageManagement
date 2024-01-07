@@ -46,9 +46,6 @@ const OutBoundBill = React.forwardRef(({ formData }, ref) => {
     customerContactId = customer.contactId;
   }
   console.log("warehouse", warehouse);
-  if (isFetching) {
-    return null;
-  }
 
   const outbound_detail_columns = [
     {
@@ -76,6 +73,9 @@ const OutBoundBill = React.forwardRef(({ formData }, ref) => {
       width: 100,
     },
   ];
+  if (isFetching) {
+    return null;
+  }
 
   return (
     <div ref={ref}>

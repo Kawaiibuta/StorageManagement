@@ -14,8 +14,11 @@ function NewUserForm({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.login?.currentUser);
   const usersList = useSelector((state) => state.employee.user?.allUsers);
   const allStaffsList = useSelector((state) => state.employee.staff?.allStaffs);
+
+  console.log("allstaff", usersList);
 
   const tailLayout = {
     wrapperCol: {
@@ -31,7 +34,11 @@ function NewUserForm({
       let staff = allStaffsList?.find((e) => e.code === values.employeeCode);
 
       console.log("emp", staff);
-      await registerEmployeeUser({ employeeId: staff._id }, dispatch);
+      await registerEmployeeUser(
+        { employeeId: staff._id },
+        dispatch,
+        user.accessToken
+      );
       form.resetFields();
       handleOkButton();
       onUpdateData();
@@ -69,22 +76,16 @@ function NewUserForm({
               label={<p>Select Employee</p>}
             >
               <Select
-                options={allStaffsList?.map((employee) => {
-                  const employeeHasAccount = usersList?.find(
-                    (e) => e.employeeId._id === employee._id
-                  );
-                  if (!employeeHasAccount) {
-                    return (
-                      <Select.Option
-                        key={employee._id}
-                        label={employee.code + " - " + employee.name}
-                        value={employee.code}
-                      ></Select.Option>
-                    );
-                  }
-
-                  return null;
-                })}
+                options={
+                  allStaffsList && usersList
+                    ? allStaffsList.map((employee) => {
+                        return {
+                          label: employee.code + " - " + employee.name,
+                          value: employee.code,
+                        };
+                      })
+                    : []
+                }
               ></Select>
             </Form.Item>
             <Form.Item {...tailLayout}>

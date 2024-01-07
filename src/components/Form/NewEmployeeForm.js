@@ -27,6 +27,8 @@ function NewEmployeeForm({
   position,
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
   //antd
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
@@ -75,9 +77,8 @@ function NewEmployeeForm({
       formData.append("email", values.employeeEmail);
       formData.append("phone_num", values.employeePhoneNumber);
       formData.append("address", values.employeeAddress);
-      if (values.employeeWarehouse) {
-        formData.append("warehouseId", values.employeeWarehouse);
-      }
+
+      formData.append("warehouseId", userWarehouseId);
 
       // Append the file to form data
       formData.append("image", values.employeeAvatar.file.originFileObj);
@@ -240,7 +241,7 @@ function NewEmployeeForm({
             >
               <Input placeholder="Employee Email" type="email" />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               labelAlign="left"
               label={<p>&nbsp;Warehouse</p>}
               name="employeeWarehouse"
@@ -260,7 +261,7 @@ function NewEmployeeForm({
                 })}
                 placeholder="Select Warehouse where Employee work"
               ></Select>
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               labelAlign="left"
               name="employeeStartDate"
