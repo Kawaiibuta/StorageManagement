@@ -76,12 +76,11 @@ function NewProductForm({
       // Make the POST request with axios
       await addProduct(formData);
       // console.log(data);
-      setIsLoading(false);
 
-      message.success("Add product success");
       onUpdateData();
       form.resetFields();
       setFileList([]);
+      message.success("Add product success");
 
       handleOkButton();
     } catch (e) {
