@@ -4,47 +4,68 @@ import { ConfigProvider, Table } from "antd";
 import { useSelector } from "react-redux";
 import { getWarehouseById } from "../../redux/apiRequest";
 
-function inbound_detail_item(num, name, quantity, price) {
-  this.num = num;
-  this.name = name;
-  this.quantity = quantity;
-  this.price = price;
-}
-const inbound_detail_dataSource = [
-  new inbound_detail_item(1, "Product1", 2, "600.000"),
-  new inbound_detail_item(2, "Product2", 3, "900.000"),
-  new inbound_detail_item(3, "Product3", 1, "300.000"),
-  new inbound_detail_item(4, "Product4", 5, "1.500.000"),
-  new inbound_detail_item(5, "Product5", 4, "1.200.000"),
-];
-const inbound_detail_columns = [
+const export_goods_columns = [
   {
-    title: "No.",
-    dataIndex: "id",
-    key: "id",
-    width: 60,
+    title: "SKU",
+    width: 110,
+    dataIndex: "sku_code",
+    key: "sku_code",
+    render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
   },
   {
-    title: "Product Name",
-    width: 250,
+    title: "Full Name",
+    width: 200,
     dataIndex: "name",
     key: "name",
   },
   {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity",
+    title: "Supplier",
+    dataIndex: "supplierCodeAndName",
+    key: "supplierCodeAndName",
+    width: 230,
+  },
+  {
+    title: "Image",
+    dataIndex: "image",
+    key: "image",
+    width: 170,
+    render: (text, _) => (
+      <img src={text} style={{ width: "70px" }} alt="product"></img>
+    ),
+  },
+  {
+    title: "Unit",
+    dataIndex: "unit",
+    key: "unit",
     width: 100,
   },
   {
-    title: "Price",
-    dataIndex: "price",
-    key: "price",
+    title: "Specification",
+    dataIndex: "specification",
+    key: "specification",
+    width: 200,
+  },
+  {
+    title: "Maximum Quantity",
+    dataIndex: "maximum_quantity_format",
+    key: "maximum_quantity_format",
     width: 150,
+  },
+  {
+    title: "Price",
+    dataIndex: "price_format",
+    key: "price_format",
+    width: 150,
+  },
+  {
+    title: "Value",
+    dataIndex: "value",
+    key: "value",
+    width: 230,
   },
 ];
 
-const InBoundBill = React.forwardRef(({ formData }, ref) => {
+const ExportProductList = React.forwardRef(({ formData }, ref) => {
   const [warehouse, setWarehouse] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   console.log("formData?bill", formData);
@@ -95,21 +116,28 @@ const InBoundBill = React.forwardRef(({ formData }, ref) => {
       <div style={{ margin: "16px" }}>
         <div>
           <span style={{ fontSize: "28px" }} className="fs-32 bold">
-            INBOUND
+            PRODUCT LIST
           </span>
           <span className=" italic fs-14">{formData?.status}</span>
         </div>
         <div className="Info">
           <div className="TransactionInfo">
-            <span className="fs-16 bold">Order at: </span>
+            <span className="fs-16 bold">Export at: </span>
             <span className="fs-14 italic">{formData?.create_time}</span>
             <br></br>
-            <span className="fs-16 bold">Finish at:</span>
-            <span className="fs-14 italic"> {formData?.update_time}</span>
+            <span className="fs-16 bold">Export by: </span>
+            <span className="fs-14 italic">{formData?.currentUser}</span>
             <br></br>
-            <span className="fs-16 bold italic">
-              Prepared by {formData?.creatorName}
+            <span className="fs-16 bold">Product Count:</span>
+            <span className="fs-14 italic">
+              {/* number of product (có bao nhiêu mặt hàng (kp số lượng mặt hàng)) ... */}
             </span>
+            <br></br>
+            <span className="fs-16 bold">Total Value:</span>
+            <span className="fs-14 italic">
+              {/* total of value of at the time */}
+            </span>
+            <br></br>
           </div>
           <div className="WarehouseInfo">
             <span className="fs-20 bold">
@@ -126,22 +154,6 @@ const InBoundBill = React.forwardRef(({ formData }, ref) => {
                   " - " +
                   warehouse.contactId.email
                 : ""}
-            </span>
-          </div>
-          <div className="PartnerInfo">
-            <span className="fs-20 bold">
-              Supplier: {formData?.supplierName}
-            </span>
-            <br></br>
-            <span className="fs-12 italic">
-              {supplierContactId ? supplierContactId.address : ""}
-            </span>
-            <br></br>
-            <span className="fs-12 italic">
-              {supplierContactId
-                ? supplierContactId.phone_num + " - " + supplierContactId.email
-                : ""}
-              {}
             </span>
           </div>
         </div>
@@ -163,7 +175,7 @@ const InBoundBill = React.forwardRef(({ formData }, ref) => {
                   marginTop: "10px",
                   textAlign: "center",
                 }}
-                columns={inbound_detail_columns}
+                columns={export_goods_columns}
                 dataSource={formData?.trans_details.map((detail, i) => {
                   const product = goodsList.find(
                     (goods) => goods._id === detail.productId
@@ -183,50 +195,9 @@ const InBoundBill = React.forwardRef(({ formData }, ref) => {
             </ConfigProvider>
           </div>
         </div>
-        <div className="ConfirmationInformation">
-          <div className="Signature">
-            <div className="flex-grow ASign">
-              <span className="fs-20 bold">Employee</span>
-              <span className="fs-14 italic">{"(Sign, full name)"}</span>
-            </div>
-            <div className="flex-grow ASign">
-              <span className="fs-20 bold">Supplier</span>
-              <span className="fs-14 italic">{"(Sign, full name)"}</span>
-            </div>
-          </div>
-          <div className="TotalPrice">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "end",
-              }}
-            >
-              <span className="fs-20 bold" style={{ marginRight: "10px" }}>
-                Total:
-              </span>
-              <div
-                style={{
-                  width: "200px",
-                  height: "40px",
-                  fontSize: "32px",
-                  backgroundColor: "lightgray",
-                  borderRadius: "10px",
-                  display: "inline",
-                  fontWeight: "bold",
-                  fontStyle: "italic",
-                  textAlign: "right",
-                  paddingRight: "10px",
-                  paddingBottom: "5px",
-                }}
-              >
-                {formData?.total_value}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
 });
 
-export default InBoundBill;
+export default ExportProductList;
