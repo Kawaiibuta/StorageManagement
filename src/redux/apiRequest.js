@@ -469,6 +469,16 @@ export const addInventoryReport = async (data) => {
   );
 };
 
+export const changePassword = async (data, accessToken) => {
+  await axios.post(
+    `https://warehousemanagement.onrender.com/api/auth/changePassword`,
+    data,
+    {
+      headers: { token: `Bearer ${accessToken}` },
+    }
+  );
+};
+
 // export const deleteUser = async (userId) => {
 
 //   const res = await axios.get(

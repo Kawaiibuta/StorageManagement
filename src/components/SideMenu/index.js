@@ -23,15 +23,15 @@ export default function SideMenu({ collapsed }) {
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState("/");
   const user = useSelector((state) => state.auth.login?.currentUser);
-  const isAdmin = !user.isEmployee;
-  const isManager = user.employeeId.position === "Manager";
+  const isAdmin = !user?.isEmployee;
+  const isManager = user?.employeeId.position === "Manager";
 
   const items = [
     dividerItem,
     isAdmin
       ? null
       : {
-          key: "/",
+          key: "/dashboard",
           icon: <MdAutoGraph />,
           label: "Dashboard",
         },
@@ -138,7 +138,7 @@ export default function SideMenu({ collapsed }) {
           selectedKeys={[selectedKeys]}
           defaultSelectedKeys={["1"]}
           style={{ fontWeight: 500 }}
-          items={items}
+          items={items.filter((item) => item !== null)}
           onClick={(item) => {
             navigate(item.key);
           }}

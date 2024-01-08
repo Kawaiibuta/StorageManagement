@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
 import { Typography } from "antd";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const onFinish = (values) => {
   console.log("Success:", values);
@@ -11,7 +13,7 @@ const onFinishFailed = (errorInfo) => {
 };
 
 function ForgotPassword() {
-  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
   return (
     <Form
       layout="vertical"
@@ -41,11 +43,7 @@ function ForgotPassword() {
         Forgot Password
       </Typography>
       <Form.Item label={<p className="label">Email</p>} name="email">
-        <Input
-          size="large"
-          placeholder="Enter Your Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <Input type="email" size="large" placeholder="Enter Your Email" />
       </Form.Item>
       <Form.Item>
         <ConfigProvider
@@ -65,6 +63,15 @@ function ForgotPassword() {
           >
             Send
           </Button>
+
+          <a
+            style={{ color: "white" }}
+            onClick={() => {
+              navigate("/auth/login");
+            }}
+          >
+            Go back to Login Form!
+          </a>
         </ConfigProvider>
       </Form.Item>
     </Form>
