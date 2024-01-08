@@ -20,6 +20,8 @@ import CustomTable from "../../components/Table/index.js";
 import dayjs from "dayjs";
 import { RiPrinterLine } from "react-icons/ri";
 import InventoryReport from "../../components/Form/InventoryReport.js";
+import InBoundBill from "../../components/Form/InBoundBill.js";
+import InventoryReportBill from "../../components/Form/InventoryReportBill.js";
 
 function inventory_item(
   product_id,
