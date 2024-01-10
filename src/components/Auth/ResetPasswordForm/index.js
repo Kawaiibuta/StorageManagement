@@ -1,39 +1,26 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Checkbox, Typography, message } from "antd";
+import { Typography, message } from "antd";
 import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { loginUser } from "../../../redux/apiRequest";
-import ForgotPassword from "../ForgotPassword";
+
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const onFinish = (values) => {
   console.log("Success:", values);
 };
 
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
-
-function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
+function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userId = user._id;
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const newUser = {
-      username: username,
-      password: password,
-    };
+
     try {
-      await loginUser(newUser, dispatch);
-      navigate("/");
     } catch (e) {
       console.log(e);
       message.error(
@@ -53,7 +40,6 @@ function Login() {
         remember: true,
       }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
       <img
@@ -71,49 +57,44 @@ function Login() {
           marginBottom: 10,
         }}
       >
-        Login
+        Reset password
       </Typography>
       <Form.Item
+        label={<p className="label">New Password</p>}
+        name="password"
         rules={[
           {
             required: true,
-            message: "Please input your username!",
+            message: " Please fill confirm password!",
           },
         ]}
-        label={<p className="label">Username</p>}
-        name="username"
       >
-        <Input
-          size="large"
-          placeholder="Enter Username"
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <Input.Password placeholder="New password" />
       </Form.Item>
 
+      {/* Field */}
       <Form.Item
+        label={<p className="label">Confirm Password</p>}
+        name="password2"
+        dependencies={["password"]}
         rules={[
           {
             required: true,
-            message: "Please input your password!",
+            message: "Please fill confirm password!",
           },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                new Error("The new password that you entered do not match!")
+              );
+            },
+          }),
         ]}
-        label={<p className="label">Password</p>}
-        name="password"
       >
-        <Input.Password
-          size="large"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item>
-        <a
-          onClick={() => navigate("/auth/forgot")}
-          style={{ color: "white", fontSize: "14px" }}
-          className="login-form-forgot"
-        >
-          Forgot password
-        </a>
+        <Input.Password placeholder="Confirm New Password" />
       </Form.Item>
       <Form.Item>
         <ConfigProvider
@@ -132,7 +113,7 @@ function Login() {
             type="default"
             htmlType="submit"
           >
-            Sign in
+            Confirm
           </Button>
         </ConfigProvider>
       </Form.Item>
@@ -140,4 +121,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ResetPassword;

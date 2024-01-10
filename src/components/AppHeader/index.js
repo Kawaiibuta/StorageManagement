@@ -72,12 +72,12 @@ const DescriptionItem = ({ title, content }) => (
   </div>
 );
 
-function AppHeader({ collapsed, setCollapsed, setIsLogin }) {
+function AppHeader({ collapsed, setCollapsed }) {
   const [open, setOpen] = useState([false, false]);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
-  const [isFetching, setIsFetching] = useState(null);
+
   const [isButtonLoading, setButtonLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
@@ -167,14 +167,12 @@ function AppHeader({ collapsed, setCollapsed, setIsLogin }) {
 
   useEffect(() => {
     async function fetchData() {
-      setIsFetching(true);
       try {
         const res = await getCurrentEmployeeInfo(user?.employeeId._id);
         setUserData(res.data);
       } catch (e) {
         console.log(e);
       }
-      setIsFetching(false);
     }
     fetchData();
   }, [isButtonLoading]);

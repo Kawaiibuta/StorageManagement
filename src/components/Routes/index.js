@@ -16,6 +16,7 @@ import AppHeader from "../AppHeader";
 import Home from "../../pages/Home";
 import ForgotPassword from "../Auth/ForgotPassword";
 import Login from "../Auth/Login";
+import ResetPassword from "../Auth/ResetPasswordForm";
 
 function AppRoutes() {
   const [collapsed, setCollapsed] = useState(false);
@@ -42,6 +43,7 @@ function AppRoutes() {
       <Route path="auth" element={<Authentication />}>
         <Route path="login" element={<Login />}></Route>
         <Route path="forgot" element={<ForgotPassword />}></Route>
+        <Route path="reset/:id" element={<ResetPassword />}></Route>
       </Route>
     </Routes>
   );
