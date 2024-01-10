@@ -1,12 +1,19 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import "./style.css";
-import { Button, Form, Input, ConfigProvider } from "antd";
+import { Button, Form, Input, ConfigProvider, message } from "antd";
 import { Typography } from "antd";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { forgotPassword } from "../../../redux/apiRequest";
 
-const onFinish = (values) => {
-  console.log("Success:", values);
+const onFinish = async (values) => {
+  try {
+    console.log("Success:", values);
+    const res = await forgotPassword({ email: values.email });
+    message.success(res);
+  } catch (error) {
+    message.error(error.response.data);
+  }
 };
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
@@ -63,15 +70,17 @@ function ForgotPassword() {
           >
             Send
           </Button>
-
-          <a
-            style={{ color: "white" }}
+          <Button
+            style={{ fontWeight: "bold", color: "white", marginTop: "10px" }}
+            block
+            size="large"
+            type="default"
             onClick={() => {
               navigate("/auth/login");
             }}
           >
-            Go back to Login Form!
-          </a>
+            Go back
+          </Button>
         </ConfigProvider>
       </Form.Item>
     </Form>
