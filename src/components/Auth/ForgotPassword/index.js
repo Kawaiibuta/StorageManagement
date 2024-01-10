@@ -79,7 +79,7 @@ function ForgotPassword() {
               navigate("/auth/login");
             }}
           >
-            Go back
+            Back to LOGIN
           </Button>
         </ConfigProvider>
       </Form.Item>

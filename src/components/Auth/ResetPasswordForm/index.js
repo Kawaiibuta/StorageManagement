@@ -4,23 +4,30 @@ import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
 import { useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { resetPassword } from "../../../redux/apiRequest";
 
 const onFinish = (values) => {
   console.log("Success:", values);
 };
 
-function ResetPassword() {
-  const [isLoading, setIsLoading] = useState(false);
-  const user = useSelector((state) => state.auth.login?.currentUser);
-  const userId = user._id;
+const onFinishFailed = (errorInfo) => {
+  console.log("Failed:", errorInfo);
+};
 
-  const handleLogin = async (e) => {
+function ResetPassword() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const { id } = useParams();
+
+  const handleReset = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
+      const res = await resetPassword({ password: password }, id);
+      message.success(res.message);
     } catch (e) {
       console.log(e);
       message.error(
@@ -33,7 +40,7 @@ function ResetPassword() {
   };
   return (
     <Form
-      onSubmitCapture={handleLogin}
+      onSubmitCapture={handleReset}
       layout="vertical"
       className="loginForm"
       initialValues={{
@@ -65,11 +72,14 @@ function ResetPassword() {
         rules={[
           {
             required: true,
-            message: " Please fill confirm password!",
+            message: " Please fill new password!",
           },
         ]}
       >
-        <Input.Password placeholder="New password" />
+        <Input.Password
+          placeholder="New password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </Form.Item>
 
       {/* Field */}
@@ -114,6 +124,17 @@ function ResetPassword() {
             htmlType="submit"
           >
             Confirm
+          </Button>
+          <Button
+            style={{ fontWeight: "bold", color: "white", marginTop: "10px" }}
+            block
+            size="large"
+            type="default"
+            onClick={() => {
+              navigate("/auth/login");
+            }}
+          >
+            Back to LOGIN
           </Button>
         </ConfigProvider>
       </Form.Item>

@@ -487,6 +487,15 @@ export const forgotPassword = async (data) => {
   return res.data;
 };
 
+export const resetPassword = async (data, userId) => {
+  const res = await axios.post(
+    `https://warehousemanagement.onrender.com/api/auth/resetPassword/${userId}`,
+    data
+  );
+  console.log(res.data);
+  return res.data;
+};
+
 // export const deleteUser = async (userId) => {
 
 //   const res = await axios.get(
