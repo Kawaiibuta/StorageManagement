@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { getWarehouseById } from "../../redux/apiRequest";
+
 import "./dashboard.css";
 // import { Gauge } from "@ant-design/charts";
 // import { Column } from "@ant-design/plots";
@@ -14,7 +17,8 @@ import {
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
-import { Table } from "antd";
+import { Table, Tabs } from "antd";
+import { useDispatch, useSelector } from "react-redux";
 
 ChartJS.register(
   ArcElement,
@@ -25,167 +29,30 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+const { TabPane } = Tabs;
 function Dashboard() {
-  //Thuộc tinh của TransactionToday
-  const data1 = {
-    labels: ["Nums of Transactions"],
-    datasets: [
-      {
-        label: "Poll",
-        data: [270, 20], //chỗ này là số đầu thể hiện số lượng, số sau thể hiện phần còn lại để đạt tối đa quy định => x và 100%-x
-        borderWidth: 1,
-        borderColor: "black",
-        circumference: 180,
-        rotation: 270,
-        cutout: "70%",
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) {
-            return null;
-          }
-          if (context.dataIndex == 0) {
-            return getGradient(chart);
-          } else {
-            return "black";
-          }
-        },
-      },
-    ],
-  };
-  const options1 = {
-    plugins: {
-      legend: {
-        display: false,
-        width: 200,
-        height: 170,
-      },
-      gaugeText: {
-        text: "270", //Đây để truyền số Transactions
-      },
-    },
-  };
-  //Thuộc tinh của Inbound
-  const data2 = {
-    labels: ["Nums of Inbound"],
-    datasets: [
-      {
-        data: [150, 10], //chỗ này là số đầu thể hiện số lượng, số sau thể hiện phần còn lại để đạt tối đa quy định => x và 100%-x
-        borderWidth: 1,
-        borderColor: "black",
-        circumference: 180,
-        rotation: 270,
-        cutout: "70%",
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) {
-            return null;
-          }
-          if (context.dataIndex == 0) {
-            return getGradient(chart);
-          } else {
-            return "black";
-          }
-        },
-      },
-    ],
-  };
-  const options2 = {
-    plugins: {
-      legend: {
-        display: false,
-        width: 200,
-        height: 170,
-      },
-      gaugeText: {
-        text: "150", //Đây để truyền số Transactions
-      },
-    },
-  };
-  //Thuộc tinh của Outbound
-  const data3 = {
-    labels: ["Nums of Outbound"],
-    datasets: [
-      {
-        label: "Poll",
-        data: [120, 10], //chỗ này là số đầu thể hiện số lượng, số sau thể hiện phần còn lại để đạt tối đa quy định => x và 100%-x
-        borderWidth: 1,
-        borderColor: "black",
-        circumference: 180,
-        rotation: 270,
-        cutout: "70%",
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) {
-            return null;
-          }
-          if (context.dataIndex == 0) {
-            return getGradient(chart);
-          } else {
-            return "black";
-          }
-        },
-      },
-    ],
-  };
-  const options3 = {
-    plugins: {
-      legend: {
-        display: false,
-        width: 200,
-        height: 170,
-      },
-      gaugeText: {
-        text: "120", //Đây để truyền số Transactions
-      },
-    },
-  };
-  //Thuộc tinh của ActivPartners
-  const data4 = {
-    labels: ["Warehouse Capacity"],
-    datasets: [
-      {
-        data: [50, 40], //chỗ này là số đầu thể hiện số lượng, số sau thể hiện phần còn lại để đạt tối đa quy định x và 100%-x
-        borderWidth: 1,
-        borderColor: "black",
-        circumference: 180,
-        rotation: 270,
-        cutout: "70%",
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) {
-            return null;
-          }
-          if (context.dataIndex == 0) {
-            return getGradient2(chart);
-          } else {
-            return "black";
-          }
-        },
-      },
-    ],
-  };
-  const options4 = {
-    plugins: {
-      legend: {
-        display: false,
-        width: 200,
-        height: 170,
-      },
-      gaugeText: {
-        text: "50", //Đây để truyền số Transactions
-      },
-    },
-  };
+  const [selectedType, setSelectedType] = useState("day");
+  const [items, setItems] = useState([]);
+  const [inbound, setInbound] = useState(0);
+  const [outbound, setOutbound] = useState(0);
+  const [inbound_done, setInboundDone] = useState(0);
+  const [inbound_order, setInboundOrder] = useState(0);
+  const [inbound_ship, setInboundShip] = useState(0);
+  const [inbound_return, setInboundReturn] = useState(0);
+  const [outbound_done, setOutboundDone] = useState(0);
+  const [outbound_order, setOutboundOrder] = useState(0);
+  const [outbound_ship, setOutboundShip] = useState(0);
+  const [outbound_return, setOutboundReturn] = useState(0);
+  const [warehouse, setWarehouse] = useState([]);
+  const [manager,setManager] =useState('');
+  const [address,setAddress] = useState('');
   //Thuộc tinh của WarehouseCapacity
   const data5 = {
     labels: ["Warehouse Capacity"],
     datasets: [
       {
-        data: [1900, 100], //chỗ này là số đầu thể hiện phần cap đã sử dụng, số sau thể hiện phần cap trống còn lại => x và 100%-x
+        data: [2000, 1000], //chỗ này là số đầu thể hiện phần cap đã sử dụng, số sau thể hiện phần cap trống còn lại => x và 100%-x
         borderWidth: 1,
         borderColor: "black",
         circumference: 180,
@@ -200,7 +67,7 @@ function Dashboard() {
           if (context.dataIndex == 0) {
             return getGradient2(chart);
           } else {
-            return "black";
+            return "white";
           }
         },
       },
@@ -213,26 +80,6 @@ function Dashboard() {
       },
       gaugeText: {
         text: "1900 in use", //Đây để truyền số cho phần cap đã sử dụng
-      },
-    },
-  };
-  //Thuộc tinh của OrderStatus Graph
-  const data6 = {
-    labels: ["Total", "Released", "Picked", "Packed", "Shipped"],
-    datasets: [
-      {
-        data: [500, 300, 100, 60, 40],
-        backgroundColor: ["yellowgreen", "cyan"],
-        borderColor: "black",
-        borderWidth: 1,
-        barThickness: 50,
-      },
-    ],
-  };
-  const options6 = {
-    plugins: {
-      legend: {
-        display: false,
       },
     },
   };
@@ -252,50 +99,73 @@ function Dashboard() {
       width: "3vw",
     },
   ];
-  //Truyền dữ liệu cho Order Status Today
-  const orderstatus_dataSource = [
+  //Truyền dữ liệu cho Order Status Outbound
+  const orderstatus_dataSource_Outbound = [
     {
-      name: "Total Order",
-      info: "500",
+      name: "Done",
+      info: outbound_done,
     },
     {
-      name: "Released for Picked",
-      info: "300",
+      name: "Return",
+      info: outbound_return,
     },
     {
-      name: "Picked",
-      info: "100",
+      name: "Order",
+      info: outbound_order,
     },
     {
-      name: "Packed",
-      info: "60",
+      name: "Ship",
+      info: outbound_ship,
+    },
+  ];
+  //Truyền dữ liệu cho Order Status Inbound
+  const orderstatus_dataSource_Inbound = [
+    {
+      name: "Done",
+      info: inbound_done,
     },
     {
-      name: "Shipped",
-      info: "40",
+      name: "Return",
+      info: inbound_return,
+    },
+    {
+      name: "Order",
+      info: inbound_order,
+    },
+    {
+      name: "Ship",
+      info: inbound_ship,
     },
   ];
   //Truyền dữ liệu cho Warehouse Status Today
   const warehousestatus_dataSource = [
     {
-      name: "Warehouse Usage",
-      info: "3524",
+      name: "Warehouse Name:",
+      info: warehouse.name,
     },
     {
-      name: "Total Pallet Spaces",
-      info: "3200",
+      name: "Capacity: ",
+      info: warehouse.capacity,
     },
     {
-      name: "Empty Pallet Spaces",
+      name: "Đã lưu trữ",
       info: "724",
     },
     {
-      name: "Capacity%",
+      name: "Còn trống",
       info: "79",
     },
     {
-      name: "Replen Tasks",
-      info: "12",
+      name: "Manager: ",
+      info: manager,
+    },
+    {
+      name: "Address",
+      info: address,
+    },
+    {
+      name: "Status",
+      info: warehouse.isDeleted ? 'Inactive' : 'Active',
     },
   ];
   const gaugeText = {
@@ -343,45 +213,159 @@ function Dashboard() {
     gradientSegment.addColorStop(0, "lime");
     return gradientSegment;
   }
+  const data = {
+    labels: ["Tổng Transaction", "Inbound", "Outbound"],
+    datasets: [
+      {
+        label: "Số lượng",
+        data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
+        backgroundColor: [
+          "rgba(75, 192, 192, 0.6)", // Màu của cột Tổng Transaction
+          "rgba(255, 99, 132, 0.6)", // Màu của cột Inbound
+          "rgba(255, 205, 86, 0.6)", // Màu của cột Outbound
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Cấu hình của biểu đồ
+  const options = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+    scales: {
+      x: [
+        {
+          type: "linear",
+          position: "bottom",
+        },
+      ],
+      y: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+  const handleTabChange = (key) => {
+    // Thực hiện logic thay đổi dữ liệu theo ngày, tháng, năm
+    setSelectedType(key);
+  };
+
+  const fetchtrans = async () => {
+    try {
+      const res = await axios.get(
+        `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/657f1395e25a1ba0b17e6689`
+      );
+      setItems(res.data);
+      const temp = res.data;
+      let inbound_count = 0;
+      let outbound_count = 0;
+      let inbound_done_count = 0;
+      let inbound_order_count = 0;
+      let inbound_return_count = 0;
+      let inbound_ship_count = 0;
+      let outbound_done_count = 0;
+      let outbound_order_count = 0;
+      let outbound_return_count = 0;
+      let outbound_ship_count = 0;
+      temp.forEach((item) => {
+        const key = `${item.type}_${item.status}`;
+        if (item.type === "Inbound") {
+          inbound_count++;
+        } else if (item.type === "Outbound") {
+          outbound_count++;
+        }
+        switch (key) {
+          case "Inbound_Done":
+            inbound_done_count++;
+            break;
+          case "Inbound_Order":
+            inbound_order_count++;
+            break;
+          case "Inbound_Return":
+            inbound_return_count++;
+            break;
+          case "Inbound_Ship":
+            inbound_ship_count++;
+            break;
+          case "Outbound_Done":
+            outbound_done_count++;
+            break;
+          case "Outbound_Order":
+            outbound_order_count++;
+            break;
+          case "Outbound_Return":
+            outbound_return_count++;
+            break;
+          case "Outbound_Ship":
+            outbound_ship_count++;
+            break;
+          default:
+            break;
+        }
+      });
+      setInbound(inbound_count);
+      setOutbound(outbound_count);
+      setInboundDone(inbound_done_count);
+      setInboundOrder(inbound_order_count);
+      setInboundReturn(inbound_return_count);
+      setInboundShip(inbound_ship_count);
+      setOutboundDone(outbound_done_count);
+      setOutboundOrder(outbound_order_count);
+      setOutboundReturn(outbound_return_count);
+      setOutboundShip(outbound_ship_count);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await getWarehouseById(`657f1395e25a1ba0b17e6689`);
+        const temp = res.data;
+        setWarehouse(res.data);
+        setManager(temp.managerId.name);
+        setAddress(temp.contactId.address)
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    fetchData();
+  }, []);
+  
+  useEffect(() => {
+    fetchtrans();
+  }, []);
+  console.log(warehouse);
+  
   return (
     <div className="wrapper">
       <div className="inner">
         <div className="TransactionsToday">
-          <div className="Transactions">
-            <span className="Title">Transactions Today</span>
-            <div className="DoughnutWrapper">
-              <Doughnut
-                data={data1}
-                options={options1}
-                plugins={[gaugeText]}
-              ></Doughnut>
-            </div>
-          </div>
-          <div className="Inbound">
-            <span className="Title">Inbound</span>
-            <div className="DoughnutWrapper">
-              <Doughnut
-                data={data2}
-                options={options2}
-                plugins={[gaugeText]}
-              ></Doughnut>
-            </div>
-          </div>
-          <div className="Outbound">
-            <span className="Title">Outbound</span>
-            <div className="DoughnutWrapper">
-              <Doughnut
-                data={data3}
-                options={options3}
-                plugins={[gaugeText]}
-              ></Doughnut>
-            </div>
-          </div>
+          <h3>Transaction</h3>
+          <Tabs defaultActiveKey={selectedType} onChange={handleTabChange}>
+            <TabPane tab="Theo ngày" key="day">
+              <Bar data={data} options={options} />
+            </TabPane>
+            <TabPane tab="Theo tháng" key="month">
+              <Bar data={data} options={options} />
+            </TabPane>
+            <TabPane tab="Theo năm" key="year">
+              <Bar data={data} options={options} />
+            </TabPane>
+          </Tabs>
         </div>
         <div className="OrderStatus">
           <div className="top">
             <span className="Title" style={{ height: "12%" }}>
-              Order Status Today
+              Order Status Outbound
             </span>
             <Table
               style={{
@@ -391,19 +375,27 @@ function Dashboard() {
                 overflowY: "scroll",
               }}
               columns={table_columns}
-              dataSource={orderstatus_dataSource}
+              dataSource={orderstatus_dataSource_Outbound}
               pagination={false}
               showHeader={false}
               size={"small"}
             />
           </div>
           <div className="bottom padtop">
-            <span className="Title">Order Status Graph</span>
-            <Bar
-              style={{ marginTop: "5vh" }}
-              data={data6}
-              options={options6}
-            ></Bar>
+            <span className="Title">Order Status Inbound</span>
+            <Table
+              style={{
+                height: "85%",
+                width: "90%",
+                border: "solid 1px black",
+                overflowY: "scroll",
+              }}
+              columns={table_columns}
+              dataSource={orderstatus_dataSource_Inbound}
+              pagination={false}
+              showHeader={false}
+              size={"small"}
+            />
           </div>
         </div>
         <div className="WarehouseStatus">
@@ -426,16 +418,6 @@ function Dashboard() {
             />
           </div>
           <div className="bottom divide">
-            <div className="ActivePartners">
-              <span className="Title">Active Partners</span>
-              <div className="DoughnutWrapper">
-                <Doughnut
-                  data={data3}
-                  options={options3}
-                  plugins={[gaugeText]}
-                ></Doughnut>
-              </div>
-            </div>
             <div className="WarehouseCapacity">
               <span className="Title">Warehouse Capacity</span>
               <div className="DoughnutWrapper">
