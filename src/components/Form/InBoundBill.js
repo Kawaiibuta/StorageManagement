@@ -4,19 +4,6 @@ import { ConfigProvider, Table } from "antd";
 import { useSelector } from "react-redux";
 import { getWarehouseById } from "../../redux/apiRequest";
 
-function inbound_detail_item(num, name, quantity, price) {
-  this.num = num;
-  this.name = name;
-  this.quantity = quantity;
-  this.price = price;
-}
-const inbound_detail_dataSource = [
-  new inbound_detail_item(1, "Product1", 2, "600.000"),
-  new inbound_detail_item(2, "Product2", 3, "900.000"),
-  new inbound_detail_item(3, "Product3", 1, "300.000"),
-  new inbound_detail_item(4, "Product4", 5, "1.500.000"),
-  new inbound_detail_item(5, "Product5", 4, "1.200.000"),
-];
 const inbound_detail_columns = [
   {
     title: "No.",

@@ -12,6 +12,7 @@ const ToolBar = ({
   position,
   employeeSelectionList,
   productSelectionList,
+  allInventoryReportData,
 }) => {
   const toolbar = [];
   switch (type) {
@@ -57,6 +58,19 @@ const ToolBar = ({
             page={page}
             employeeSelectionList={employeeSelectionList}
             productSelectionList={productSelectionList}
+          />
+        </div>
+      );
+      break;
+    case 4:
+      toolbar.push(
+        <div>
+          <CustomButton
+            onUpdateData={onUpdateData}
+            className="left"
+            numButtons={4}
+            page={page}
+            allInventoryReportData={allInventoryReportData}
           />
         </div>
       );
