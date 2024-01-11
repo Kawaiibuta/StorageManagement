@@ -17,7 +17,7 @@ import {
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
-import { Table, Tabs } from "antd";
+import { Button, DatePicker, Table, Tabs } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 
 ChartJS.register(
@@ -47,7 +47,46 @@ function Dashboard() {
   const [warehouse, setWarehouse] = useState([]);
   const [manager, setManager] = useState("");
   const [address, setAddress] = useState("");
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
 
+  //Thuộc tinh của WarehouseCapacity
+  const data5 = {
+    labels: ["Warehouse in Used", "Free"],
+    datasets: [
+      {
+        data: [2000, 1000], //chỗ này là số đầu thể hiện phần cap đã sử dụng, số sau thể hiện phần cap trống còn lại => x và 100%-x
+        borderWidth: 1,
+        borderColor: "black",
+        circumference: 230,
+        rotation: 245,
+        cutout: "75%",
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) {
+            return null;
+          }
+          if (context.dataIndex == 0) {
+            return getGradient(chart);
+          } else {
+            return "#f5f5f5";
+          }
+        },
+      },
+    ],
+  };
+  const options5 = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+      gaugeText: {
+        text: "2000 in use", //Đây để truyền số cho phần cap đã sử dụng
+      },
+    },
+  };
   //Chia cột cho 2 bảng thông tin
   const table_columns = [
     {
@@ -113,11 +152,11 @@ function Dashboard() {
       info: warehouse.capacity,
     },
     {
-      name: "Đã lưu trữ",
+      name: "Stored",
       info: "724",
     },
     {
-      name: "Còn trống",
+      name: "Free",
       info: "79",
     },
     {
@@ -134,41 +173,7 @@ function Dashboard() {
     },
   ];
   //Thuộc tính của WarehouseCapacity
-  const data5 = {
-    labels: ["Warehouse Capacity"],
-    datasets: [
-      {
-        data: [1900, 1000], //chỗ này là số đầu thể hiện phần cap đã sử dụng, số sau thể hiện phần cap trống còn lại => x và 100%-x
-        borderWidth: 1,
-        borderColor: "black",
-        circumference: 230,
-        rotation: 245,
-        cutout: "75%",
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) {
-            return null;
-          }
-          if (context.dataIndex == 0) {
-            return getGradient(chart);
-          } else {
-            return "#f5f5f5";
-          }
-        },
-      },
-    ],
-  };
-  const options5 = {
-    plugins: {
-      legend: {
-        display: false,
-      },
-      gaugeText: {
-        text: "1900 in use", //Đây để truyền số cho phần cap đã sử dụng
-      },
-    },
-  };
+
   const gaugeText = {
     id: "gaugeText",
     beforeDatasetsDraw(chart, args, pluginOptions) {
@@ -251,69 +256,126 @@ function Dashboard() {
     setSelectedType(key);
   };
 
+  const countstatus = (temp) => {
+    let inbound_done_count = 0;
+    let inbound_order_count = 0;
+    let inbound_return_count = 0;
+    let inbound_ship_count = 0;
+    let outbound_done_count = 0;
+    let outbound_order_count = 0;
+    let outbound_return_count = 0;
+    let outbound_ship_count = 0;
+    temp.forEach((item) => {
+      const key = `${item.type}_${item.status}`;
+
+      switch (key) {
+        case "Inbound_Done":
+          inbound_done_count++;
+          break;
+        case "Inbound_Order":
+          inbound_order_count++;
+          break;
+        case "Inbound_Return":
+          inbound_return_count++;
+          break;
+        case "Inbound_Ship":
+          inbound_ship_count++;
+          break;
+        case "Outbound_Done":
+          outbound_done_count++;
+          break;
+        case "Outbound_Order":
+          outbound_order_count++;
+          break;
+        case "Outbound_Return":
+          outbound_return_count++;
+          break;
+        case "Outbound_Ship":
+          outbound_ship_count++;
+          break;
+        default:
+          break;
+      }
+    });
+    setInboundDone(inbound_done_count);
+    setInboundOrder(inbound_order_count);
+    setInboundReturn(inbound_return_count);
+    setInboundShip(inbound_ship_count);
+    setOutboundDone(outbound_done_count);
+    setOutboundOrder(outbound_order_count);
+    setOutboundReturn(outbound_return_count);
+    setOutboundShip(outbound_ship_count);
+  };
+
+  const counttrans = (temp) => {
+    let inbound_count = 0;
+    let outbound_count = 0;
+    temp.forEach((item) => {
+      if (item.type === "Inbound") {
+        inbound_count++;
+      } else if (item.type === "Outbound") {
+        outbound_count++;
+      }
+    });
+    setInbound(inbound_count);
+    setOutbound(outbound_count);
+  };
   const fetchtrans = async () => {
     try {
       const res = await axios.get(
         `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/657f1395e25a1ba0b17e6689`
       );
-      setItems(res.data);
       const temp = res.data;
-      let inbound_count = 0;
-      let outbound_count = 0;
-      let inbound_done_count = 0;
-      let inbound_order_count = 0;
-      let inbound_return_count = 0;
-      let inbound_ship_count = 0;
-      let outbound_done_count = 0;
-      let outbound_order_count = 0;
-      let outbound_return_count = 0;
-      let outbound_ship_count = 0;
+      const gettransbyday = [];
+      const gettransbymonth = [];
+      const gettransbyyear = [];
+
       temp.forEach((item) => {
-        const key = `${item.type}_${item.status}`;
-        if (item.type === "Inbound") {
-          inbound_count++;
-        } else if (item.type === "Outbound") {
-          outbound_count++;
-        }
-        switch (key) {
-          case "Inbound_Done":
-            inbound_done_count++;
-            break;
-          case "Inbound_Order":
-            inbound_order_count++;
-            break;
-          case "Inbound_Return":
-            inbound_return_count++;
-            break;
-          case "Inbound_Ship":
-            inbound_ship_count++;
-            break;
-          case "Outbound_Done":
-            outbound_done_count++;
-            break;
-          case "Outbound_Order":
-            outbound_order_count++;
-            break;
-          case "Outbound_Return":
-            outbound_return_count++;
-            break;
-          case "Outbound_Ship":
-            outbound_ship_count++;
-            break;
-          default:
-            break;
+        const transactionDate = new Date(item.createdAt);
+        const day = ("0" + transactionDate.getDate()).slice(-2);
+        const month = ("0" + (transactionDate.getMonth() + 1)).slice(-2);
+        const year = transactionDate.getFullYear().toString();
+        const selectday = selectedDay ? selectedDay.format("DD") : null;
+        const selectmonth = selectedMonth ? selectedMonth.format("MM") : null;
+        const selectyear = selectedYear ? selectedYear.format("YYYY") : null;
+        console.log(selectyear === year);
+
+        if (selectday === day && selectmonth === month && selectyear === year) {
+          gettransbyday.push(item);
+        } else if (
+          selectday === null &&
+          selectmonth === month &&
+          selectyear === year
+        ) {
+          gettransbymonth.push(item);
+        } else if (
+          selectday === null &&
+          selectmonth === null &&
+          selectyear === year
+        ) {
+          gettransbyyear.push(item);
         }
       });
-      setInbound(inbound_count);
-      setOutbound(outbound_count);
-      setInboundDone(inbound_done_count);
-      setInboundOrder(inbound_order_count);
-      setInboundReturn(inbound_return_count);
-      setInboundShip(inbound_ship_count);
-      setOutboundDone(outbound_done_count);
-      setOutboundOrder(outbound_order_count);
-      setOutboundReturn(outbound_return_count);
-      setOutboundShip(outbound_ship_count);
+      console.log(gettransbyday);
+      console.log(gettransbymonth);
+      console.log(gettransbyyear);
+
+      if (gettransbyday && gettransbyday.length > 0) {
+        setItems(gettransbyday);
+        counttrans(gettransbyday);
+      } else if (gettransbymonth && gettransbymonth.length > 0) {
+        setItems(gettransbymonth);
+        counttrans(gettransbymonth);
+      } else if (gettransbyyear && gettransbyyear.length > 0) {
+        setItems(gettransbyyear);
+        counttrans(gettransbyyear);
+      } else {
+        setItems([]);
+        counttrans([]);
+      }
+      console.log(items);
+
+      countstatus(res.data);
     } catch (e) {
       console.log(e);
     }
@@ -336,7 +398,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchtrans();
-  }, []);
+  }, [selectedDay, selectedMonth, selectedYear]);
   console.log(warehouse);
 
   return (
@@ -344,21 +406,38 @@ function Dashboard() {
       <div className="inner">
         <div className="TransactionsToday">
           <span className="Title">Transaction Today</span>
-          <Tabs
-            className="ChartBarWrapper"
-            defaultActiveKey={selectedType}
-            onChange={handleTabChange}
-          >
-            <TabPane tab="By Date" key="day">
-              <Bar data={data} options={options} />
-            </TabPane>
-            <TabPane tab="By Month" key="month">
-              <Bar data={data} options={options} />
-            </TabPane>
-            <TabPane tab="By Year" key="year">
-              <Bar data={data} options={options} />
-            </TabPane>
-          </Tabs>
+          <div className="filter">
+            <div className="filter_date">
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedDay(date || undefined)}
+                format="DD"
+                placeholder="Select Day"
+              />
+
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedMonth(date)}
+                picker="month"
+                format="MM"
+                placeholder="Select Month"
+              />
+
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedYear(date)}
+                picker="year"
+                format="YYYY"
+                placeholder="Select Year"
+              />
+            </div>
+            <Button className="filter_button" onClick={fetchtrans}>
+              Apply Filter
+            </Button>
+          </div>
+          <div className="ChartBarWrapper">
+            <Bar data={data} options={options} />
+          </div>
         </div>
         <div className="OrderStatus">
           <div className="InboundStatus">

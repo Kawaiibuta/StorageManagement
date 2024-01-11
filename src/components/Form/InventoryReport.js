@@ -23,6 +23,7 @@ import {
 import CustomForm from "../CustomForm";
 import SubmitButton from "../SubmitButton";
 import "./style.css";
+import InventoryReportBill from "./InventoryReportBill";
 
 const { TextArea } = Input;
 
@@ -162,32 +163,6 @@ function InventoryReport({
     setLoading(false);
     console.log("values", values);
   };
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        if (formData) {
-          form.setFieldsValue({
-            items: formData.reportDetails.map((detail) => {
-              console.log("detail", detail);
-              const product = goodsListIncludeDelete?.find(
-                (goods) => goods._id === detail.productId
-              );
-              console.log("product", product);
-              return {
-                ...detail,
-                productId: product.name,
-                quantity: product.quantity,
-              };
-            }),
-          });
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    fetchData();
-  }, [formData, form]);
 
   return (
     <>
@@ -348,36 +323,13 @@ function InventoryReport({
               )}
             </Form.List>
 
-            <Form.Item {...(formData ? tailLayoutTwoButton : tailLayout)}>
+            <Form.Item {...tailLayout}>
               <Space>
-                {formData && isManager ? (
-                  <div style={{ marginTop: "10px" }}>
-                    {" "}
-                    <Space>
-                      <ApprovedAndRejectButton
-                        title="REJECT"
-                        id={formData.key}
-                        handleOkButton={handleOkButton}
-                        onUpdateData={onUpdateData}
-                      >
-                        Ok
-                      </ApprovedAndRejectButton>
-                      <ApprovedAndRejectButton
-                        title="APPROVED"
-                        Z
-                        id={formData.key}
-                        handleOkButton={handleOkButton}
-                        onUpdateData={onUpdateData}
-                      >
-                        Ok
-                      </ApprovedAndRejectButton>
-                    </Space>
-                  </div>
-                ) : formData ? null : (
-                  <SubmitButton Form={Form} form={form} isLoading={loading}>
-                    Ok
-                  </SubmitButton>
-                )}
+                formData ? null : (
+                <SubmitButton Form={Form} form={form} isLoading={loading}>
+                  Ok
+                </SubmitButton>
+                )
               </Space>
             </Form.Item>
           </Form>

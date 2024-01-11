@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button } from "antd";
+import React, { useRef, useState } from "react";
+import { Button, Tooltip } from "antd";
 import { MdAdd, MdAutorenew } from "react-icons/md";
 import "./custombutton.css";
 import InboundForm from "../Form/InBoundForm.js";
@@ -14,6 +14,56 @@ import NewWarehouseForm from "../Form/NewWarehouseForm.js";
 import { BiTransfer } from "react-icons/bi";
 import EmployeeTransferForm from "../Form/EmployeeTransferForm.js";
 import ProductTransferForm from "../Form/ProductTransferForm.js";
+import { useReactToPrint } from "react-to-print";
+import { RiPrinterLine } from "react-icons/ri";
+import InventoryReportBill from "../Form/InventoryReportBill.js";
+import { useSelector } from "react-redux";
+import ExportCustomerList from "../Form/ExportCustomerList.js";
+import ExportProductList from "../Form/ExportProductList.js";
+
+const PrintButton = ({
+  allInventoryReportData,
+  customersList,
+  suppliersList,
+  productsList,
+  page,
+}) => {
+  console.log("page", page);
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  return (
+    <>
+      <div style={{ display: "none" }}>
+        {page === "report" && (
+          <InventoryReportBill
+            formData={allInventoryReportData}
+            ref={componentRef}
+          />
+        )}
+        {page === "customer" && (
+          <ExportCustomerList formData={customersList} ref={componentRef} />
+        )}
+        {page === "supplier" && (
+          <ExportCustomerList
+            type="supplier"
+            formData={suppliersList}
+            ref={componentRef}
+          />
+        )}
+        {page === "product" && (
+          <ExportProductList formData={productsList} ref={componentRef} />
+        )}
+      </div>
+      <Button className="two-three" onClick={handlePrint}>
+        <BiTransfer className="icon" />
+        PRINT
+      </Button>
+    </>
+  );
+};
 
 const CustomButton = ({
   managersList,
@@ -23,13 +73,24 @@ const CustomButton = ({
   position,
   employeeSelectionList,
   productSelectionList,
+  allInventoryReportData,
 }) => {
   const buttons = [];
   const form = [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalTransferOpen, setIsModalTransferOpen] = useState(false);
+  const customersList = useSelector(
+    (state) => state.partner.customer?.allCustomers
+  );
+  const suppliersList = useSelector(
+    (state) => state.partner.supplier?.allSuppliers
+  );
+  const productsList = useSelector(
+    (state) => state.product.goodsList?.allProducts
+  );
 
+  console.log("productlist", productsList);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -237,6 +298,40 @@ const CustomButton = ({
           <BiTransfer className="icon" />
           TRANSFER
         </Button>
+      );
+      page === "product" &&
+        buttons.push(
+          <PrintButton
+            allInventoryReportData={allInventoryReportData}
+            productList={productsList}
+            page={page}
+          />
+        );
+      break;
+
+    case 4:
+      buttons.push(
+        <Button className="two-one" onClick={() => handleButtonClick("NEW")}>
+          <MdAdd className="icon" />
+          NEW
+        </Button>
+      );
+      buttons.push(
+        <Button
+          className="two-two"
+          onClick={() => handleButtonClick("REFRESH")}
+        >
+          <MdAutorenew className="icon" />
+          REFRESH
+        </Button>
+      );
+      buttons.push(
+        <PrintButton
+          allInventoryReportData={allInventoryReportData}
+          customersList={customersList}
+          suppliersList={suppliersList}
+          page={page}
+        />
       );
       break;
     default:

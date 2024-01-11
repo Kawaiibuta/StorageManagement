@@ -257,13 +257,13 @@ function AppHeader({ collapsed, setCollapsed }) {
                         danger
                         onClick={async (values) => {
                           try {
+                            navigate("/auth/login");
                             await logoutUser(
                               id,
                               accessToken,
                               dispatch,
                               axiosJWT
                             );
-                            navigate("/auth/login");
                           } catch (e) {
                             console.log(e);
                             message.error(

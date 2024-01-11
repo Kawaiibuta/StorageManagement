@@ -41,6 +41,7 @@
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 .InboundStatus,
 .OutboundStatus,
@@ -77,6 +78,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 100%;
 }
 .ChartBarWrapper .ant-tabs-content-holder {
   display: flex;
@@ -87,6 +89,25 @@
 }
 .ChartBarWrapper .ant-tabs-tabpane {
   height: 100%;
+}
+.filter {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  justify-content: space-between;
+  align-items: center;
+}
+.filter_date {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.filter_picker {
+  width: 90% !important;
+  margin-bottom: 10px;
+}
+.filter_button {
+  height: 60px;
 }
 
 @media only screen and (max-width: 760px),
@@ -127,5 +148,11 @@
   .inner .ant-table-cell {
     padding: 0px !important;
     text-align: center;
+  }
+  .ant-picker-cell {
+    display: initial !important;
+    padding: initial !important;
+    position: initial;
+    border: initial;
   }
 }
