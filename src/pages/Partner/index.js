@@ -314,7 +314,7 @@ function Partner() {
 
   const customer = (
     <div style={{ width: "100%" }}>
-      <ToolBar onUpdateData={onUpdateData} type={2} page={"customer"}></ToolBar>
+      <ToolBar onUpdateData={onUpdateData} type={4} page={"customer"}></ToolBar>
       <CustomTable
         scrollX={null}
         columns={partner_columns}
@@ -349,7 +349,7 @@ function Partner() {
 
   const supplier = (
     <div style={{ width: "100%" }}>
-      <ToolBar onUpdateData={onUpdateData} type={2} page={"supplier"}></ToolBar>
+      <ToolBar onUpdateData={onUpdateData} type={4} page={"supplier"}></ToolBar>
       <CustomTable
         columns={partner_columns}
         dataSource={suppliersList?.map((supplier) => {
