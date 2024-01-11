@@ -16,7 +16,7 @@ function Home() {
   return (
     <div className="App">
       <Layout style={{ height: "100vh" }}>
-        <SideMenu collapsed={collapsed} />
+        <SideMenu className="responsive-SideMenu" collapsed={collapsed} />
         <Layout>
           <AppHeader
             setIsLogin={setIsLogin}

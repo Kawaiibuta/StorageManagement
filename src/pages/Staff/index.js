@@ -436,7 +436,7 @@ function Staff() {
 
   const user_columns = [
     {
-      title: "STT",
+      title: "Num",
       dataIndex: "id",
       key: "id",
       width: 60,
@@ -484,7 +484,7 @@ function Staff() {
   ];
 
   const staff_user = (
-    <div style={{ width: "100%" }}>
+    <div className="UserTable" style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"user"}></ToolBar>
       <CustomTable
         columns={user_columns}
@@ -505,6 +505,7 @@ function Staff() {
 
   const transfer_send = (
     <div
+      className="TransferTable"
       style={{
         width: "100%",
       }}
@@ -572,6 +573,7 @@ function Staff() {
 
   const staff_manager = (
     <div
+      className="StaffTable"
       style={{
         width: "100%",
       }}
@@ -634,6 +636,7 @@ function Staff() {
   const staff_data = isAdmin ? allEmployeonAllWarehouses : employeeList;
   const staff_employee = (
     <div
+      className={isAdmin ? "StaffTable" : "EmployeeTable"}
       style={{
         width: "100%",
       }}

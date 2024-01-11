@@ -414,6 +414,7 @@ function InBound() {
 
   const all = (
     <div
+      className="InboundTable"
       style={{
         width: "100%",
       }}

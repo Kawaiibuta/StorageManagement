@@ -4,30 +4,31 @@
   background-color: white;
   border-radius: 10px;
 }
-.two-one {
+.one-left {
   width: 120px;
   height: 40px;
   background-color: white;
   border-right: none;
   border-radius: 10px 0px 0px 10px;
 }
-.two-two {
+.one-right {
   width: 120px;
   height: 40px;
   background-color: white;
   border-left: none;
   border-radius: 0px 10px 10px 0px;
 }
-
-.two-three {
+.one-middle {
   width: 120px;
   height: 40px;
   background-color: white;
   border-left: none;
-  border-radius: 0px 10px 10px 0px;
+  border-right: none;
+  border-radius: 0px;
 }
-.two-one:hover,
-.two-two:hover,
+.one-left:hover,
+.one-right:hover,
+.one-middle:hover,
 .one {
   border-style: solid;
   border-radius: 10px;

@@ -3,79 +3,129 @@
   align-items: center;
   justify-content: center;
   vertical-align: middle;
+  height: 100%;
 }
 .inner {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 95%;
-  height: 80vh;
+  height: 90%;
 }
-
-.TransactionsToday {
-  width: 33%;
+.TransactionsToday,
+.WarehouseStatus {
+  flex: 2;
   height: 100%;
-  display: flex;
-  justify-content: space-around;
-  flex-direction: column;
-  border: 3px solid black;
-  border-right: 0px;
+  margin: 0px 10px;
 }
 .OrderStatus {
-  width: 33%;
+  flex: 1;
   height: 100%;
-  border: 3px solid black;
-  border-right: 0px;
+  margin: 0px 10px;
 }
+.TransactionsToday,
+.OrderStatus,
 .WarehouseStatus {
-  width: 33%;
-  height: 100%;
-  border: 3px solid black;
+  display: flex;
+  flex-direction: column;
 }
 .Title {
   font-size: 3vh;
+  padding: 20px 0px 10px;
   font-weight: bold;
   text-align: center;
 }
-.DoughnutWrapper {
-  width: 25vh;
-  padding-left: 1vw;
-}
-.Transactions,
-.Inbound,
-.Outbound,
-.ActivePartners,
-.WarehouseCapacity,
-.top {
+.TransactionsToday {
+  background-color: white;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
-.Transactions,
-.Inbound,
-.Outbound {
-  height: 33%;
-}
-.ActivePartners,
+.InboundStatus,
+.OutboundStatus,
+.WarehouseDetail,
 .WarehouseCapacity {
-  height: 50%;
-}
-.top {
-  height: 40%;
-  width: 100%;
-}
-.bottom {
-  border-top: 3px solid black;
-  height: 60%;
-  width: 100%;
-}
-.padtop {
+  background-color: white;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
+}
+.InboundStatus {
+  margin-bottom: 10px;
+  flex: 1;
+}
+.OutboundStatus {
+  margin-top: 10px;
+  flex: 1;
+}
+.WarehouseDetail {
+  margin-bottom: 10px;
+  flex: 1;
+}
+.WarehouseCapacity {
+  margin-top: 10px;
+  flex: 1;
   align-items: center;
 }
-.divide {
+.DoughnutWrapper {
+  height: 70%;
+}
+.ChartBarWrapper {
+  padding: 0px 30px 20px;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+}
+.ChartBarWrapper .ant-tabs-content-holder {
+  display: flex;
+  align-items: flex-end;
+}
+.ChartBarWrapper .ant-tabs-content {
+  height: 100%;
+}
+.ChartBarWrapper .ant-tabs-tabpane {
+  height: 100%;
+}
+
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  .inner {
+    width: 100%;
+    flex-direction: column;
+    background-color: white;
+  }
+  .TransactionsToday,
+  .OrderStatus,
+  .WarehouseDetail,
+  .WarehouseCapacity {
+    height: auto;
+    width: 100%;
+    border-radius: 0px;
+    padding: 0px 10px 20px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+  .TransactionsToday {
+    border-top: 2px solid black;
+  }
+  .OrderStatus {
+    flex-direction: row;
+  }
+  .WarehouseStatus {
+    height: auto;
+    width: 100%;
+  }
+  .InboundStatus,
+  .OutboundStatus,
+  .WarehouseDetail,
+  .WarehouseCapacity {
+    margin: 0px;
+    border-radius: 0px;
+  }
+  .inner .ant-table-cell {
+    padding: 0px !important;
+    text-align: center;
+  }
 }

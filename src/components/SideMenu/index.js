@@ -99,6 +99,7 @@ export default function SideMenu({ collapsed }) {
 
   return (
     <Sider
+      className={`${!collapsed ? "responsive-SideMenu" : ""}`}
       style={{ backgroundColor: "white" }}
       trigger={null}
       collapsed={collapsed}
@@ -132,7 +133,6 @@ export default function SideMenu({ collapsed }) {
           </div>
         )}
         <Menu
-          // className="SideMenuVertical"
           theme="light"
           mode="inline"
           selectedKeys={[selectedKeys]}

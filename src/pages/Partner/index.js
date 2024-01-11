@@ -313,7 +313,7 @@ function Partner() {
   }, [dispatch, isUpdateData]);
 
   const customer = (
-    <div style={{ width: "100%" }}>
+    <div className="PartnerTable" style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"customer"}></ToolBar>
       <CustomTable
         scrollX={null}
@@ -348,7 +348,7 @@ function Partner() {
   );
 
   const supplier = (
-    <div style={{ width: "100%" }}>
+    <div className="PartnerTable" style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"supplier"}></ToolBar>
       <CustomTable
         columns={partner_columns}

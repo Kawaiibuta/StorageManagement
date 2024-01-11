@@ -25,6 +25,7 @@ function CustomForm({
       }}
     >
       <Modal
+        className="Form"
         style={{
           top: marginTop,
         }}

@@ -249,6 +249,7 @@ function GoodsList() {
       width: 110,
       dataIndex: "sku_code",
       key: "sku_code",
+
       ...getColumnSearchProps("sku_code"),
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
@@ -336,11 +337,14 @@ function GoodsList() {
 
   const goodslist = (
     <div
+      className="GoodsTable"
       style={{
         width: "100%",
       }}
     >
       <ToolBar
+        className="ToolBar"
+        style={{ backgroundColor: "red", width: "95%" }}
         productSelectionList={selectedRow}
         onUpdateData={onUpdateData}
         type={isManager ? 3 : 2}
@@ -386,7 +390,6 @@ function GoodsList() {
         marginTop={20}
         onUpdateData={onUpdateData}
         scrollX={1800}
-        title="Update Product"
       />
     </div>
   );
@@ -484,6 +487,7 @@ function GoodsList() {
 
   const transfer = (
     <div
+      className="TransferTable"
       style={{
         width: "100%",
       }}
@@ -558,6 +562,7 @@ function GoodsList() {
         <TabPane
           tab={
             <span
+              className="TabButton"
               style={{
                 display: "flex",
                 flexDirection: "column",

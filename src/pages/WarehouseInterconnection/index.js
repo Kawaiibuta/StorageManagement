@@ -276,7 +276,7 @@ function WarehouseInterconnection() {
   ];
 
   const warehouseinter = (
-    <div width="100%">
+    <div className="WarehouseTable" style={{ width: "100%" }}>
       <ToolBar
         managersList={managersList}
         onUpdateData={onUpdateData}
