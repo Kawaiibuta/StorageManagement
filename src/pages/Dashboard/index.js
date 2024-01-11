@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getWarehouseById } from "../../redux/apiRequest";
+import { getWarehouseById, getTransactionById } from "../../redux/apiRequest";
 
 import "./dashboard.css";
 // import { Gauge } from "@ant-design/charts";
@@ -193,18 +193,6 @@ function Dashboard() {
       ctx.restore();
     },
   };
-  function getGradient(chart) {
-    const {
-      ctx,
-      chartArea: { top, bottom, left, right },
-    } = chart;
-    const gradientSegment = ctx.createLinearGradient(left, 0, right, 0);
-    gradientSegment.addColorStop(0, "red");
-    gradientSegment.addColorStop(0.3, "orange");
-    gradientSegment.addColorStop(0.7, "yellow");
-    gradientSegment.addColorStop(1, "lime");
-    return gradientSegment;
-  }
   function getGradient2(chart) {
     const {
       ctx,
@@ -327,9 +315,7 @@ function Dashboard() {
   };
   const fetchtrans = async () => {
     try {
-      const res = await axios.get(
-        `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/657f1395e25a1ba0b17e6689`
-      );
+      const res = await getTransactionById(userWarehouseId);
       const temp = res.data;
       const gettransbyday = [];
       const gettransbymonth = [];
@@ -343,19 +329,23 @@ function Dashboard() {
         const selectday = selectedDay ? selectedDay.format("DD") : null;
         const selectmonth = selectedMonth ? selectedMonth.format("MM") : null;
         const selectyear = selectedYear ? selectedYear.format("YYYY") : null;
-        console.log(selectyear === year);
 
         if (selectday === day && selectmonth === month && selectyear === year) {
           gettransbyday.push(item);
-        } else if (selectday === null && selectmonth === month && selectyear === year) {
+        } else if (
+          selectday === null &&
+          selectmonth === month &&
+          selectyear === year
+        ) {
           gettransbymonth.push(item);
-        } else if (selectday === null && selectmonth === null &&selectyear === year) {
+        } else if (
+          selectday === null &&
+          selectmonth === null &&
+          selectyear === year
+        ) {
           gettransbyyear.push(item);
         }
       });
-      console.log(gettransbyday);
-      console.log(gettransbymonth);
-      console.log(gettransbyyear);
 
       if (gettransbyday && gettransbyday.length > 0) {
         setItems(gettransbyday);
@@ -370,7 +360,6 @@ function Dashboard() {
         setItems([]);
         counttrans([]);
       }
-      console.log(items);
 
       countstatus(res.data);
     } catch (e) {
@@ -378,10 +367,12 @@ function Dashboard() {
     }
   };
 
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await getWarehouseById(`657f1395e25a1ba0b17e6689`);
+        const res = await getWarehouseById(userWarehouseId);
         const temp = res.data;
         setWarehouse(res.data);
         setManager(temp.managerId.name);
