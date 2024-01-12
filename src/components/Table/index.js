@@ -40,6 +40,7 @@ function CustomTable({
       }}
     >
       <Modal
+        className="Form"
         style={{
           top: marginTop,
         }}

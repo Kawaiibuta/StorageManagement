@@ -253,6 +253,7 @@ function Inventory() {
 
   const inventory_report = (
     <div
+      className="ReportTable"
       style={{
         width: "100%",
       }}
@@ -389,7 +390,7 @@ function Inventory() {
   ];
 
   const inventory_product = (
-    <div style={{ width: "100%" }}>
+    <div className="InventoryTable" style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={1}></ToolBar>
       <CustomTable
         isFetching={isFetching}

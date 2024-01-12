@@ -10,7 +10,6 @@
   top: 100%;
   font-size: 12px;
 }
-
 .SideMenu {
   text-align: left;
 }
@@ -92,3 +91,528 @@
     transform: rotate(360deg);
   }
 }
+
+/* Responsive for Phone */
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  tr {
+    border: 1px solid #ccc;
+  }
+  table {
+    width: 100% !important;
+  }
+  td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding: 0px 0px 0px 140px !important;
+  }
+  td:before {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-style: italic;
+  }
+  .ant-table-wrapper {
+    max-width: 100% !important;
+  }
+  /* Goods Columns */
+  .GoodsTable table {
+    width: 90% !important;
+  }
+  .GoodsTable td:nth-of-type(1) {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .GoodsTable td:nth-of-type(1) .ant-checkbox-inner {
+    width: 25px;
+    height: 25px;
+  }
+  .GoodsTable td:nth-of-type(2):before {
+    content: "SKU";
+  }
+  .GoodsTable td:nth-of-type(2) p {
+    margin: 0px;
+  }
+  .GoodsTable td:nth-of-type(3):before {
+    content: "Full Name";
+  }
+  .GoodsTable td:nth-of-type(4):before {
+    content: "Supplier";
+  }
+  .GoodsTable td:nth-of-type(5):before {
+    content: "Maximum Quantity";
+  }
+  .GoodsTable td:nth-of-type(6):before {
+    content: "Price";
+  }
+  .GoodsTable td:nth-of-type(7):before {
+    content: "Unit";
+  }
+  .GoodsTable td:nth-of-type(8):before {
+    content: "Image";
+  }
+  .GoodsTable td:nth-of-type(9):before {
+    content: "Specification";
+  }
+  .GoodsTable td:nth-of-type(10):before {
+    content: "Action";
+  }
+  .GoodsTable td:nth-of-type(10) {
+    display: flex;
+    align-items: center;
+  }
+  .GoodsTable td:nth-of-type(10) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Transfer Columns */
+  .TransferTable table {
+    width: 100% !important;
+  }
+  .TransferTable td:nth-of-type(1):before {
+    content: "Code";
+  }
+  .TransferTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .TransferTable td:nth-of-type(2):before {
+    content: "Status";
+  }
+  .TransferTable td:nth-of-type(3):before {
+    content: "From";
+  }
+  .TransferTable td:nth-of-type(4):before {
+    content: "To";
+  }
+  .TransferTable td:nth-of-type(5):before {
+    content: "Creat At";
+  }
+  .TransferTable td:nth-of-type(6):before {
+    content: "Action";
+  }
+  .TransferTable td:nth-of-type(6) {
+    display: flex;
+    align-items: center;
+  }
+  .TransferTable td:nth-of-type(6) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Partner Columns */
+  .PartnerTable td:nth-of-type(1):before {
+    content: "Code";
+  }
+  .PartnerTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .PartnerTable td:nth-of-type(2):before {
+    content: "Full Name";
+  }
+  .PartnerTable td:nth-of-type(3):before {
+    content: "Address";
+  }
+  .PartnerTable td:nth-of-type(4):before {
+    content: "Phone Number";
+  }
+  .PartnerTable td:nth-of-type(5):before {
+    content: "Email";
+  }
+  .PartnerTable td:nth-of-type(6):before {
+    content: "Action";
+  }
+  .PartnerTable td:nth-of-type(6) {
+    display: flex;
+    align-items: center;
+  }
+  .PartnerTable td:nth-of-type(6) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Employees Columns */
+  .EmployeeTable table {
+    width: 90% !important;
+  }
+  .EmployeeTable td:nth-of-type(1) {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .EmployeeTable td:nth-of-type(1) .ant-checkbox-inner {
+    width: 25px;
+    height: 25px;
+  }
+  .EmployeeTable td:nth-of-type(2):before {
+    content: "Code";
+  }
+  .EmployeeTable td:nth-of-type(2) p {
+    margin: 0px;
+  }
+  .EmployeeTable td:nth-of-type(3):before {
+    content: "Full Name";
+  }
+  .EmployeeTable td:nth-of-type(4):before {
+    content: "Address";
+  }
+  .EmployeeTable td:nth-of-type(5):before {
+    content: "Phone Number";
+  }
+  .EmployeeTable td:nth-of-type(6):before {
+    content: "Email";
+  }
+  .EmployeeTable td:nth-of-type(7):before {
+    content: "Warehouse";
+  }
+  .EmployeeTable td:nth-of-type(8):before {
+    content: "Start Time";
+  }
+  .EmployeeTable td:nth-of-type(9):before {
+    content: "Action";
+  }
+  .EmployeeTable td:nth-of-type(9) {
+    display: flex;
+    align-items: center;
+  }
+  .EmployeeTable td:nth-of-type(9) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Staff Columns */
+  .StaffTable table {
+    width: 90% !important;
+  }
+  .StaffTable td:nth-of-type(1):before {
+    content: "Code";
+  }
+  .StaffTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .StaffTable td:nth-of-type(2):before {
+    content: "Full Name";
+  }
+  .StaffTable td:nth-of-type(3):before {
+    content: "Address";
+  }
+  .StaffTable td:nth-of-type(4):before {
+    content: "Phone Number";
+  }
+  .StaffTable td:nth-of-type(5):before {
+    content: "Email";
+  }
+  .StaffTable td:nth-of-type(6):before {
+    content: "Warehouse";
+  }
+  .StaffTable td:nth-of-type(7):before {
+    content: "Start Time";
+  }
+  .StaffTable td:nth-of-type(8):before {
+    content: "Action";
+  }
+  .StaffTable td:nth-of-type(8) {
+    display: flex;
+    align-items: center;
+  }
+  .StaffTable td:nth-of-type(8) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* User Columns */
+  .UserTable td:nth-of-type(1):before {
+    content: "Num";
+  }
+  .UserTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .UserTable td:nth-of-type(2):before {
+    content: "Employee";
+  }
+  .UserTable td:nth-of-type(3):before {
+    content: "Role";
+  }
+  .UserTable td:nth-of-type(4):before {
+    content: "Username";
+  }
+  .UserTable td:nth-of-type(5):before {
+    content: "Action";
+  }
+  .UserTable td:nth-of-type(5) {
+    display: flex;
+    align-items: center;
+  }
+  .UserTable td:nth-of-type(5) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Warehouse Columns */
+  .WarehouseTable td:nth-of-type(1):before {
+    content: "Code";
+  }
+  .WarehouseTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .WarehouseTable td:nth-of-type(2):before {
+    content: "Full Name";
+  }
+  .WarehouseTable td:nth-of-type(3):before {
+    content: "Address";
+  }
+  .WarehouseTable td:nth-of-type(4):before {
+    content: "Contact";
+  }
+  .WarehouseTable td:nth-of-type(5):before {
+    content: "Manager";
+  }
+  .WarehouseTable td:nth-of-type(6):before {
+    content: "Capacity";
+  }
+  .WarehouseTable td:nth-of-type(7):before {
+    content: "Description";
+  }
+  .WarehouseTable td:nth-of-type(8):before {
+    content: "Action";
+  }
+  .WarehouseTable td:nth-of-type(8) {
+    display: flex;
+    align-items: center;
+  }
+  .WarehouseTable td:nth-of-type(8) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Inbound Columns */
+  .InboundTable td:nth-of-type(1):before {
+    content: "ASN";
+  }
+  .InboundTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .InboundTable td:nth-of-type(2):before {
+    content: "Status";
+  }
+  .InboundTable td:nth-of-type(3):before {
+    content: "Supplier";
+  }
+  .InboundTable td:nth-of-type(4):before {
+    content: "Total Value";
+  }
+  .InboundTable td:nth-of-type(5):before {
+    content: "Creator";
+  }
+  .InboundTable td:nth-of-type(6):before {
+    content: "Create Time";
+  }
+  .InboundTable td:nth-of-type(7):before {
+    content: "Update Time";
+  }
+  .InboundTable td:nth-of-type(8):before {
+    content: "Action";
+  }
+  .InboundTable td:nth-of-type(8) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .InboundTable td:nth-of-type(8) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 40px;
+  }
+  /* Outbound Columns */
+  .OutboundTable td:nth-of-type(1):before {
+    content: "DN";
+  }
+  .OutboundTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .OutboundTable td:nth-of-type(2):before {
+    content: "Status";
+  }
+  .OutboundTable td:nth-of-type(3):before {
+    content: "Customer";
+  }
+  .OutboundTable td:nth-of-type(4):before {
+    content: "Total Value";
+  }
+  .OutboundTable td:nth-of-type(5):before {
+    content: "Creator";
+  }
+  .OutboundTable td:nth-of-type(6):before {
+    content: "Create Time";
+  }
+  .OutboundTable td:nth-of-type(7):before {
+    content: "Update Time";
+  }
+  .OutboundTable td:nth-of-type(8):before {
+    content: "Action";
+  }
+  .OutboundTable td:nth-of-type(8) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .OutboundTable td:nth-of-type(8) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 40px;
+  }
+  /* Inventory Columns */
+  .InventoryTable td:nth-of-type(1):before {
+    content: "SKU";
+  }
+  .InventoryTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .InventoryTable td:nth-of-type(2):before {
+    content: "Full Name";
+  }
+  .InventoryTable td:nth-of-type(3):before {
+    content: "Quantity";
+  }
+  .InventoryTable td:nth-of-type(4):before {
+    content: "Image";
+  }
+  /* Inventory Columns */
+  .ReportTable td:nth-of-type(1):before {
+    content: "SKU";
+  }
+  .ReportTable td:nth-of-type(1) p {
+    margin: 0px;
+  }
+  .ReportTable td:nth-of-type(2):before {
+    content: "Status";
+  }
+  .ReportTable td:nth-of-type(3):before {
+    content: "Total Actual Quantity";
+  }
+  .ReportTable td:nth-of-type(4):before {
+    content: "Total Difference Quantity";
+  }
+  .ReportTable td:nth-of-type(5):before {
+    content: "Increase Quantity";
+  }
+  .ReportTable td:nth-of-type(6):before {
+    content: "Decrease Quantity";
+  }
+  .ReportTable td:nth-of-type(7):before {
+    content: "Created at";
+  }
+  .ReportTable td:nth-of-type(8):before {
+    content: "Updated at";
+  }
+  .ReportTable td:nth-of-type(9):before {
+    content: "Action";
+  }
+  .ReportTable td:nth-of-type(9) {
+    display: flex;
+    align-items: center;
+  }
+  .ReportTable td:nth-of-type(9) a {
+    display: flex;
+    padding: 10px 0px;
+    margin-right: 50px;
+  }
+  /* Side Menu */
+  .responsive-SideMenu {
+    display: none;
+  }
+  /* Tab */
+  .ant-tabs-nav-list {
+    width: 100%;
+    display: flex;
+  }
+  .ant-tabs-tab {
+    margin: 0px !important;
+    flex: 1;
+    justify-content: center;
+  }
+  .ant-tabs-tab-btn {
+    font-size: 10px;
+  }
+  .ant-tabs-tab-btn img,
+  .ant-tabs-tab-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  /* Form - Modal */
+  .Form {
+    .ant-form {
+      padding: 0px 20px;
+      margin: 0px;
+    }
+    .ant-form-item {
+      margin: 0px;
+    }
+    .ant-form-item .ant-col {
+      padding: 0px;
+      margin: 0px;
+    }
+    .ant-modal-header {
+      margin-top: 0px;
+    }
+    .ant-input-number {
+      width: 100%;
+    }
+    .ant-picker {
+      float: left;
+    }
+    .ant-form-item-control-input-content,
+    .ant-upload-list {
+      display: flex;
+      justify-content: center;
+    }
+    .ant-btn-lg {
+      margin: 10px 0px !important;
+    }
+    .anticon-close {
+      padding-top: 5px !important;
+    }
+    .ant-modal-title p {
+      padding: 0px !important;
+    }
+    .ant-tooltip {
+      display: none;
+    }
+    .ant-popover {
+      inset: auto auto 180px 180px !important;
+    }
+  }
+
+  /* Tool Bar */
+  .ToolBar {
+    width: 100%;
+  }
+  .CustomButton {
+    width: 100%;
+    display: flex !important;
+    flex-direction: row;
+  }
+  .CustomButton button {
+    flex: 1;
+    height: 60px;
+    box-sizing: border-box;
+    width: auto;
+  }
+}
+/* End Responsive for Phone */
