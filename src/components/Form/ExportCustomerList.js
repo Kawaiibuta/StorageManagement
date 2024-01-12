@@ -38,26 +38,12 @@ const export_customers_columns = [
   },
 ];
 
-const ExportCustomerList = React.forwardRef(({ formData }, ref) => {
+const ExportCustomerList = React.forwardRef(({ formData, type }, ref) => {
   const [warehouse, setWarehouse] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   console.log("formData?bill", formData);
   const user = useSelector((state) => state.auth.login?.currentUser);
-  const userWarehouseId = user.employeeId.warehouseId;
-
-  const goodsList = useSelector(
-    (state) => state.product.goodsList?.allProductsIncludeDelete
-  );
-
-  const partners = useSelector(
-    (state) => state.partner.supplier?.allPartnersIncludeDelete
-  );
-  console.log("userwh", userWarehouseId);
-
-  let supplier;
-  let supplierContactId;
-
-  console.log("suppliers", partners);
+  const userWarehouseId = user.employeeId?.warehouseId;
 
   useEffect(() => {
     async function fetchData() {
@@ -75,10 +61,6 @@ const ExportCustomerList = React.forwardRef(({ formData }, ref) => {
     fetchData();
   }, [userWarehouseId]);
 
-  if (partners && formData && warehouse) {
-    supplier = partners?.find((sup) => sup._id === formData.supplierId);
-    supplierContactId = supplier.contactId;
-  }
   console.log("warehouse", warehouse);
   if (isFetching) {
     return null;
@@ -89,22 +71,21 @@ const ExportCustomerList = React.forwardRef(({ formData }, ref) => {
       <div style={{ margin: "16px" }}>
         <div>
           <span style={{ fontSize: "28px" }} className="fs-32 bold">
-            CUSTOMER LIST
+            {type === "supplier" ? "SUPPLIER LIST" : "CUSTOMER LIST"}
           </span>
-          <span className=" italic fs-14">{formData?.status}</span>
         </div>
         <div className="Info">
           <div className="TransactionInfo">
-            <span className="fs-16 bold">Export at: </span>
+            <span className="fs-16 bold">
+              {"Export at:" + new Date().toLocaleString() + ""}
+            </span>
             <span className="fs-14 italic">{formData?.create_time}</span>
             <br></br>
             <span className="fs-16 bold">Export by: </span>
-            <span className="fs-14 italic">{formData?.currentUser}</span>
+            <span className="fs-14 italic">{user.employeeId?.name}</span>
             <br></br>
             <span className="fs-16 bold">Customer Count:</span>
-            <span className="fs-14 italic">
-              {/* number of customer (có bao nhiêu nhân viên ... */}
-            </span>
+            <span className="fs-14 italic">{formData?.length}</span>
             <br></br>
           </div>
           <div className="WarehouseInfo">
@@ -138,24 +119,21 @@ const ExportCustomerList = React.forwardRef(({ formData }, ref) => {
               }}
             >
               <Table
+                size="small"
                 bordered
                 style={{
                   marginTop: "10px",
                   textAlign: "center",
                 }}
                 columns={export_customers_columns}
-                dataSource={formData?.trans_details.map((detail, i) => {
-                  const product = goodsList.find(
-                    (goods) => goods._id === detail.productId
-                  );
+                dataSource={formData?.map((cus, i) => {
                   return {
-                    id: i + 1,
-                    name: product.name,
-                    quantity: detail.quantity,
-                    price: Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(detail.total),
+                    key: cus._id,
+                    code: cus.code,
+                    name: cus.name,
+                    address: cus.contactId.address,
+                    phone_num: cus.contactId.phone_num,
+                    email: cus.contactId.email,
                   };
                 })}
                 pagination={false}

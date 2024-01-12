@@ -1,7 +1,17 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TabView from "../../components/Button Header/TabView";
-import { Table, Tabs, Tag, Tooltip } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Modal,
+  Space,
+  Table,
+  Tabs,
+  Tag,
+  Tooltip,
+  message,
+} from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import ActionBar from "../../components/ActionBar/actionbar.js";
 import { PiEyeBold } from "react-icons/pi";
@@ -9,9 +19,11 @@ import {
   getAllProductsIncludeDelete,
   getGoodsListByWarehouseId,
   getInventoryReport,
+  updateReportApproved,
 } from "../../redux/apiRequest.js";
 import { useDispatch, useSelector } from "react-redux";
 import TabPane from "antd/es/tabs/TabPane.js";
+import { CloseOutlined } from "@ant-design/icons";
 import inventoryIcon from "../../assets/images/inventory_icon.png";
 import inventoryIconActive from "../../assets/images/inventory_icon_active.png";
 import invenReportIcon from "../../assets/images/inventory_report_icon.png";
@@ -22,49 +34,94 @@ import { RiPrinterLine } from "react-icons/ri";
 import InventoryReport from "../../components/Form/InventoryReport.js";
 import InBoundBill from "../../components/Form/InBoundBill.js";
 import InventoryReportBill from "../../components/Form/InventoryReportBill.js";
+import { useReactToPrint } from "react-to-print";
+import InventoryReportBillIndividual from "../../components/Form/InventoryReportBillIndividual.js";
 
-function inventory_item(
-  product_id,
-  product_name,
-  product_detail,
-  total_quantity,
-  onhand,
-  inbound_stock,
-  outbound_stock
-) {
-  this.product_id = product_id;
-  this.product_name = product_name;
-  this.product_detail = product_detail;
-  this.total_quantity = total_quantity;
-  this.onhand = onhand;
-  this.inbound_stock = inbound_stock;
-  this.outbound_stock = outbound_stock;
-}
-const inventory_dataSource = [];
-for (let i = 1; i < 100; i++) {
-  inventory_dataSource.push(
-    new inventory_item(
-      i,
-      "Product Name " + i.toString(),
-      "Link đến Product",
-      (i * 6).toString(),
-      (i * 3).toString(),
-      (i * 2).toString(),
-      (i * 1).toString()
-    )
+const PrintButton = ({ record }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  return (
+    <>
+      <div style={{ display: "none" }}>
+        <InventoryReportBillIndividual formData={record} ref={componentRef} />
+      </div>
+      <Tooltip title="Print" key="print">
+        {
+          <RiPrinterLine
+            onClick={() => {
+              handlePrint();
+            }}
+            size={24}
+            color="#1ba79b"
+          />
+        }
+      </Tooltip>
+    </>
   );
-}
-function report_item(id, employee_name, timestamp) {
-  this.id = id;
-  this.employee_name = employee_name;
-  this.timestamp = timestamp;
-}
-const report_dataSource = [];
-for (let i = 1; i < 100; i++) {
-  report_dataSource.push(
-    new report_item(i, "Employee Name " + i.toString(), "00:00:00 12/11/2023")
+};
+
+const ApprovedAndRejectButton = ({
+  Form,
+  form,
+  title,
+  id,
+  onUpdateData,
+  handleOkButton,
+}) => {
+  const [loading, setLoading] = React.useState(false);
+
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Button: {
+            textHoverBg: "white",
+            defaultBg:
+              title === "REJECT" ? "crimson" : "rgba(156, 188, 235, 1)",
+            defaultColor: "white",
+            fontWeight: "500",
+          },
+        },
+      }}
+    >
+      <Button
+        onClick={async () => {
+          setLoading(true);
+          try {
+            await updateReportApproved(id, {
+              isApproved: title === "REJECT" ? false : true,
+            });
+            handleOkButton();
+            onUpdateData();
+            message.success("Update transfer success");
+          } catch (e) {
+            console.log(e);
+            message.error(
+              typeof e.response.data === "string"
+                ? e.response.data
+                : "Something went wrong!"
+            );
+          }
+
+          setLoading(false);
+        }}
+        style={{
+          padding: "0px 50px",
+          marginBottom: "24px",
+          width: "200px",
+        }}
+        type="default"
+        size="large"
+        loading={loading}
+      >
+        {title}
+      </Button>
+    </ConfigProvider>
   );
-}
+};
 
 function Inventory() {
   const [isFetching, setIsFetching] = useState(false);
@@ -74,11 +131,13 @@ function Inventory() {
   const [hoveredTab, setHoveredTab] = useState(null);
   const [formData, setFormData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const user = useSelector((state) => state.auth.login?.currentUser);
   const goodsList = useSelector(
     (state) => state.product.goodsList?.allProducts
   );
-  const userWarehouseId = user.employeeId.warehouseId;
+  const isManager = user?.employeeId?.position === "Manager";
+  const userWarehouseId = user?.employeeId?.warehouseId;
   const dispatch = useDispatch();
   function onUpdateData() {
     setIsUpdateData(!isUpdateData);
@@ -92,6 +151,7 @@ function Inventory() {
   const showModal = () => {
     setIsModalOpen(true);
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
     onUpdateData();
@@ -178,9 +238,13 @@ function Inventory() {
                 {<PiEyeBold size={24} color="#85dcea" />}
               </a>
             </Tooltip>
-            <Tooltip key="print" title="Print">
-              <a>{<RiPrinterLine size={24} color="#1ba79b" />}</a>
-            </Tooltip>
+            <a
+              onClickCapture={() => {
+                setFormData(record);
+              }}
+            >
+              <PrintButton key={record._id} record={formData} />
+            </a>
           </>
         );
       },
@@ -189,18 +253,78 @@ function Inventory() {
 
   const inventory_report = (
     <div
+      className="ReportTable"
       style={{
         width: "100%",
       }}
     >
-      <ToolBar onUpdateData={onUpdateData} type={2} page={"report"}></ToolBar>
-      <InventoryReport
-        isModalOpen={isModalOpen}
-        handleCancelButton={handleCancel}
-        handleOkButton={handleOk}
+      <ToolBar
+        allInventoryReportData={dataSource}
         onUpdateData={onUpdateData}
-        formData={formData}
-      ></InventoryReport>
+        type={4}
+        page={"report"}
+      ></ToolBar>
+      <ConfigProvider
+        theme={{
+          components: {
+            Modal: {
+              titleFontSize: 24,
+              headerBg: "rgba(156, 188, 235, 1)",
+              paddingLG: 0,
+              padding: 0,
+            },
+          },
+        }}
+      ></ConfigProvider>
+      <Modal
+        style={{
+          top: 20,
+        }}
+        title=" &nbsp;"
+        width={700}
+        footer={
+          formData?.status === "Waiting" &&
+          isManager && (
+            <div style={{ marginTop: "10px", textAlign: "center" }}>
+              {" "}
+              <Space>
+                <ApprovedAndRejectButton
+                  title="REJECT"
+                  id={formData?.key}
+                  handleOkButton={handleOk}
+                  onUpdateData={onUpdateData}
+                >
+                  Ok
+                </ApprovedAndRejectButton>
+                <ApprovedAndRejectButton
+                  title="APPROVED"
+                  id={formData?.key}
+                  handleOkButton={handleOk}
+                  onUpdateData={onUpdateData}
+                >
+                  Ok
+                </ApprovedAndRejectButton>
+              </Space>
+            </div>
+          )
+        }
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        closeIcon={
+          <CloseOutlined
+            style={{
+              fontSize: "25px",
+              paddingTop: "10px",
+              paddingRight: "20px",
+              color: "white",
+            }}
+          />
+        }
+      >
+        <InventoryReportBillIndividual type="view" formData={formData} />
+      </Modal>
+
       <CustomTable
         columns={report_columns}
         dataSource={dataSource?.map((report) => {
@@ -223,35 +347,11 @@ function Inventory() {
             createdAt: dayjs(report.createdAt).format("DD-MM-YYYY HH:mm:ss"),
             updatedAt: dayjs(report.updatedAt).format("DD-MM-YYYY HH:mm:ss"),
             reportDetails: report.reportDetails,
+            managerId: report.managerId,
           };
         })}
         isFetching={isFetching}
       />
-      {/* <Table
-        bordered
-        loading={isFetching}
-        style={{ marginTop: "10px", maxWidth: "85vw" }}
-        columns={report_columns}
-        dataSource={dataSource?.map((report) => {
-          return {
-            key: report._id,
-            code: report.code,
-            totalActualQuantity: report.totalActualQuantity,
-            totalDiffQuantity: report.totalDiffQuantity,
-            increaseQuantity: report.increaseQuantity,
-            decreaseQuantity: report.decreaseQuantity,
-            createdAt: report.createdAt,
-            updatedAt: report.updatedAt,
-          };
-        })}
-        pagination={{
-          showQuickJumper: true,
-          total: dataSource?.length,
-        }}
-        scroll={{
-          x: 1800,
-        }}
-      /> */}
     </div>
   );
 
@@ -290,7 +390,7 @@ function Inventory() {
   ];
 
   const inventory_product = (
-    <div style={{ width: "100%" }}>
+    <div className="InventoryTable" style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={1}></ToolBar>
       <CustomTable
         isFetching={isFetching}

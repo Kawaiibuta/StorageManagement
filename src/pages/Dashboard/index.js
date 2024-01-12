@@ -59,9 +59,9 @@ function Dashboard() {
         data: [2000, 1000], //chỗ này là số đầu thể hiện phần cap đã sử dụng, số sau thể hiện phần cap trống còn lại => x và 100%-x
         borderWidth: 1,
         borderColor: "black",
-        circumference: 180,
-        rotation: 270,
-        cutout: "70%",
+        circumference: 230,
+        rotation: 245,
+        cutout: "75%",
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -69,9 +69,9 @@ function Dashboard() {
             return null;
           }
           if (context.dataIndex == 0) {
-            return getGradient2(chart);
+            return getGradient(chart);
           } else {
-            return "white";
+            return "#f5f5f5";
           }
         },
       },
@@ -94,13 +94,13 @@ function Dashboard() {
       render: (data) => {
         return <a href="#">{data.name}</a>;
       },
-      width: "17vw",
-      fontSize: "3px",
+      width: "20px",
+      textAlign: "right",
     },
     {
       title: "Thông tin",
+      width: "4vw",
       dataIndex: "info",
-      width: "3vw",
     },
   ];
   //Truyền dữ liệu cho Order Status Outbound
@@ -172,6 +172,8 @@ function Dashboard() {
       info: warehouse.isDeleted ? "Inactive" : "Active",
     },
   ];
+  //Thuộc tính của WarehouseCapacity
+
   const gaugeText = {
     id: "gaugeText",
     beforeDatasetsDraw(chart, args, pluginOptions) {
@@ -189,11 +191,11 @@ function Dashboard() {
       ctx.font = `bold ${fontSize}px sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
-      ctx.fillText(text, xCenter, yCenter - width / 15);
+      ctx.fillText(text, xCenter, yCenter - width / 30);
       ctx.restore();
     },
   };
-  function getGradient2(chart) {
+  function getGradient(chart) {
     const {
       ctx,
       chartArea: { top, bottom, left, right },
@@ -206,23 +208,28 @@ function Dashboard() {
     return gradientSegment;
   }
   const data = {
-    labels: ["Tổng Transaction", "Inbound", "Outbound"],
+    labels: ["Total Transaction", "Inbound", "Outbound"],
     datasets: [
       {
-        label: "Số lượng",
-        data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
+        label: "Num",
+        // data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
+        data: [25, 12, 13],
         backgroundColor: [
           "rgba(75, 192, 192, 0.6)", // Màu của cột Tổng Transaction
           "rgba(255, 99, 132, 0.6)", // Màu của cột Inbound
           "rgba(255, 205, 86, 0.6)", // Màu của cột Outbound
         ],
         borderWidth: 1,
+        barPercentage: 0.4,
+        categoryPercentage: 1,
       },
     ],
   };
 
-  // Cấu hình của biểu đồ
+  // Cấu hình của biểu đồ Transaction
   const options = {
+    maintainAspectRatio: false, // Tắt tự động duy trì tỷ lệ khung hình
+
     plugins: {
       legend: {
         display: false,
@@ -393,78 +400,66 @@ function Dashboard() {
     <div className="wrapper">
       <div className="inner">
         <div className="TransactionsToday">
-          <h3>Transaction</h3>
-          <DatePicker
-            onChange={(date) => setSelectedDay(date || undefined)}
-            format="DD"
-            placeholder="Select Day"
-          />
+          <span className="Title">Transaction Today</span>
+          <div className="filter">
+            <div className="filter_date">
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedDay(date || undefined)}
+                format="DD"
+                placeholder="Select Day"
+              />
 
-          <DatePicker
-            onChange={(date) => setSelectedMonth(date)}
-            picker="month"
-            format="MM"
-            placeholder="Select Month"
-          />
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedMonth(date)}
+                picker="month"
+                format="MM"
+                placeholder="Select Month"
+              />
 
-          <DatePicker
-            onChange={(date) => setSelectedYear(date)}
-            picker="year"
-            format="YYYY"
-            placeholder="Select Year"
-          />
-
-          <Button onClick={fetchtrans}>Apply Filter</Button>
-          <Bar data={data} options={options} />
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedYear(date)}
+                picker="year"
+                format="YYYY"
+                placeholder="Select Year"
+              />
+            </div>
+            <Button className="filter_button" onClick={fetchtrans}>
+              Apply Filter
+            </Button>
+          </div>
+          <div className="ChartBarWrapper">
+            <Bar data={data} options={options} />
+          </div>
         </div>
         <div className="OrderStatus">
-          <div className="top">
-            <span className="Title" style={{ height: "12%" }}>
-              Order Status Outbound
-            </span>
+          <div className="InboundStatus">
+            <span className="Title">Inbound Today</span>
             <Table
-              style={{
-                height: "85%",
-                width: "90%",
-                border: "solid 1px black",
-                overflowY: "scroll",
-              }}
-              columns={table_columns}
-              dataSource={orderstatus_dataSource_Outbound}
-              pagination={false}
-              showHeader={false}
-              size={"small"}
-            />
-          </div>
-          <div className="bottom padtop">
-            <span className="Title">Order Status Inbound</span>
-            <Table
-              style={{
-                height: "85%",
-                width: "90%",
-                border: "solid 1px black",
-                overflowY: "scroll",
-              }}
               columns={table_columns}
               dataSource={orderstatus_dataSource_Inbound}
               pagination={false}
               showHeader={false}
-              size={"small"}
+              size={"large"}
+            />
+          </div>
+          <div className="OutboundStatus">
+            <span className="Title">Outbound Today</span>
+            <Table
+              columns={table_columns}
+              dataSource={orderstatus_dataSource_Outbound}
+              pagination={false}
+              showHeader={false}
+              size={"large"}
             />
           </div>
         </div>
         <div className="WarehouseStatus">
-          <div className="top">
-            <span className="Title" style={{ height: "12%" }}>
-              Warehouse status
-            </span>
+          <div className="WarehouseDetail">
+            <span className="Title">Warehouse Status</span>
             <Table
-              style={{
-                height: "85%",
-                width: "90%",
-                border: "solid 1px black",
-                overflowY: "scroll",
-              }}
               columns={table_columns}
               dataSource={warehousestatus_dataSource}
               pagination={false}
@@ -472,16 +467,14 @@ function Dashboard() {
               size={"small"}
             />
           </div>
-          <div className="bottom divide">
-            <div className="WarehouseCapacity">
-              <span className="Title">Warehouse Capacity</span>
-              <div className="DoughnutWrapper">
-                <Doughnut
-                  data={data5}
-                  options={options5}
-                  plugins={[gaugeText]}
-                ></Doughnut>
-              </div>
+          <div className="WarehouseCapacity">
+            <span className="Title">Warehouse Capacity</span>
+            <div className="DoughnutWrapper">
+              <Doughnut
+                data={data5}
+                options={options5}
+                plugins={[gaugeText]}
+              ></Doughnut>
             </div>
           </div>
         </div>

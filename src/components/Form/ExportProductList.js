@@ -68,21 +68,18 @@ const export_goods_columns = [
 const ExportProductList = React.forwardRef(({ formData }, ref) => {
   const [warehouse, setWarehouse] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
-  console.log("formData?bill", formData);
+  // console.log("formData?bill", formData);
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
-
-  const goodsList = useSelector(
-    (state) => state.product.goodsList?.allProductsIncludeDelete
-  );
 
   const partners = useSelector(
     (state) => state.partner.supplier?.allPartnersIncludeDelete
   );
-  console.log("userwh", userWarehouseId);
 
-  let supplier;
-  let supplierContactId;
+  const goodsList = useSelector(
+    (state) => state.product.goodsList?.allProducts
+  );
+  console.log("userwh", userWarehouseId);
 
   console.log("suppliers", partners);
 
@@ -102,10 +99,6 @@ const ExportProductList = React.forwardRef(({ formData }, ref) => {
     fetchData();
   }, [userWarehouseId]);
 
-  if (partners && formData && warehouse) {
-    supplier = partners?.find((sup) => sup._id === formData.supplierId);
-    supplierContactId = supplier.contactId;
-  }
   console.log("warehouse", warehouse);
   if (isFetching) {
     return null;
@@ -118,20 +111,20 @@ const ExportProductList = React.forwardRef(({ formData }, ref) => {
           <span style={{ fontSize: "28px" }} className="fs-32 bold">
             PRODUCT LIST
           </span>
-          <span className=" italic fs-14">{formData?.status}</span>
         </div>
         <div className="Info">
           <div className="TransactionInfo">
-            <span className="fs-16 bold">Export at: </span>
-            <span className="fs-14 italic">{formData?.create_time}</span>
+            <span className="fs-16 bold">
+              {" "}
+              {"Export at:" + new Date().toLocaleString() + ""}
+            </span>
+            {/* <span className="fs-14 italic">{formData?.create_time}</span> */}
             <br></br>
             <span className="fs-16 bold">Export by: </span>
-            <span className="fs-14 italic">{formData?.currentUser}</span>
+            <span className="fs-14 italic">{user.employeeId?.name}</span>
             <br></br>
             <span className="fs-16 bold">Product Count:</span>
-            <span className="fs-14 italic">
-              {/* number of product (có bao nhiêu mặt hàng (kp số lượng mặt hàng)) ... */}
-            </span>
+            <span className="fs-14 italic">{goodsList?.length}</span>
             <br></br>
             <span className="fs-16 bold">Total Value:</span>
             <span className="fs-14 italic">
@@ -176,18 +169,26 @@ const ExportProductList = React.forwardRef(({ formData }, ref) => {
                   textAlign: "center",
                 }}
                 columns={export_goods_columns}
-                dataSource={formData?.trans_details.map((detail, i) => {
-                  const product = goodsList.find(
-                    (goods) => goods._id === detail.productId
-                  );
+                dataSource={goodsList?.map((goods) => {
                   return {
-                    id: i + 1,
-                    name: product.name,
-                    quantity: detail.quantity,
-                    price: Intl.NumberFormat("en-US", {
+                    key: goods?._id,
+                    name: goods.name,
+                    sku_code: goods.skuCode,
+                    supplier_name: goods.supplierId?.code,
+                    supplier_id: goods.supplierId?._id,
+                    supplierCodeAndName:
+                      goods.supplierId?.code + " - " + goods.supplierId?.name,
+                    maximum_quantity: goods.maximumQuantity,
+                    maximum_quantity_format:
+                      goods.maximumQuantity.toLocaleString(),
+                    price: goods.price,
+                    price_format: Intl.NumberFormat("en-US", {
                       style: "currency",
                       currency: "USD",
-                    }).format(detail.total),
+                    }).format(goods.price),
+                    unit: goods.unit,
+                    image: goods.imageUrl,
+                    specification: goods.specification,
                   };
                 })}
                 pagination={false}

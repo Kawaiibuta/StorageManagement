@@ -426,7 +426,7 @@ function Outbound() {
   ];
 
   const all = (
-    <div style={{ width: "100%" }}>
+    <div className="OutboundTable" style={{ width: "100%" }}>
       <ToolBar onUpdateData={onUpdateData} type={2} page={"outbound"}></ToolBar>
       <OutBoundForm
         isModalOpen={isModalOpen}

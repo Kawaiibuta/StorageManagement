@@ -34,7 +34,7 @@ function ChangePasswordForm({
         // id: user._id,
       };
       console.log("data", user.accessToken);
-      await changePassword(data, user.accessToken);
+      await changePassword(data, user.accessToken, user._id);
       handleOkButton();
       form.resetFields();
       message.success("Change password success");

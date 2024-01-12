@@ -3,58 +3,51 @@ import "./style.css";
 import { ConfigProvider, Table } from "antd";
 import { useSelector } from "react-redux";
 import { getWarehouseById } from "../../redux/apiRequest";
+import dayjs from "dayjs";
 
 const report_columns = [
   {
     title: "Code",
-
     dataIndex: "code",
-    width: 150,
+    // width: 150,
     key: "code",
-    render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
   },
   {
     title: "Total Actual Quantity",
     dataIndex: "totalActualQuantity",
     key: "totalActualQuantity",
-    width: 200,
+    // width: 200,
   },
   {
     title: "Total Difference Quantity",
     dataIndex: "totalDiffQuantity",
     key: "totalDiffQuantity",
-    width: 200,
+    // width: 200,
   },
   {
     title: "Increase Quantity",
     dataIndex: "increaseQuantity",
     key: "increaseQuantity",
-    width: 200,
+    // width: 200,
   },
   {
     title: "Decrease Quantity",
     dataIndex: "decreaseQuantity",
     key: "decreaseQuantity",
-    width: 200,
+    // width: 200,
   },
   {
     title: "Created At",
     dataIndex: "createdAt",
     key: "createdAt",
-    width: 200,
-  },
-  {
-    title: "Updated At",
-    dataIndex: "updatedAt",
-    key: "updatedAt",
-    width: 200,
+    // width: 200,
   },
 ];
 
 const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
   const [warehouse, setWarehouse] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
-  console.log("formData?bill", formData);
+  console.log("formDatabill", formData);
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
 
@@ -67,8 +60,8 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
   );
   console.log("userwh", userWarehouseId);
 
-  let supplier;
-  let supplierContactId;
+  // let supplier;
+  // let supplierContactId;
 
   console.log("suppliers", partners);
 
@@ -88,10 +81,10 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
     fetchData();
   }, [userWarehouseId]);
 
-  if (partners && formData && warehouse) {
-    supplier = partners?.find((sup) => sup._id === formData.supplierId);
-    supplierContactId = supplier.contactId;
-  }
+  // if (partners && formData && warehouse) {
+  //   supplier = partners?.find((sup) => sup._id === formData.supplierId);
+  //   supplierContactId = supplier.contactId;
+  // }
   console.log("warehouse", warehouse);
   if (isFetching) {
     return null;
@@ -107,19 +100,19 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
           <span className=" italic fs-14">{formData?.status}</span>
         </div>
         <div className="Info">
-          <div className="TransactionInfo">
+          {/* <div className="TransactionInfo">
             <span className="fs-16 bold">Time of inventory: </span>
-            {/* Thời gian thực hiện kiểm kê - chỗ này để ghi?*/}
+            Thời gian thực hiện kiểm kê - chỗ này để ghi?
             <br />
             <span className="fs-16 bold">Created at: </span>
-            <span className="fs-14 italic">{formData?.create_time}</span>
-            {/* Thời gian người tạo kiểm kê lên hệ thống? */}
+            <span className="fs-14 italic">{formData?.createdAt}</span>
+            Thời gian người tạo kiểm kê lên hệ thống?
             <br></br>
-            <span className="fs-16 bold italic">
-              Prepared by: {formData?.creatorName}
-            </span>
-            {/* Người tạo kiểm kê lên hệ thống? */}
-          </div>
+             <span className="fs-16 bold italic">
+              Prepared by: {formData?.managerId?.name}
+            </span> 
+            Người tạo kiểm kê lên hệ thống?
+          </div> */}
           <div className="WarehouseInfo">
             <span className="fs-20 bold">
               Warehouse: {warehouse ? warehouse.name : ""}
@@ -141,20 +134,20 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
                 : ""}
             </span>
           </div>
-          <div className="EmployeeInfo">
+          {/* <div className="EmployeeInfo">
             <span className="fs-20 bold">
               Inventory Employee:
-              {/* Nhân viên kiểm kê*/}
+              Nhân viên kiểm kê
             </span>
             <br></br>
             <span className="fs-12 italic">
-              {/*employee id - Mã nhân viên */}
+              employee id - Mã nhân viên
             </span>
             <br></br>
             <span className="fs-12 italic">
-              {/* employee phone_num + email - Thông tin liên lạc của nhân viên */}
+              employee phone_num + email - Thông tin liên lạc của nhân viên
             </span>
-          </div>
+          </div> */}
         </div>
 
         <div style={{ textAlign: "center" }} className="TransactionDetail">
@@ -169,24 +162,39 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
               }}
             >
               <Table
+                size="small"
                 bordered
                 style={{
                   marginTop: "10px",
                   textAlign: "center",
                 }}
                 columns={report_columns}
-                dataSource={formData?.trans_details.map((detail, i) => {
-                  const product = goodsList.find(
-                    (goods) => goods._id === detail.productId
-                  );
+                dataSource={formData?.map((report) => {
+                  // let status;
+                  // if (report.isApproved === true) {
+                  //   status = "Approved";
+                  // } else if (report.isApproved === false) {
+                  //   status = "Reject";
+                  // } else {
+                  //   status = "Waiting";
+                  // }
                   return {
-                    id: i + 1,
-                    name: product.name,
-                    quantity: detail.quantity,
-                    price: Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(detail.total),
+                    key: report._id,
+                    code: report.code,
+                    // status: status,
+                    totalActualQuantity: report.totalActualQuantity,
+                    totalDiffQuantity: report.totalDiffQuantity,
+                    increaseQuantity: report.increaseQuantity,
+                    decreaseQuantity: report.decreaseQuantity,
+                    createdAt: dayjs(report.createdAt).format(
+                      "DD-MM-YYYY HH:mm:ss"
+                    ),
+                    updatedAt: dayjs(report.updatedAt).format(
+                      "DD-MM-YYYY HH:mm:ss"
+                    ),
+                    managerId: report.managerId,
+
+                    reportDetails: report.reportDetails,
                   };
                 })}
                 pagination={false}
