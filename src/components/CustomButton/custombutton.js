@@ -57,7 +57,7 @@ const PrintButton = ({
           <ExportProductList formData={productsList} ref={componentRef} />
         )}
       </div>
-      <Button className="two-three" onClick={handlePrint}>
+      <Button className="one-right" onClick={handlePrint}>
         <BiTransfer className="icon" />
         PRINT
       </Button>
@@ -292,7 +292,7 @@ const CustomButton = ({
       );
       buttons.push(
         <Button
-          className="one-right"
+          className="one-middle"
           onClick={() => handleButtonClick("TRANSFER")}
         >
           <BiTransfer className="icon" />
@@ -302,6 +302,7 @@ const CustomButton = ({
       page === "product" &&
         buttons.push(
           <PrintButton
+            className="one-right"
             allInventoryReportData={allInventoryReportData}
             productList={productsList}
             page={page}
@@ -311,14 +312,14 @@ const CustomButton = ({
 
     case 4:
       buttons.push(
-        <Button className="two-one" onClick={() => handleButtonClick("NEW")}>
+        <Button className="one-left" onClick={() => handleButtonClick("NEW")}>
           <MdAdd className="icon" />
           NEW
         </Button>
       );
       buttons.push(
         <Button
-          className="two-two"
+          className="one-middle"
           onClick={() => handleButtonClick("REFRESH")}
         >
           <MdAutorenew className="icon" />
