@@ -448,6 +448,13 @@ export const getWarehouseById = async (warehouseId) => {
   );
 };
 
+export const getTransactionById = async (warehouseId) => {
+  return await axios.get(
+    `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/${warehouseId}`
+  );
+};
+
+
 export const updateStatus = async (transactionId, status) => {
   await axios.put(
     `https://warehousemanagement.onrender.com/api/transaction/status/${transactionId}`,

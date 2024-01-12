@@ -259,14 +259,14 @@ const CustomButton = ({
       break;
     case 2:
       buttons.push(
-        <Button className="two-one" onClick={() => handleButtonClick("NEW")}>
+        <Button className="one-left" onClick={() => handleButtonClick("NEW")}>
           <MdAdd className="icon" />
           NEW
         </Button>
       );
       buttons.push(
         <Button
-          className="two-two"
+          className="one-right"
           onClick={() => handleButtonClick("REFRESH")}
         >
           <MdAutorenew className="icon" />
@@ -276,14 +276,14 @@ const CustomButton = ({
       break;
     case 3:
       buttons.push(
-        <Button className="two-one" onClick={() => handleButtonClick("NEW")}>
+        <Button className="one-left" onClick={() => handleButtonClick("NEW")}>
           <MdAdd className="icon" />
           NEW
         </Button>
       );
       buttons.push(
         <Button
-          className="two-two"
+          className="one-middle"
           onClick={() => handleButtonClick("REFRESH")}
         >
           <MdAutorenew className="icon" />
@@ -292,7 +292,7 @@ const CustomButton = ({
       );
       buttons.push(
         <Button
-          className="two-three"
+          className="one-right"
           onClick={() => handleButtonClick("TRANSFER")}
         >
           <BiTransfer className="icon" />
@@ -344,22 +344,9 @@ const CustomButton = ({
       break;
   }
   return (
-    <div style={{ display: "inline" }}>
+    <div className="CustomButton" style={{ display: "inline" }}>
       {buttons}
-
       {form}
-
-      {/* Test */}
-      {/* <Modal
-        open={isModal2Open}
-        onOk={handleOk2}
-        onCancel={handleCancel2}
-        width="21cm"
-        height="29.7cm"
-      >
-        {<OutBoundBill />}
-      </Modal> */}
-      {/* End Test */}
     </div>
   );
 };

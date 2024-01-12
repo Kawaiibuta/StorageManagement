@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getWarehouseById } from "../../redux/apiRequest";
+import { getWarehouseById, getTransactionById } from "../../redux/apiRequest";
 
 import "./dashboard.css";
 // import { Gauge } from "@ant-design/charts";
@@ -17,7 +17,7 @@ import {
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
-import { Table, Tabs } from "antd";
+import { Button, DatePicker, Table, Tabs } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 
 ChartJS.register(
@@ -45,19 +45,23 @@ function Dashboard() {
   const [outbound_ship, setOutboundShip] = useState(0);
   const [outbound_return, setOutboundReturn] = useState(0);
   const [warehouse, setWarehouse] = useState([]);
-  const [manager,setManager] =useState('');
-  const [address,setAddress] = useState('');
+  const [manager, setManager] = useState("");
+  const [address, setAddress] = useState("");
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
+
   //Thuộc tinh của WarehouseCapacity
   const data5 = {
-    labels: ["Warehouse Capacity"],
+    labels: ["Warehouse in Used", "Free"],
     datasets: [
       {
         data: [2000, 1000], //chỗ này là số đầu thể hiện phần cap đã sử dụng, số sau thể hiện phần cap trống còn lại => x và 100%-x
         borderWidth: 1,
         borderColor: "black",
-        circumference: 180,
-        rotation: 270,
-        cutout: "70%",
+        circumference: 230,
+        rotation: 245,
+        cutout: "75%",
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -65,9 +69,9 @@ function Dashboard() {
             return null;
           }
           if (context.dataIndex == 0) {
-            return getGradient2(chart);
+            return getGradient(chart);
           } else {
-            return "white";
+            return "#f5f5f5";
           }
         },
       },
@@ -79,7 +83,7 @@ function Dashboard() {
         display: false,
       },
       gaugeText: {
-        text: "1900 in use", //Đây để truyền số cho phần cap đã sử dụng
+        text: "2000 in use", //Đây để truyền số cho phần cap đã sử dụng
       },
     },
   };
@@ -90,13 +94,13 @@ function Dashboard() {
       render: (data) => {
         return <a href="#">{data.name}</a>;
       },
-      width: "17vw",
-      fontSize: "3px",
+      width: "20px",
+      textAlign: "right",
     },
     {
       title: "Thông tin",
+      width: "4vw",
       dataIndex: "info",
-      width: "3vw",
     },
   ];
   //Truyền dữ liệu cho Order Status Outbound
@@ -148,11 +152,11 @@ function Dashboard() {
       info: warehouse.capacity,
     },
     {
-      name: "Đã lưu trữ",
+      name: "Stored",
       info: "724",
     },
     {
-      name: "Còn trống",
+      name: "Free",
       info: "79",
     },
     {
@@ -165,9 +169,11 @@ function Dashboard() {
     },
     {
       name: "Status",
-      info: warehouse.isDeleted ? 'Inactive' : 'Active',
+      info: warehouse.isDeleted ? "Inactive" : "Active",
     },
   ];
+  //Thuộc tính của WarehouseCapacity
+
   const gaugeText = {
     id: "gaugeText",
     beforeDatasetsDraw(chart, args, pluginOptions) {
@@ -185,23 +191,11 @@ function Dashboard() {
       ctx.font = `bold ${fontSize}px sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom";
-      ctx.fillText(text, xCenter, yCenter - width / 15);
+      ctx.fillText(text, xCenter, yCenter - width / 30);
       ctx.restore();
     },
   };
   function getGradient(chart) {
-    const {
-      ctx,
-      chartArea: { top, bottom, left, right },
-    } = chart;
-    const gradientSegment = ctx.createLinearGradient(left, 0, right, 0);
-    gradientSegment.addColorStop(0, "red");
-    gradientSegment.addColorStop(0.3, "orange");
-    gradientSegment.addColorStop(0.7, "yellow");
-    gradientSegment.addColorStop(1, "lime");
-    return gradientSegment;
-  }
-  function getGradient2(chart) {
     const {
       ctx,
       chartArea: { top, bottom, left, right },
@@ -214,23 +208,28 @@ function Dashboard() {
     return gradientSegment;
   }
   const data = {
-    labels: ["Tổng Transaction", "Inbound", "Outbound"],
+    labels: ["Total Transaction", "Inbound", "Outbound"],
     datasets: [
       {
-        label: "Số lượng",
-        data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
+        label: "Num",
+        // data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
+        data: [25, 12, 13],
         backgroundColor: [
           "rgba(75, 192, 192, 0.6)", // Màu của cột Tổng Transaction
           "rgba(255, 99, 132, 0.6)", // Màu của cột Inbound
           "rgba(255, 205, 86, 0.6)", // Màu của cột Outbound
         ],
         borderWidth: 1,
+        barPercentage: 0.4,
+        categoryPercentage: 1,
       },
     ],
   };
 
-  // Cấu hình của biểu đồ
+  // Cấu hình của biểu đồ Transaction
   const options = {
+    maintainAspectRatio: false, // Tắt tự động duy trì tỷ lệ khung hình
+
     plugins: {
       legend: {
         display: false,
@@ -257,159 +256,210 @@ function Dashboard() {
     setSelectedType(key);
   };
 
+  const countstatus = (temp) => {
+    let inbound_done_count = 0;
+    let inbound_order_count = 0;
+    let inbound_return_count = 0;
+    let inbound_ship_count = 0;
+    let outbound_done_count = 0;
+    let outbound_order_count = 0;
+    let outbound_return_count = 0;
+    let outbound_ship_count = 0;
+    temp.forEach((item) => {
+      const key = `${item.type}_${item.status}`;
+
+      switch (key) {
+        case "Inbound_Done":
+          inbound_done_count++;
+          break;
+        case "Inbound_Order":
+          inbound_order_count++;
+          break;
+        case "Inbound_Return":
+          inbound_return_count++;
+          break;
+        case "Inbound_Ship":
+          inbound_ship_count++;
+          break;
+        case "Outbound_Done":
+          outbound_done_count++;
+          break;
+        case "Outbound_Order":
+          outbound_order_count++;
+          break;
+        case "Outbound_Return":
+          outbound_return_count++;
+          break;
+        case "Outbound_Ship":
+          outbound_ship_count++;
+          break;
+        default:
+          break;
+      }
+    });
+    setInboundDone(inbound_done_count);
+    setInboundOrder(inbound_order_count);
+    setInboundReturn(inbound_return_count);
+    setInboundShip(inbound_ship_count);
+    setOutboundDone(outbound_done_count);
+    setOutboundOrder(outbound_order_count);
+    setOutboundReturn(outbound_return_count);
+    setOutboundShip(outbound_ship_count);
+  };
+
+  const counttrans = (temp) => {
+    let inbound_count = 0;
+    let outbound_count = 0;
+    temp.forEach((item) => {
+      if (item.type === "Inbound") {
+        inbound_count++;
+      } else if (item.type === "Outbound") {
+        outbound_count++;
+      }
+    });
+    setInbound(inbound_count);
+    setOutbound(outbound_count);
+  };
   const fetchtrans = async () => {
     try {
-      const res = await axios.get(
-        `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/657f1395e25a1ba0b17e6689`
-      );
-      setItems(res.data);
+      const res = await getTransactionById(userWarehouseId);
       const temp = res.data;
-      let inbound_count = 0;
-      let outbound_count = 0;
-      let inbound_done_count = 0;
-      let inbound_order_count = 0;
-      let inbound_return_count = 0;
-      let inbound_ship_count = 0;
-      let outbound_done_count = 0;
-      let outbound_order_count = 0;
-      let outbound_return_count = 0;
-      let outbound_ship_count = 0;
+      const gettransbyday = [];
+      const gettransbymonth = [];
+      const gettransbyyear = [];
+
       temp.forEach((item) => {
-        const key = `${item.type}_${item.status}`;
-        if (item.type === "Inbound") {
-          inbound_count++;
-        } else if (item.type === "Outbound") {
-          outbound_count++;
-        }
-        switch (key) {
-          case "Inbound_Done":
-            inbound_done_count++;
-            break;
-          case "Inbound_Order":
-            inbound_order_count++;
-            break;
-          case "Inbound_Return":
-            inbound_return_count++;
-            break;
-          case "Inbound_Ship":
-            inbound_ship_count++;
-            break;
-          case "Outbound_Done":
-            outbound_done_count++;
-            break;
-          case "Outbound_Order":
-            outbound_order_count++;
-            break;
-          case "Outbound_Return":
-            outbound_return_count++;
-            break;
-          case "Outbound_Ship":
-            outbound_ship_count++;
-            break;
-          default:
-            break;
+        const transactionDate = new Date(item.createdAt);
+        const day = ("0" + transactionDate.getDate()).slice(-2);
+        const month = ("0" + (transactionDate.getMonth() + 1)).slice(-2);
+        const year = transactionDate.getFullYear().toString();
+        const selectday = selectedDay ? selectedDay.format("DD") : null;
+        const selectmonth = selectedMonth ? selectedMonth.format("MM") : null;
+        const selectyear = selectedYear ? selectedYear.format("YYYY") : null;
+
+        if (selectday === day && selectmonth === month && selectyear === year) {
+          gettransbyday.push(item);
+        } else if (
+          selectday === null &&
+          selectmonth === month &&
+          selectyear === year
+        ) {
+          gettransbymonth.push(item);
+        } else if (
+          selectday === null &&
+          selectmonth === null &&
+          selectyear === year
+        ) {
+          gettransbyyear.push(item);
         }
       });
-      setInbound(inbound_count);
-      setOutbound(outbound_count);
-      setInboundDone(inbound_done_count);
-      setInboundOrder(inbound_order_count);
-      setInboundReturn(inbound_return_count);
-      setInboundShip(inbound_ship_count);
-      setOutboundDone(outbound_done_count);
-      setOutboundOrder(outbound_order_count);
-      setOutboundReturn(outbound_return_count);
-      setOutboundShip(outbound_ship_count);
+
+      if (gettransbyday && gettransbyday.length > 0) {
+        setItems(gettransbyday);
+        counttrans(gettransbyday);
+      } else if (gettransbymonth && gettransbymonth.length > 0) {
+        setItems(gettransbymonth);
+        counttrans(gettransbymonth);
+      } else if (gettransbyyear && gettransbyyear.length > 0) {
+        setItems(gettransbyyear);
+        counttrans(gettransbyyear);
+      } else {
+        setItems([]);
+        counttrans([]);
+      }
+
+      countstatus(res.data);
     } catch (e) {
       console.log(e);
     }
   };
 
+  const user = useSelector((state) => state.auth.login?.currentUser);
+  const userWarehouseId = user.employeeId.warehouseId;
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await getWarehouseById(`657f1395e25a1ba0b17e6689`);
+        const res = await getWarehouseById(userWarehouseId);
         const temp = res.data;
         setWarehouse(res.data);
         setManager(temp.managerId.name);
-        setAddress(temp.contactId.address)
+        setAddress(temp.contactId.address);
       } catch (e) {
         console.log(e);
       }
     }
     fetchData();
   }, []);
-  
+
   useEffect(() => {
     fetchtrans();
-  }, []);
+  }, [selectedDay, selectedMonth, selectedYear]);
   console.log(warehouse);
-  
+
   return (
     <div className="wrapper">
       <div className="inner">
         <div className="TransactionsToday">
-          <h3>Transaction</h3>
-          <Tabs defaultActiveKey={selectedType} onChange={handleTabChange}>
-            <TabPane tab="Theo ngày" key="day">
-              <Bar data={data} options={options} />
-            </TabPane>
-            <TabPane tab="Theo tháng" key="month">
-              <Bar data={data} options={options} />
-            </TabPane>
-            <TabPane tab="Theo năm" key="year">
-              <Bar data={data} options={options} />
-            </TabPane>
-          </Tabs>
+          <span className="Title">Transaction Today</span>
+          <div className="filter">
+            <div className="filter_date">
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedDay(date || undefined)}
+                format="DD"
+                placeholder="Select Day"
+              />
+
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedMonth(date)}
+                picker="month"
+                format="MM"
+                placeholder="Select Month"
+              />
+
+              <DatePicker
+                className="filter_picker"
+                onChange={(date) => setSelectedYear(date)}
+                picker="year"
+                format="YYYY"
+                placeholder="Select Year"
+              />
+            </div>
+            <Button className="filter_button" onClick={fetchtrans}>
+              Apply Filter
+            </Button>
+          </div>
+          <div className="ChartBarWrapper">
+            <Bar data={data} options={options} />
+          </div>
         </div>
         <div className="OrderStatus">
-          <div className="top">
-            <span className="Title" style={{ height: "12%" }}>
-              Order Status Outbound
-            </span>
+          <div className="InboundStatus">
+            <span className="Title">Inbound Today</span>
             <Table
-              style={{
-                height: "85%",
-                width: "90%",
-                border: "solid 1px black",
-                overflowY: "scroll",
-              }}
-              columns={table_columns}
-              dataSource={orderstatus_dataSource_Outbound}
-              pagination={false}
-              showHeader={false}
-              size={"small"}
-            />
-          </div>
-          <div className="bottom padtop">
-            <span className="Title">Order Status Inbound</span>
-            <Table
-              style={{
-                height: "85%",
-                width: "90%",
-                border: "solid 1px black",
-                overflowY: "scroll",
-              }}
               columns={table_columns}
               dataSource={orderstatus_dataSource_Inbound}
               pagination={false}
               showHeader={false}
-              size={"small"}
+              size={"large"}
+            />
+          </div>
+          <div className="OutboundStatus">
+            <span className="Title">Outbound Today</span>
+            <Table
+              columns={table_columns}
+              dataSource={orderstatus_dataSource_Outbound}
+              pagination={false}
+              showHeader={false}
+              size={"large"}
             />
           </div>
         </div>
         <div className="WarehouseStatus">
-          <div className="top">
-            <span className="Title" style={{ height: "12%" }}>
-              Warehouse status
-            </span>
+          <div className="WarehouseDetail">
+            <span className="Title">Warehouse Status</span>
             <Table
-              style={{
-                height: "85%",
-                width: "90%",
-                border: "solid 1px black",
-                overflowY: "scroll",
-              }}
               columns={table_columns}
               dataSource={warehousestatus_dataSource}
               pagination={false}
@@ -417,16 +467,14 @@ function Dashboard() {
               size={"small"}
             />
           </div>
-          <div className="bottom divide">
-            <div className="WarehouseCapacity">
-              <span className="Title">Warehouse Capacity</span>
-              <div className="DoughnutWrapper">
-                <Doughnut
-                  data={data5}
-                  options={options5}
-                  plugins={[gaugeText]}
-                ></Doughnut>
-              </div>
+          <div className="WarehouseCapacity">
+            <span className="Title">Warehouse Capacity</span>
+            <div className="DoughnutWrapper">
+              <Doughnut
+                data={data5}
+                options={options5}
+                plugins={[gaugeText]}
+              ></Doughnut>
             </div>
           </div>
         </div>
