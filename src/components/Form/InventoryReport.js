@@ -40,66 +40,6 @@ const tailLayoutTwoButton = {
   },
 };
 
-const ApprovedAndRejectButton = ({
-  Form,
-  form,
-  title,
-  id,
-  onUpdateData,
-  handleOkButton,
-}) => {
-  const [loading, setLoading] = React.useState(false);
-
-  return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Button: {
-            textHoverBg: "white",
-            defaultBg:
-              title === "REJECT" ? "crimson" : "rgba(156, 188, 235, 1)",
-            defaultColor: "white",
-            fontWeight: "500",
-          },
-        },
-      }}
-    >
-      <Button
-        onClick={async () => {
-          setLoading(true);
-          try {
-            await updateReportApproved(id, {
-              isApproved: title === "REJECT" ? false : true,
-            });
-            handleOkButton();
-            onUpdateData();
-            message.success("Update transfer success");
-          } catch (e) {
-            console.log(e);
-            message.error(
-              typeof e.response.data === "string"
-                ? e.response.data
-                : "Something went wrong!"
-            );
-          }
-
-          setLoading(false);
-        }}
-        style={{
-          padding: "0px 50px",
-          marginBottom: "24px",
-          width: "200px",
-        }}
-        type="default"
-        size="large"
-        loading={loading}
-      >
-        {title}
-      </Button>
-    </ConfigProvider>
-  );
-};
-
 function InventoryReport({
   onUpdateData,
   isModalOpen,
@@ -325,11 +265,11 @@ function InventoryReport({
 
             <Form.Item {...tailLayout}>
               <Space>
-                formData ? null : (
-                <SubmitButton Form={Form} form={form} isLoading={loading}>
-                  Ok
-                </SubmitButton>
-                )
+                {formData ? null : (
+                  <SubmitButton Form={Form} form={form} isLoading={loading}>
+                    Ok
+                  </SubmitButton>
+                )}
               </Space>
             </Form.Item>
           </Form>

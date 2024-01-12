@@ -42,7 +42,7 @@ import OutBoundForm from "../../components/Form/OutBoundForm.js";
 import dnIcon from "../../assets/images/dn_icon.png";
 import dnIconActive from "../../assets/images/dn_icon_active.png";
 import orderIcon from "../../assets/images/order_outbound_icon.png";
-import orderIconActive from "../../assets/images/order_outbound_icon_active.png";
+import orderIconActive from "../../assets/images/oder_outbound_icon_active.png";
 import doneIcon from "../../assets/images/outbound_done_icon.png";
 import doneIconActive from "../../assets/images/outbound_done_icon_active.png";
 import TabPane from "antd/es/tabs/TabPane.js";

@@ -344,13 +344,14 @@ function AppHeader({ collapsed, setCollapsed }) {
                           // console.log(data);
 
                           message.success("Update employee success");
-                          // onUpdateData();
+
                           setButtonLoading(false);
                         })
                         .catch((info) => {
                           console.log("Validate Failed:", info);
                         });
                     }
+                    setButtonLoading(false);
                   }}
                   type="primary"
                 >

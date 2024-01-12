@@ -721,23 +721,25 @@ function Staff() {
   return (
     <div style={{ margin: "0px 16px" }}>
       <Tabs onChange={onTabsChange} size="large" defaultActiveKey="1">
-        <TabPane
-          tab={
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <MdAssignmentInd size={30} />
-              EMPLOYEE
-            </span>
-          }
-          key="1"
-        >
-          {staff_employee}
-        </TabPane>
+        {isAdmin || (
+          <TabPane
+            tab={
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <MdAssignmentInd size={30} />
+                EMPLOYEE
+              </span>
+            }
+            key="1"
+          >
+            {staff_employee}
+          </TabPane>
+        )}
 
         {isAdmin ? (
           <TabPane

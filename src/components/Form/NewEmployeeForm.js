@@ -29,6 +29,7 @@ function NewEmployeeForm({
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
+  const isAdmin = !user.isEmployeee;
   //antd
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
@@ -61,6 +62,7 @@ function NewEmployeeForm({
   );
 
   const handleFinish = async (values) => {
+    console.log("values", values);
     try {
       setIsLoading(true);
 
@@ -77,8 +79,11 @@ function NewEmployeeForm({
       formData.append("email", values.employeeEmail);
       formData.append("phone_num", values.employeePhoneNumber);
       formData.append("address", values.employeeAddress);
-
-      formData.append("warehouseId", userWarehouseId);
+      if (position === "Manager") {
+        formData.append("warehouseId", values.employeeWarehouse);
+      } else {
+        formData.append("warehouseId", userWarehouseId);
+      }
 
       // Append the file to form data
       formData.append("image", values.employeeAvatar.file.originFileObj);
@@ -241,27 +246,29 @@ function NewEmployeeForm({
             >
               <Input placeholder="Employee Email" type="email" />
             </Form.Item>
-            {/* <Form.Item
-              labelAlign="left"
-              label={<p>&nbsp;Warehouse</p>}
-              name="employeeWarehouse"
-              rules={[
-                {
-                  required: false,
-                },
-              ]}
-            >
-              <Select
-                allowClear
-                options={warehouses?.map((warehouse) => {
-                  return {
-                    label: warehouse.code + " - " + warehouse.name,
-                    value: warehouse._id,
-                  };
-                })}
-                placeholder="Select Warehouse where Employee work"
-              ></Select>
-            </Form.Item> */}
+            {isAdmin && (
+              <Form.Item
+                labelAlign="left"
+                label={<p>&nbsp;Warehouse</p>}
+                name="employeeWarehouse"
+                rules={[
+                  {
+                    required: false,
+                  },
+                ]}
+              >
+                <Select
+                  allowClear
+                  options={warehouses?.map((warehouse) => {
+                    return {
+                      label: warehouse.code + " - " + warehouse.name,
+                      value: warehouse._id,
+                    };
+                  })}
+                  placeholder="Select Warehouse where Employee work"
+                ></Select>
+              </Form.Item>
+            )}
             <Form.Item
               labelAlign="left"
               name="employeeStartDate"
