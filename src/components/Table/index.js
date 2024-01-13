@@ -1,6 +1,6 @@
 import { ConfigProvider, Modal, Table } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { useState } from "react";
+
 import "./style.css";
 
 function CustomTable({

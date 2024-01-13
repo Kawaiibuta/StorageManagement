@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+
 import { getWarehouseById, getTransactionById } from "../../redux/apiRequest";
 
 import "./dashboard.css";
@@ -17,8 +17,8 @@ import {
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
-import { Button, DatePicker, Table, Tabs } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { Button, DatePicker, Table } from "antd";
+import { useSelector } from "react-redux";
 
 ChartJS.register(
   ArcElement,
@@ -30,7 +30,6 @@ ChartJS.register(
   Legend
 );
 
-const { TabPane } = Tabs;
 function Dashboard() {
   const [selectedType, setSelectedType] = useState("day");
   const [items, setItems] = useState([]);

@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useRef, useState } from "react";
-import TabView from "../../components/Button Header/TabView";
 
 import {
   Button,
@@ -9,7 +8,6 @@ import {
   Modal,
   Popconfirm,
   Space,
-  Table,
   Tabs,
   Tag,
   Tooltip,
@@ -25,9 +23,7 @@ import {
   getAllOutbound,
   getAllPartnersIncludeDelete,
   getAllProductsIncludeDelete,
-  getAllSupplier,
   getAllWarehouses,
-  getGoodsList,
   getGoodsListByWarehouseId,
   updateStatus,
 } from "../../redux/apiRequest.js";

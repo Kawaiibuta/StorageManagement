@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import AppHeader from "../../components/AppHeader";
 import SideMenu from "../../components/SideMenu";
-import PageContent from "../../components/PageContent";
 import { Layout } from "antd";
-import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 function Home() {

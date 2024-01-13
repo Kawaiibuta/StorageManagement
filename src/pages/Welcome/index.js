@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import welcomeScreen from "../../assets/images/warehouse_screen.png";
-import { Button, ConfigProvider } from "antd";
 
 function Welcome() {
   return (

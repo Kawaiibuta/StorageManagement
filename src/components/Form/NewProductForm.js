@@ -1,17 +1,7 @@
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import {
-  Select,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Upload,
-  Modal,
-  Space,
-  message,
-} from "antd";
-import { useForm } from "antd/es/form/Form";
+import { Select, Form, Input, InputNumber, Upload, Space, message } from "antd";
+
 import { useSelector } from "react-redux";
 import { addProduct } from "../../redux/apiRequest";
 import CustomForm from "../CustomForm";

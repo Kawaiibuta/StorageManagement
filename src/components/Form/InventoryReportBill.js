@@ -51,10 +51,6 @@ const InventoryReportBill = React.forwardRef(({ formData }, ref) => {
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
 
-  const goodsList = useSelector(
-    (state) => state.product.goodsList?.allProductsIncludeDelete
-  );
-
   const partners = useSelector(
     (state) => state.partner.supplier?.allPartnersIncludeDelete
   );

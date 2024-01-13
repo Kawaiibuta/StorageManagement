@@ -1,18 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useRef, useState } from "react";
-import TabView from "../../components/Button Header/TabView";
-import {
-  Table,
-  Form,
-  Input,
-  message,
-  Modal,
-  Tabs,
-  Tooltip,
-  Popconfirm,
-  Button,
-  Space,
-} from "antd";
+
+import { Input, message, Tabs, Tooltip, Popconfirm, Button, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
@@ -34,45 +23,7 @@ import customerIconActive from "../../assets/images/customer_icon_active.png";
 import CustomTable from "../../components/Table/index.js";
 import Highlighter from "react-highlight-words";
 
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-
-  ...restProps
-}) => {
-  const inputNode = <Input />;
-
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
-
 function Partner() {
-  const [form] = Form.useForm();
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
 

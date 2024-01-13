@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import {
@@ -14,7 +15,6 @@ import {
   Divider,
   Flex,
   Upload,
-  Badge,
   Form,
   Input,
   DatePicker,
@@ -26,7 +26,7 @@ import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { createAxios } from "../../createInstance";
 import { logoutSuccess } from "../../redux/authSlice";
 import { IoMdArrowDropdown } from "react-icons/io";
-import keyIcon from "../../assets/images/key.png";
+
 import dayjs from "dayjs";
 
 import "./style.css";
@@ -36,14 +36,13 @@ import {
   InfoCircleOutlined,
   KeyOutlined,
   LogoutOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
 
 import React, { useEffect, useState } from "react";
 import { logoutUser, updateEmployee } from "../../redux/apiRequest";
 import axios from "axios";
 import ChangePasswordForm from "../Auth/ChangePasswordForm";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 const { useToken } = theme;

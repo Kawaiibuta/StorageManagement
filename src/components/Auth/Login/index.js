@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Checkbox, Typography, message } from "antd";
+import { Typography, message } from "antd";
 import "./style.css";
 import { Button, Form, Input, ConfigProvider } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../../redux/apiRequest";
-import ForgotPassword from "../ForgotPassword";
 import { useNavigate } from "react-router-dom";
 
 const onFinish = (values) => {

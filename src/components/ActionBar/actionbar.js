@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { Action } from "antd";
+
 import {
   RiDeleteBin6Line,
   RiCheckboxLine,
@@ -7,7 +8,7 @@ import {
   RiTruckLine,
   RiPrinterLine,
 } from "react-icons/ri";
-import { PiEyeBold } from "react-icons/pi"; 
+import { PiEyeBold } from "react-icons/pi";
 import "./actionbar.css";
 
 const CustomAction = (props) => {

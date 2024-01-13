@@ -23,6 +23,10 @@
   color: rgba(0, 0, 0, 0.85);
 }
 
+:where(.css-gzal6t).ant-layout-header {
+  line-height: 0;
+}
+
 .ant-layout-header:where(.css-dev-only-do-not-override-gzal6t) {
   line-height: 0;
 }

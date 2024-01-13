@@ -1,42 +1,24 @@
-import React, { useSelector, useState } from "react";
+import React, { useState } from "react";
 
 import axios from "axios";
 import {
   Form,
   Input,
   Button,
-  Modal,
   Space,
   message,
   Select,
   ConfigProvider,
 } from "antd";
 import "./style.css";
-import { CloseOutlined } from "@ant-design/icons";
+
 import CustomForm from "../CustomForm";
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 const SubmitButton = ({ form, isLoading }) => {
-  const [submittable, setSubmittable] = React.useState(false);
-
   // Watch all values
-  const values = Form.useWatch([], form);
-  React.useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(
-        () => {
-          setSubmittable(true);
-        },
-        () => {
-          setSubmittable(false);
-        }
-      );
-  }, [values]);
+
   return (
     <ConfigProvider
       theme={{

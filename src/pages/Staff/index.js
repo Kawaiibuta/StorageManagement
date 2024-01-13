@@ -1,28 +1,24 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect, useRef } from "react";
-import TabView from "../../components/Button Header/TabView";
+
 import {
   Button,
-  ConfigProvider,
   Input,
-  Modal,
   Popconfirm,
   Space,
-  Table,
   Tabs,
   Tag,
   Tooltip,
   message,
 } from "antd";
-import { RiDeleteBin6Line, RiEditBoxLine, RiPrinterLine } from "react-icons/ri";
-import { FaRegUser, FaUser } from "react-icons/fa";
+import { RiDeleteBin6Line, RiEditBoxLine } from "react-icons/ri";
+import { FaUser } from "react-icons/fa";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import dayjs from "dayjs";
-import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import {
   deleteEmployee,
   deleteUser,
-  getAllEmployeeIncludeDelete,
   getAllEmployeesByWarehouseId,
   getAllStaffs,
   getAllTransfer,
@@ -37,7 +33,6 @@ import Highlighter from "react-highlight-words";
 import { MdAssignmentInd, MdCallReceived, MdSend } from "react-icons/md";
 import managerIcon from "../../assets/images/manager_icon.png";
 import managerIconActive from "../../assets/images/manager_icon_active.png";
-import { LuUser2 } from "react-icons/lu";
 import CustomTable from "../../components/Table/index.js";
 import { PiEyeBold } from "react-icons/pi";
 import EmployeeTransferForm from "../../components/Form/EmployeeTransferForm.js";
@@ -110,7 +105,7 @@ function Staff() {
       onSelectChange(record);
     },
   };
-  const hasSelected = selectedRow.length > 0;
+
   //end select row
 
   const handleDelete = async (key) => {
