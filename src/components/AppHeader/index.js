@@ -177,6 +177,8 @@ function AppHeader({ collapsed, setCollapsed }) {
     fetchData();
   }, [isButtonLoading]);
 
+  console.log("data", userData);
+
   return (
     <Header
       style={{
@@ -344,13 +346,14 @@ function AppHeader({ collapsed, setCollapsed }) {
                           // console.log(data);
 
                           message.success("Update employee success");
-                          // onUpdateData();
+
                           setButtonLoading(false);
                         })
                         .catch((info) => {
                           console.log("Validate Failed:", info);
                         });
                     }
+                    setButtonLoading(false);
                   }}
                   type="primary"
                 >
@@ -469,6 +472,25 @@ function AppHeader({ collapsed, setCollapsed }) {
                 <DescriptionItem
                   title="Position"
                   content={user?.isEmployee ? userData?.position : "Admin"}
+                />
+              </Col>
+              <Col span={11} style={{ marginRight: "16px" }}>
+                <DescriptionItem
+                  title="Start Date"
+                  content={dayjs(userData?.startDate).format("MMMM DD, YYYY")}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col span={11} style={{ marginRight: "16px" }}>
+                <DescriptionItem
+                  title="Working at"
+                  content={
+                    user?.isEmployee &&
+                    userData?.warehouseId?.code +
+                      " - " +
+                      userData?.warehouseId?.name
+                  }
                 />
               </Col>
               <Col span={11} style={{ marginRight: "16px" }}>

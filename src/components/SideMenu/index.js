@@ -100,7 +100,7 @@ export default function SideMenu({ collapsed }) {
   return (
     <Sider
       className={`${!collapsed ? "responsive-SideMenu" : ""}`}
-      style={{ backgroundColor: "white" }}
+      style={{ backgroundColor: "white", boxShadow: "5px 10px 18px #888888;" }}
       trigger={null}
       collapsed={collapsed}
       collapsible
@@ -114,6 +114,7 @@ export default function SideMenu({ collapsed }) {
               itemHeight: 50,
               iconMarginInlineEnd: 20,
               selectable: false,
+
               // collapsedIconSize: 20,
             },
           },

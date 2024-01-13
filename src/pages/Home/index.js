@@ -7,8 +7,6 @@ import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
 function Home() {
-  const [isLogin, setIsLogin] = useState(false);
-  const user = useSelector((state) => state.auth.login?.currentUser);
   const [collapsed, setCollapsed] = useState(false);
   const onSetCollapsed = () => {
     setCollapsed(!collapsed);
@@ -18,11 +16,7 @@ function Home() {
       <Layout style={{ height: "100vh" }}>
         <SideMenu className="responsive-SideMenu" collapsed={collapsed} />
         <Layout>
-          <AppHeader
-            setIsLogin={setIsLogin}
-            collapsed={collapsed}
-            setCollapsed={onSetCollapsed}
-          />
+          <AppHeader collapsed={collapsed} setCollapsed={onSetCollapsed} />
           <Outlet />
         </Layout>
       </Layout>

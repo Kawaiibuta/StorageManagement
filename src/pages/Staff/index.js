@@ -324,11 +324,14 @@ function Staff() {
       ...getColumnSearchProps("email"),
     },
     {
-      title: "Warehouse",
-      dataIndex: "warehouseCodeAndName",
+      title: "Avatar",
+      dataIndex: "avatar",
       key: "6",
       width: 200,
-      ...getColumnSearchProps("warehouseCodeAndName"),
+      ...getColumnSearchProps("avatar"),
+      render: (text, _) => (
+        <img src={text} style={{ width: "70px" }} alt="product"></img>
+      ),
     },
     {
       title: "Start Time",
@@ -724,23 +727,25 @@ function Staff() {
   return (
     <div style={{ margin: "0px 16px" }}>
       <Tabs onChange={onTabsChange} size="large" defaultActiveKey="1">
-        <TabPane
-          tab={
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <MdAssignmentInd size={30} />
-              EMPLOYEE
-            </span>
-          }
-          key="1"
-        >
-          {staff_employee}
-        </TabPane>
+        {isAdmin || (
+          <TabPane
+            tab={
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <MdAssignmentInd size={30} />
+                EMPLOYEE
+              </span>
+            }
+            key="1"
+          >
+            {staff_employee}
+          </TabPane>
+        )}
 
         {isAdmin ? (
           <TabPane
