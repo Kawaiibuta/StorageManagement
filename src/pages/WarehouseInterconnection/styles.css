@@ -9,3 +9,7 @@ p {
 :where(.css-dev-only-do-not-override-k9ip2o).ant-modal .ant-modal-content {
   padding: 0;
 }
+
+:where(.css-k9ip2o).ant-modal .ant-modal-content {
+  padding: 0;
+}
