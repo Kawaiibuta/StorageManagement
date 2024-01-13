@@ -89,20 +89,19 @@ function Staff() {
   //select row
   const onSelectChange = (newSelectedRow) => {
     console.log("selectedRowKeys changed: ", newSelectedRow);
-    if (selectedRow.find((row) => row.key === newSelectedRow.key)) {
-      setSelectedRow(
-        selectedRow.filter((row) => row.key !== newSelectedRow.key)
-      );
-    } else {
-      setSelectedRow([...selectedRow, newSelectedRow]);
-    }
+    // if (selectedRow.find((row) => row.key === newSelectedRow.key)) {
+    //   setSelectedRow(
+    //     selectedRow.filter((row) => row.key !== newSelectedRow.key)
+    //   );
+    // } else {
+    //   setSelectedRow([...selectedRow, newSelectedRow]);
+    // }
+    setSelectedRow(newSelectedRow);
   };
 
   const rowSelection = {
-    // selectedRowKeys,
-    onSelect: (record) => {
-      console.log("record", record);
-      onSelectChange(record);
+    onChange: (_, selectedRows) => {
+      onSelectChange(selectedRows);
     },
   };
 
