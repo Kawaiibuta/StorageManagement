@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  vertical-align: middle;
   height: 100%;
 }
 .inner {
@@ -32,16 +31,15 @@
 }
 .Title {
   font-size: 3vh;
-  padding: 20px 0px 10px;
+  padding: 10px 0px 10px;
   font-weight: bold;
   text-align: center;
 }
 .TransactionsToday {
   background-color: white;
   border-radius: 10px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  padding: 0px 30px;
 }
 .InboundStatus,
 .OutboundStatus,
@@ -72,23 +70,20 @@
 .DoughnutWrapper {
   height: 70%;
 }
-.ChartBarWrapper {
+
+.ChartWrapper {
   padding: 0px 30px 20px;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   width: 100%;
-}
-.ChartBarWrapper .ant-tabs-content-holder {
   display: flex;
-  align-items: flex-end;
 }
-.ChartBarWrapper .ant-tabs-content {
+.ChartBarWrapper {
   height: 100%;
+  width: 100%;
+  display: flex;
 }
-.ChartBarWrapper .ant-tabs-tabpane {
-  height: 100%;
+.ChartBarWrapper canvas {
+  flex: 1;
 }
 .filter {
   display: flex;
@@ -96,6 +91,7 @@
   width: 90%;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 .filter_date {
   display: flex;

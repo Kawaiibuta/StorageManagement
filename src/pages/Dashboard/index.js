@@ -211,8 +211,8 @@ function Dashboard() {
     datasets: [
       {
         label: "Num",
-        // data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
-        data: [25, 12, 13],
+        data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
+        // data: [25, 12, 13],
         backgroundColor: [
           "rgba(75, 192, 192, 0.6)", // Màu của cột Tổng Transaction
           "rgba(255, 99, 132, 0.6)", // Màu của cột Inbound
@@ -429,8 +429,10 @@ function Dashboard() {
               Apply Filter
             </Button>
           </div>
-          <div className="ChartBarWrapper">
-            <Bar data={data} options={options} />
+          <div className="ChartWrapper">
+            <div className="ChartBarWrapper">
+              <Bar data={data} options={options} />
+            </div>
           </div>
         </div>
         <div className="OrderStatus">
@@ -441,7 +443,7 @@ function Dashboard() {
               dataSource={orderstatus_dataSource_Inbound}
               pagination={false}
               showHeader={false}
-              size={"large"}
+              size={"middle"}
             />
           </div>
           <div className="OutboundStatus">
@@ -451,7 +453,7 @@ function Dashboard() {
               dataSource={orderstatus_dataSource_Outbound}
               pagination={false}
               showHeader={false}
-              size={"large"}
+              size={"middle"}
             />
           </div>
         </div>

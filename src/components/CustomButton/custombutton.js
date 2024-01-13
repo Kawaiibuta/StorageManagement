@@ -289,15 +289,28 @@ const CustomButton = ({
           REFRESH
         </Button>
       );
-      buttons.push(
-        <Button
-          className="one-middle"
-          onClick={() => handleButtonClick("TRANSFER")}
-        >
-          <BiTransfer className="icon" />
-          TRANSFER
-        </Button>
-      );
+
+      !(page === "product") &&
+        buttons.push(
+          <Button
+            className="one-right"
+            onClick={() => handleButtonClick("TRANSFER")}
+          >
+            <BiTransfer className="icon" />
+            TRANSFER
+          </Button>
+        );
+
+      page === "product" &&
+        buttons.push(
+          <Button
+            className="one-middle"
+            onClick={() => handleButtonClick("TRANSFER")}
+          >
+            <BiTransfer className="icon" />
+            TRANSFER
+          </Button>
+        );
       page === "product" &&
         buttons.push(
           <PrintButton
