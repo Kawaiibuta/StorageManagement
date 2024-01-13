@@ -33,7 +33,7 @@ function Login() {
     };
     try {
       await loginUser(newUser, dispatch);
-      navigate("/dashboard");
+      navigate("/");
     } catch (e) {
       console.log(e);
       message.error(

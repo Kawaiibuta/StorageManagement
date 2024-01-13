@@ -246,7 +246,7 @@ function NewEmployeeForm({
             >
               <Input placeholder="Employee Email" type="email" />
             </Form.Item>
-            {isAdmin && (
+            {position === "Manager" && (
               <Form.Item
                 labelAlign="left"
                 label={<p>&nbsp;Warehouse</p>}

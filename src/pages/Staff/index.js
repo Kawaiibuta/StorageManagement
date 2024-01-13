@@ -324,11 +324,14 @@ function Staff() {
       ...getColumnSearchProps("email"),
     },
     {
-      title: "Warehouse",
-      dataIndex: "warehouseCodeAndName",
+      title: "Avatar",
+      dataIndex: "avatar",
       key: "6",
       width: 200,
-      ...getColumnSearchProps("warehouseCodeAndName"),
+      ...getColumnSearchProps("avatar"),
+      render: (text, _) => (
+        <img src={text} style={{ width: "70px" }} alt="product"></img>
+      ),
     },
     {
       title: "Start Time",

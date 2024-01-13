@@ -17,6 +17,7 @@ import Home from "../../pages/Home";
 import ForgotPassword from "../Auth/ForgotPassword";
 import Login from "../Auth/Login";
 import ResetPassword from "../Auth/ResetPasswordForm";
+import Welcome from "../../pages/Welcome";
 
 function AppRoutes() {
   const [collapsed, setCollapsed] = useState(false);
@@ -28,6 +29,7 @@ function AppRoutes() {
     <Routes>
       <Route path="*" element={<Navigate to="/auth/login" />} />
       <Route path="/" element={<Home />}>
+        <Route index element={<Welcome />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/inbound" element={<InBound />}></Route>
         <Route path="/outbound" element={<Outbound />}></Route>
