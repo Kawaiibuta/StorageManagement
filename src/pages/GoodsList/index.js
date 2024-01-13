@@ -75,14 +75,14 @@ function GoodsList() {
   //select row
   const onSelectChange = (newSelectedRow) => {
     console.log("selectedRowKeys changed: ", newSelectedRow);
-
-    if (selectedRow.find((row) => row.key === newSelectedRow.key)) {
-      setSelectedRow(
-        selectedRow.filter((row) => row.key !== newSelectedRow.key)
-      );
-    } else {
-      setSelectedRow([...selectedRow, newSelectedRow]);
-    }
+    setSelectedRow(newSelectedRow);
+    // if (selectedRow.find((row) => row.key === newSelectedRow.key)) {
+    //   setSelectedRow(
+    //     selectedRow.filter((row) => row.key !== newSelectedRow.key)
+    //   );
+    // } else {
+    //   setSelectedRow([...selectedRow, newSelectedRow]);
+    // }
   };
 
   const rowSelection = {
@@ -90,6 +90,9 @@ function GoodsList() {
     onSelect: (record) => {
       console.log("record", record);
       onSelectChange(record);
+    },
+    onChange: (selectedRowKeys, selectedRows) => {
+      onSelectChange(selectedRows);
     },
   };
 

@@ -249,9 +249,14 @@ export const deleteEmployee = async (employeeId, accessToken) => {
   );
 };
 
-export const deleteUser = async (userId) => {
+export const deleteUser = async (userId, accessToken) => {
   await axios.delete(
-    `https://warehousemanagement.onrender.com/api/user/${userId}`
+    `https://warehousemanagement.onrender.com/api/user/${userId}`,
+    {
+      headers: {
+        token: `Bearer ${accessToken}`,
+      },
+    }
   );
 };
 
