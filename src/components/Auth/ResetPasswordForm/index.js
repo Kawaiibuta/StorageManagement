@@ -5,15 +5,11 @@ import { Button, Form, Input, ConfigProvider } from "antd";
 import { useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+
 import { resetPassword } from "../../../redux/apiRequest";
 
 const onFinish = (values) => {
   console.log("Success:", values);
-};
-
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
 };
 
 function ResetPassword() {

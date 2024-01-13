@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import {
-  Select,
-  Form,
-  Input,
-  Modal,
-  DatePicker,
-  Space,
-  Button,
-  Upload,
-  message,
-  ConfigProvider,
-} from "antd";
+import { Select, Form, Input, DatePicker, Space, Upload, message } from "antd";
 import "./style.css";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -29,19 +18,13 @@ function NewEmployeeForm({
   const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
-  const isAdmin = !user.isEmployeee;
+
   //antd
   const [messageApi, contextHolder] = message.useMessage();
   const success = () => {
     messageApi.open({
       type: "success",
       content: "Add Staff Success",
-    });
-  };
-  const error = () => {
-    messageApi.open({
-      type: "error",
-      content: "Add Staff Failed",
     });
   };
 

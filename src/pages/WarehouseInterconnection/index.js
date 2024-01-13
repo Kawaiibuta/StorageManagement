@@ -5,20 +5,9 @@ import warehouseset from "../../assets/images/warehouseset-active.png";
 import Highlighter from "react-highlight-words";
 import "./styles.css";
 
-import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 
-import {
-  Table,
-  message,
-  Modal,
-  Tabs,
-  Popconfirm,
-  Tooltip,
-  Input,
-  Space,
-  Button,
-  ConfigProvider,
-} from "antd";
+import { message, Tabs, Popconfirm, Tooltip, Input, Space, Button } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
 import {
   deleteWarehouse,

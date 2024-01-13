@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, ConfigProvider, Modal, Table } from "antd";
+import { ConfigProvider, Table } from "antd";
 import { useSelector } from "react-redux";
-import { CloseOutlined } from "@ant-design/icons";
 
 import "./style.css";
 import { getWarehouseById } from "../../redux/apiRequest";

@@ -1,6 +1,5 @@
 import React from "react";
 import CustomButton from "../../components/CustomButton/custombutton.js";
-import SearchBar from "../../components/SearchBar/searchbar.js";
 import "./toolbar.css";
 
 const ToolBar = ({

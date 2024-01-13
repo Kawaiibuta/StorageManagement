@@ -1,11 +1,9 @@
 import axios from "axios";
 import {
-  loginError,
   loginStart,
   loginSuccess,
   logoutSuccess,
   logoutStart,
-  registerFailed,
   registerStart,
   registerSuccess,
   logoutError,
@@ -71,7 +69,7 @@ export const loginUser = async (user, dispatch) => {
 };
 
 export const updateReportApproved = async (reportId, data) => {
-  const res = await axios.put(
+  await axios.put(
     `https://warehousemanagement.onrender.com/api/report/${reportId}`,
     data
   );
@@ -162,7 +160,7 @@ export const getAllEmployeeIncludeDelete = async (dispatch) => {
 };
 
 export const updateTransfer = async (transferId, data) => {
-  const res = await axios.put(
+  await axios.put(
     `https://warehousemanagement.onrender.com/api/transfer/${transferId}`,
     data
   );
@@ -453,7 +451,6 @@ export const getTransactionById = async (warehouseId) => {
     `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/${warehouseId}`
   );
 };
-
 
 export const updateStatus = async (transactionId, status) => {
   await axios.put(

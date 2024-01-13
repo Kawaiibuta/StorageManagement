@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Select, Form, InputNumber, Button, Modal, Space, message } from "antd";
+import { Select, Form, InputNumber, Button, Space, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { addTransaction, updateTransaction } from "../../redux/apiRequest";

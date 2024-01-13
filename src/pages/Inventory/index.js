@@ -1,19 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useRef, useState } from "react";
-import TabView from "../../components/Button Header/TabView";
+
 import {
   Button,
   ConfigProvider,
   Modal,
   Space,
-  Table,
   Tabs,
   Tag,
   Tooltip,
   message,
 } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
-import ActionBar from "../../components/ActionBar/actionbar.js";
+
 import { PiEyeBold } from "react-icons/pi";
 import {
   getAllProductsIncludeDelete,
@@ -31,9 +30,7 @@ import invenReportIconActive from "../../assets/images/inventory_report_icon_act
 import CustomTable from "../../components/Table/index.js";
 import dayjs from "dayjs";
 import { RiPrinterLine } from "react-icons/ri";
-import InventoryReport from "../../components/Form/InventoryReport.js";
-import InBoundBill from "../../components/Form/InBoundBill.js";
-import InventoryReportBill from "../../components/Form/InventoryReportBill.js";
+
 import { useReactToPrint } from "react-to-print";
 import InventoryReportBillIndividual from "../../components/Form/InventoryReportBillIndividual.js";
 

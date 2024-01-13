@@ -2,17 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
-import {
-  Select,
-  Form,
-  Input,
-  Button,
-  Upload,
-  Space,
-  message,
-  DatePicker,
-  ConfigProvider,
-} from "antd";
+import { Select, Form, Input, Upload, Space, message, DatePicker } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { useSelector } from "react-redux";
 import { updateEmployee } from "../../redux/apiRequest";

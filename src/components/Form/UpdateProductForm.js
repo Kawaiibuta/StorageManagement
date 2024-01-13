@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import {
-  Select,
-  Form,
-  Input,
-  InputNumber,
-  Button,
-  Upload,
-  Modal,
-  Space,
-  message,
-} from "antd";
-import { useForm } from "antd/es/form/Form";
+import { Select, Form, Input, InputNumber, Upload, Space, message } from "antd";
+
 import { useSelector } from "react-redux";
-import { addProduct, updateProduct } from "../../redux/apiRequest";
+import { updateProduct } from "../../redux/apiRequest";
 import "./style.css";
 import SubmitButton from "../SubmitButton";
 
@@ -37,9 +27,7 @@ function UpdateProductForm({
   const suppliersList = useSelector(
     (state) => state.partner.supplier?.allSuppliers
   );
-  const warehouseList = useSelector(
-    (state) => state.warehouse.warehouse?.allWarehouses
-  );
+
   const [fileList, setFileList] = useState([
     {
       uid: "-1",

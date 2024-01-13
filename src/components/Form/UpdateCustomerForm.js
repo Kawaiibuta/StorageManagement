@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Space, message } from "antd";
+import { Form, Input, Space, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 
 import { updateSupplier } from "../../redux/apiRequest";

@@ -3,7 +3,6 @@ import "./style.css";
 import { ConfigProvider, Table } from "antd";
 import { useSelector } from "react-redux";
 import { getWarehouseById } from "../../redux/apiRequest";
-import dayjs from "dayjs";
 
 const report_columns = [
   {

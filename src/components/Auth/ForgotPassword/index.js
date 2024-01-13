@@ -2,7 +2,7 @@
 import "./style.css";
 import { Button, Form, Input, ConfigProvider, message } from "antd";
 import { Typography } from "antd";
-import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../../redux/apiRequest";
 
@@ -35,7 +35,7 @@ function ForgotPassword() {
       <img
         className="logo"
         src={require("../../../assets/images/WarehouseLogo.png")}
-        alt=""
+        alt="logo"
         width={150}
       ></img>
       <Typography

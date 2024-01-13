@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Select,
-  Form,
-  InputNumber,
-  Button,
-  Modal,
-  Space,
-  message,
-  ConfigProvider,
-} from "antd";
+import { Select, Form, InputNumber, Button, Space, message } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 
 import { useSelector } from "react-redux";

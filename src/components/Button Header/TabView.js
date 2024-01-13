@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./TabView.css";
-import { Avatar, Flex, Segmented } from "antd";
 
 function TabView({ tabs = [] }) {
   const [activeTabIndex, setActiveTabIndex] = useState(0);

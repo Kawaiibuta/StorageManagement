@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+
 import {
   Button,
   Form,
@@ -7,23 +7,16 @@ import {
   Space,
   Card,
   Select,
-  DatePicker,
   InputNumber,
-  Modal,
   message,
-  ConfigProvider,
 } from "antd";
-import FormItem from "antd/es/form/FormItem";
+
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import {
-  addInventoryReport,
-  updateReportApproved,
-} from "../../redux/apiRequest";
+import { addInventoryReport } from "../../redux/apiRequest";
 import CustomForm from "../CustomForm";
 import SubmitButton from "../SubmitButton";
 import "./style.css";
-import InventoryReportBill from "./InventoryReportBill";
 
 const { TextArea } = Input;
 
@@ -31,12 +24,6 @@ const tailLayout = {
   wrapperCol: {
     offset: 8,
     span: 16,
-  },
-};
-const tailLayoutTwoButton = {
-  wrapperCol: {
-    offset: 2,
-    span: 22,
   },
 };
 
@@ -51,12 +38,10 @@ function InventoryReport({
   const goodsList = useSelector(
     (state) => state.product.goodsList?.allProducts
   );
-  const goodsListIncludeDelete = useSelector(
-    (state) => state.product.goodsList?.allProductsIncludeDelete
-  );
+
   const user = useSelector((state) => state.auth.login?.currentUser);
   const userWarehouseId = user.employeeId.warehouseId;
-  const isManager = user.employeeId.position === "Manager";
+
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { Input, Button } from "antd";
 import { AiOutlineSearch } from "react-icons/ai";
-import Search from "antd/es/input/Search";
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 const SearchBar = (props) => {
