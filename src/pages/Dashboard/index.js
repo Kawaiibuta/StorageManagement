@@ -428,8 +428,10 @@ function Dashboard() {
               Apply Filter
             </Button>
           </div>
-          <div className="ChartBarWrapper">
-            <Bar data={data} options={options} />
+          <div className="ChartWrapper">
+            <div className="ChartBarWrapper">
+              <Bar data={data} options={options} />
+            </div>
           </div>
         </div>
         <div className="OrderStatus">
@@ -440,7 +442,7 @@ function Dashboard() {
               dataSource={orderstatus_dataSource_Inbound}
               pagination={false}
               showHeader={false}
-              size={"large"}
+              size={"middle"}
             />
           </div>
           <div className="OutboundStatus">
@@ -450,7 +452,7 @@ function Dashboard() {
               dataSource={orderstatus_dataSource_Outbound}
               pagination={false}
               showHeader={false}
-              size={"large"}
+              size={"middle"}
             />
           </div>
         </div>
