@@ -291,7 +291,7 @@ const CustomButton = ({
       );
       buttons.push(
         <Button
-          className="one-middle"
+          className={page === "employee" ? "one-right" : "one-middle"}
           onClick={() => handleButtonClick("TRANSFER")}
         >
           <BiTransfer className="icon" />

@@ -300,7 +300,6 @@ function AppHeader({ collapsed, setCollapsed }) {
           <Drawer
             title="User Profile"
             placement="right"
-            footer="Footer"
             width={640}
             onClose={() => toggleDrawer(0, false)}
             open={open[0]}
@@ -492,12 +491,12 @@ function AppHeader({ collapsed, setCollapsed }) {
                   }
                 />
               </Col>
-              <Col span={11} style={{ marginRight: "16px" }}>
+              {/* <Col span={11} style={{ marginRight: "16px" }}>
                 <DescriptionItem
                   title="Start Date"
                   content={dayjs(userData?.startDate).format("MMMM DD, YYYY")}
                 />
-              </Col>
+              </Col> */}
             </Row>
 
             <Divider />
