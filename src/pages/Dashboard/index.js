@@ -212,7 +212,6 @@ function Dashboard() {
       {
         label: "Num",
         data: [items.length, inbound, outbound], // Giá trị của 3 cột lân lượt Tổng, In, Out
-        // data: [25, 12, 13],
         backgroundColor: [
           "rgba(75, 192, 192, 0.6)", // Màu của cột Tổng Transaction
           "rgba(255, 99, 132, 0.6)", // Màu của cột Inbound

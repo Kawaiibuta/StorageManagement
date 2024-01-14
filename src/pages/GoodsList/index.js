@@ -86,12 +86,7 @@ function GoodsList() {
   };
 
   const rowSelection = {
-    // selectedRowKeys,
-    onSelect: (record) => {
-      console.log("record", record);
-      onSelectChange(record);
-    },
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (_, selectedRows) => {
       onSelectChange(selectedRows);
     },
   };
@@ -374,6 +369,7 @@ function GoodsList() {
             specification: goods.specification,
           };
         })}
+        title="Update Product"
         form={
           <UpdateProductForm
             isModalOpen={isModalOpen}
