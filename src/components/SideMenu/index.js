@@ -66,7 +66,7 @@ export default function SideMenu({ collapsed }) {
 
           label: "Goods List",
         },
-    isAdmin || !isManager
+    isAdmin
       ? null
       : {
           key: "/partner",

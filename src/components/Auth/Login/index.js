@@ -108,7 +108,11 @@ function Login() {
       <Form.Item>
         <a
           onClick={() => navigate("/auth/forgot")}
-          style={{ color: "white", fontSize: "14px" }}
+          style={{
+            color: "white",
+            fontSize: "15px",
+            textDecoration: "underline",
+          }}
           className="login-form-forgot"
         >
           Forgot password

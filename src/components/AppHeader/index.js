@@ -305,7 +305,7 @@ function AppHeader({ collapsed, setCollapsed }) {
             open={open[0]}
             styles={drawerStyles}
             extra={
-              <Form.Item>
+              <Form.Item noStyle>
                 <Button
                   loading={isButtonLoading}
                   htmlType="submit"

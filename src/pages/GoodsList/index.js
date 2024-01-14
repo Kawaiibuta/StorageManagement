@@ -27,7 +27,7 @@ import {
   getGoodsListByWarehouseId,
 } from "../../redux/apiRequest.js";
 import goodsListIcon from "../../assets/images/goods_list_icon.png";
-
+import goodsListIconInActive from "../../assets/images/goods_list_icon_inactive.png";
 import UpdateProductForm from "../../components/Form/UpdateProductForm.js";
 import TabPane from "antd/es/tabs/TabPane.js";
 import CustomTable from "../../components/Table/index.js";
@@ -47,7 +47,8 @@ function GoodsList() {
   const [isModalViewTransferOpen, setIsModalViewTransferOpen] = useState(false);
   const [selectTransferId, setSelectTransferId] = useState(null);
   const [selectTransferStatus, setSelectTransferStatus] = useState(null);
-  const [currentTab, setCurrentTab] = useState();
+  const [currentTab, setCurrentTab] = useState("1");
+  const [hoveredTab, setHoveredTab] = useState(null);
   const transfersList = useSelector(
     (state) => state.warehouse.warehouse?.transfers
   );
@@ -564,9 +565,15 @@ function GoodsList() {
                 flexDirection: "column",
                 alignItems: "center",
               }}
+              onMouseEnter={() => setHoveredTab("1")}
+              onMouseLeave={() => setHoveredTab(null)}
             >
               <img
-                src={goodsListIcon}
+                src={
+                  currentTab === "1" || hoveredTab === "1"
+                    ? goodsListIcon
+                    : goodsListIconInActive
+                }
                 alt="goodslist"
                 style={{ width: "30px", height: "30px" }}
               />
