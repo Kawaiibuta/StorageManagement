@@ -19,6 +19,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Bar } from "react-chartjs-2";
 import { Button, DatePicker, Table } from "antd";
 import { useSelector } from "react-redux";
+import moment from "moment";
 
 ChartJS.register(
   ArcElement,
@@ -46,9 +47,10 @@ function Dashboard() {
   const [warehouse, setWarehouse] = useState([]);
   const [manager, setManager] = useState("");
   const [address, setAddress] = useState("");
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  const [selectedYear, setSelectedYear] = useState(null);
+  const currentDate = moment();
+  const [selectedDay, setSelectedDay] = useState(moment());
+  const [selectedMonth, setSelectedMonth] = useState(moment());
+  const [selectedYear, setSelectedYear] = useState(moment());
 
   //Thuộc tinh của WarehouseCapacity
   const data5 = {
@@ -405,7 +407,7 @@ function Dashboard() {
                 className="filter_picker"
                 onChange={(date) => setSelectedDay(date || undefined)}
                 format="DD"
-                placeholder="Select Day"
+                placeholder={currentDate.format("DD")}
               />
 
               <DatePicker
@@ -413,7 +415,7 @@ function Dashboard() {
                 onChange={(date) => setSelectedMonth(date)}
                 picker="month"
                 format="MM"
-                placeholder="Select Month"
+                placeholder={currentDate.format("MM")}
               />
 
               <DatePicker
@@ -421,7 +423,7 @@ function Dashboard() {
                 onChange={(date) => setSelectedYear(date)}
                 picker="year"
                 format="YYYY"
-                placeholder="Select Year"
+                placeholder={currentDate.format("YYYY")}
               />
             </div>
             <Button className="filter_button" onClick={fetchtrans}>
