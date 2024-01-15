@@ -405,7 +405,7 @@ function Dashboard() {
             <div className="filter_date">
               <DatePicker
                 className="filter_picker"
-                onChange={(date) => setSelectedDay(date || undefined)}
+                onChange={(date) => setSelectedDay(date)}
                 format="DD"
                 placeholder={currentDate.format("DD")}
               />
@@ -438,7 +438,7 @@ function Dashboard() {
         </div>
         <div className="OrderStatus">
           <div className="InboundStatus">
-            <span className="Title">Inbound Today</span>
+            <span className="Title">All Inbound</span>
             <Table
               columns={table_columns}
               dataSource={orderstatus_dataSource_Inbound}
@@ -448,7 +448,7 @@ function Dashboard() {
             />
           </div>
           <div className="OutboundStatus">
-            <span className="Title">Outbound Today</span>
+            <span className="Title">All Outbound</span>
             <Table
               columns={table_columns}
               dataSource={orderstatus_dataSource_Outbound}
