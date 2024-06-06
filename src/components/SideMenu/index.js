@@ -22,72 +22,82 @@ const dividerItem = {
 export default function SideMenu({ collapsed }) {
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState("/");
-  const user = useSelector((state) => state.auth.login?.currentUser);
-  const isAdmin = !user?.isEmployee;
-  const isManager = user?.employeeId.position === "Manager";
+  // const user = useSelector((state) => state.auth.login?.currentUser);
+  // const isAdmin = !user?.isEmployee;
+  // const isManager = user?.employeeId.position === "Manager";
 
   const items = [
     dividerItem,
-    isAdmin
-      ? null
-      : {
-          key: "/dashboard",
-          icon: <MdAutoGraph />,
-          label: "Dashboard",
-        },
-    dividerItem,
-    isAdmin
-      ? null
-      : {
-          key: "/inbound",
-          icon: <MdSpeakerNotes />,
-          label: "Inbound",
-        },
-    isAdmin
-      ? null
-      : {
-          key: "/outbound",
-          icon: <MdRvHookup />,
-          label: "Outbound",
-        },
-    dividerItem,
-    isAdmin
-      ? null
-      : {
-          key: "/inventory",
-          icon: <MdOutlineMultilineChart />,
-          label: "Inventory",
-        },
-    isAdmin
-      ? null
-      : {
-          key: "/goods-list",
-          icon: <MdShopTwo />,
+    // {
+    //   key: "/dashboard",
+    //   icon: <MdAutoGraph />,
+    //   label: "Dashboard",
+    // },
+    {
+      key: "/inventory",
+      icon: <MdOutlineMultilineChart />,
+      label: "Inventory",
+    },
+    // isAdmin
+    //   ? null
+    //   : {
+    //       key: "/dashboard",
+    //       icon: <MdAutoGraph />,
+    //       label: "Dashboard",
+    //     },
+    // dividerItem,
+    // isAdmin
+    //   ? null
+    //   : {
+    //       key: "/inbound",
+    //       icon: <MdSpeakerNotes />,
+    //       label: "Inbound",
+    //     },
+    // isAdmin
+    //   ? null
+    //   : {
+    //       key: "/outbound",
+    //       icon: <MdRvHookup />,
+    //       label: "Outbound",
+    //     },
+    // dividerItem,
+    // isAdmin
+    //   ? null
+    //   : {
+    //       key: "/inventory",
+    //       icon: <MdOutlineMultilineChart />,
+    //       label: "Inventory",
+    //     },
+    // isAdmin
+    //   ? null
+    //   : {
+    //       key: "/goods-list",
+    //       icon: <MdShopTwo />,
 
-          label: "Goods List",
-        },
-    isAdmin
-      ? null
-      : {
-          key: "/partner",
-          icon: <UploadOutlined />,
-          label: "Partner",
-        },
-    dividerItem,
-    isAdmin || isManager
-      ? {
-          key: "/staff",
-          icon: <MdAssignmentInd />,
-          label: "Staff",
-        }
-      : null,
-    isAdmin
-      ? {
-          key: "/warehouse-interconnection",
-          icon: <MdSettings />,
-          label: "Warehouse interconnection",
-        }
-      : null,
+    //       label: "Goods List",
+    //     },
+    // isAdmin
+    //   ? null
+    //   : {
+    //       key: "/partner",
+    //       icon: <UploadOutlined />,
+    //       label: "Partner",
+    //     },
+    // dividerItem,
+    // isAdmin || isManager
+    //   ? {
+    //       key: "/staff",
+    //       icon: <MdAssignmentInd />,
+    //       label: "Staff",
+    //     }
+    //   : null,
+    // isAdmin
+    //   ? {
+    //       key: "/warehouse-interconnection",
+    //       icon: <MdSettings />,
+    //       label: "Warehouse interconnection",
+    //     }
+    //   : null,
   ];
 
   const navigate = useNavigate();

@@ -56,6 +56,7 @@ import {
   getProductsStart,
   getProductsSuccess,
 } from "./productSlice";
+import { endpoint } from "../constraint/endpoints";
 
 export const loginUser = async (user, dispatch) => {
   dispatch(loginStart());
@@ -328,16 +329,13 @@ export const getAllCustomer = async (dispatch) => {
   );
   dispatch(getCustomersSuccess(res.data));
 };
-
-export const getGoodsListByWarehouseId = async (dispatch, warehouseId) => {
+export const getAllProduct = async (dispatch) => {
   dispatch(getProductsStart());
-
   const res = await axios.get(
-    `https://warehousemanagement.onrender.com/api/product/byWarehouse/${warehouseId}`
+    endpoint.product
   );
-  dispatch(getProductsSuccess(res.data));
-};
-
+  dispatch(getProductsSuccess(res.data))
+}
 export const addProduct = async (formData) => {
   await axios.post(
     `https://warehousemanagement.onrender.com/api/product`,
@@ -437,13 +435,6 @@ export const getAllTransfer = async (dispatch) => {
   dispatch(getAllTransferSuccess(res.data));
 };
 
-export const getAllProductsIncludeDelete = async (dispatch) => {
-  dispatch(getProductsIncludeDeleteStart());
-  const res = await axios.get(
-    `https://warehousemanagement.onrender.com/api/product/`
-  );
-  dispatch(getProductsIncludeDeleteSuccess(res.data));
-};
 
 export const getWarehouseById = async (warehouseId) => {
   return await axios.get(

@@ -1,6 +1,6 @@
 import { ConfigProvider, Modal, Table } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-
+import { useState } from "react";
 import "./style.css";
 
 function CustomTable({
@@ -9,7 +9,6 @@ function CustomTable({
   isFetching,
   columns,
   dataSource,
-  isModalOpen,
   handleOk,
   handleCancel,
   title,
@@ -18,6 +17,7 @@ function CustomTable({
   rowSelection,
   button,
 }) {
+  const [selectedProduct, setSelectedProduct] = useState(null);
   return (
     <ConfigProvider
       theme={{
@@ -53,7 +53,7 @@ function CustomTable({
               padding: "16px 0px",
             }}
           >
-            {title}
+            {"Product " + selectedProduct + "'s detail: " }
           </p>
         }
         closeIcon={
@@ -67,9 +67,12 @@ function CustomTable({
           />
         }
         footer={null}
-        open={isModalOpen}
+        open={selectedProduct}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={() => {
+          if(handleCancel && handleCancel instanceof Function) handleCancel();
+          setSelectedProduct(null);
+        }}
       >
         {form}
       </Modal>
@@ -91,6 +94,15 @@ function CustomTable({
         scroll={{
           x: scrollX,
           y: "55vh",
+        }}
+        onRow={(record, rowIndex) => {
+          return {
+            onClick: (event) => {setSelectedProduct(dataSource[rowIndex].sku_code)}, // click row
+            onDoubleClick: (event) => {}, // double click row
+            onContextMenu: (event) => {}, // right button click row
+            onMouseEnter: (event) => {}, // mouse enter row
+            onMouseLeave: (event) => {}, // mouse leave row
+          };
         }}
       />
     </ConfigProvider>

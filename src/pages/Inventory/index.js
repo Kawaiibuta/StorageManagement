@@ -15,9 +15,7 @@ import ToolBar from "../../components/ToolBar/toolbar.js";
 
 import { PiEyeBold } from "react-icons/pi";
 import {
-  getAllProductsIncludeDelete,
-  getGoodsListByWarehouseId,
-  getInventoryReport,
+  getAllProduct,
   updateReportApproved,
 } from "../../redux/apiRequest.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +24,8 @@ import { CloseOutlined } from "@ant-design/icons";
 import inventoryIcon from "../../assets/images/inventory_icon.png";
 import inventoryIconActive from "../../assets/images/inventory_icon_active.png";
 import invenReportIcon from "../../assets/images/inventory_report_icon.png";
+import { MoreOutlined } from '@ant-design/icons';
+
 import invenReportIconActive from "../../assets/images/inventory_report_icon_active.png";
 import CustomTable from "../../components/Table/index.js";
 import dayjs from "dayjs";
@@ -61,8 +61,6 @@ const PrintButton = ({ record }) => {
 };
 
 const ApprovedAndRejectButton = ({
-  Form,
-  form,
   title,
   id,
   onUpdateData,
@@ -131,7 +129,7 @@ function Inventory() {
 
   const user = useSelector((state) => state.auth.login?.currentUser);
   const goodsList = useSelector(
-    (state) => state.product.goodsList?.allProducts
+    (state) => state.product.goodsList?.allProductsIncludeDelete
   );
   const isManager = user?.employeeId?.position === "Manager";
   const userWarehouseId = user?.employeeId?.warehouseId;
@@ -355,31 +353,37 @@ function Inventory() {
   const inventory_columns = [
     {
       title: "SKU",
-      width: 110,
       dataIndex: "sku_code",
       key: "sku_code",
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Full Name",
-      width: 200,
       dataIndex: "name",
       key: "name",
     },
-
+    {
+      title: "Creator",
+      dataIndex: "created_by",
+      key: "created_by",
+    },
     {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
-      width: 150,
       sorter: (a, b) => a.maximum_quantity - b.maximum_quantity,
     },
 
     {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      sorter: (a, b) => a.description.localeCompare(b.description),
+    },
+    {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      width: 170,
       render: (text, _) => (
         <img src={text} style={{ width: "70px" }} alt="product"></img>
       ),
@@ -394,11 +398,13 @@ function Inventory() {
         columns={inventory_columns}
         dataSource={goodsList?.map((goods) => {
           return {
-            key: goods?._id,
+            key: goods?.id,
             name: goods.name,
-            sku_code: goods.skuCode,
+            created_by: goods.created_by,
+            sku_code: goods.sku_code,
             quantity: goods.quantity,
-            image: goods.imageUrl,
+            description: goods.description,
+            image: goods.images.length === 0 ? undefined : goods.images[0].url,
           };
         })}
       />
@@ -409,10 +415,7 @@ function Inventory() {
     async function fetchData() {
       setIsFetching(true);
       try {
-        const data = await getInventoryReport(userWarehouseId);
-        getGoodsListByWarehouseId(dispatch, userWarehouseId);
-        getAllProductsIncludeDelete(dispatch);
-        setDataSource(data);
+        getAllProduct(dispatch)
       } catch (e) {
         console.log(e);
       }
@@ -478,7 +481,7 @@ function Inventory() {
                 alt="goodslist"
                 style={{ width: "30px", height: "30px" }}
               />
-              INVENTORY REPORT
+              ORDER
             </span>
           }
           key="2"

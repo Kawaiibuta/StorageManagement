@@ -15,7 +15,6 @@ import {
   message,
 } from "antd";
 import ToolBar from "../../components/ToolBar/toolbar.js";
-import ActionBar from "../../components/ActionBar/actionbar.js";
 import {
   RiDeleteBin6Line,
   RiCheckboxLine,
@@ -29,11 +28,9 @@ import {
   deleteTransaction,
   getAllInbound,
   getAllPartnersIncludeDelete,
-  getAllProductsIncludeDelete,
+  getAllProduct,
   getAllSupplier,
   getAllWarehouses,
-  getGoodsList,
-  getGoodsListByWarehouseId,
   updateStatus,
 } from "../../redux/apiRequest.js";
 import InBoundForm from "../../components/Form/InBoundForm.js";
@@ -268,9 +265,8 @@ function InBound() {
         await getAllInbound(dispatch, userWarehouseId);
         getAllWarehouses(dispatch);
         getAllSupplier(dispatch);
-        getGoodsListByWarehouseId(dispatch, userWarehouseId);
         getAllPartnersIncludeDelete(dispatch);
-        getAllProductsIncludeDelete(dispatch);
+        getAllProduct(dispatch);
       } catch (e) {
         console.log(e);
       }

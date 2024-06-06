@@ -21,10 +21,10 @@ import { PiEyeBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteProduct,
+  getAllProduct,
   getAllSupplier,
   getAllTransfer,
   getAllWarehouses,
-  getGoodsListByWarehouseId,
 } from "../../redux/apiRequest.js";
 import goodsListIcon from "../../assets/images/goods_list_icon.png";
 import goodsListIconInActive from "../../assets/images/goods_list_icon_inactive.png";
@@ -396,7 +396,7 @@ function GoodsList() {
       setIsFetching(true);
 
       try {
-        await getGoodsListByWarehouseId(dispatch, userWarehouseId);
+        getAllProduct(dispatch);
         getAllSupplier(dispatch);
         getAllWarehouses(dispatch);
         getAllTransfer(dispatch);

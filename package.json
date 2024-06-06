@@ -1,5 +1,5 @@
 {
-  "name": "quan-ly-kho-bai",
+  "name": "storage_management",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -23,6 +23,7 @@
     "react-scripts": "5.0.1",
     "react-to-print": "^2.14.15",
     "redux-persist": "^6.0.0",
+    "typescript": "^5.4.5",
     "web-vitals": "^2.1.4",
     "webpack-dev-middleware": "^7.0.0"
   },
