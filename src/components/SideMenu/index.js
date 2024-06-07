@@ -38,6 +38,12 @@ export default function SideMenu({ collapsed }) {
       icon: <MdOutlineMultilineChart />,
       label: "Inventory",
     },
+    {
+      key: "/staff",
+      icon: <MdAssignmentInd />,
+      label: "Staff",
+    },
+
     // isAdmin
     //   ? null
     //   : {

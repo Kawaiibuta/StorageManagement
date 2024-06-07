@@ -263,21 +263,8 @@ export const deleteUser = async (userId, accessToken) => {
 
 export const getAllUsersAccount = async (accessToken, dispatch) => {
   dispatch(getAllUsersStart());
-  try {
-    const res = await axios.get(
-      "https://warehousemanagement.onrender.com/api/user",
-      {
-        headers: {
-          token: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    dispatch(getAllUsersSuccess(res.data));
-    // console.log("hihi");
-  } catch (e) {
-    console.log(e);
-    dispatch(getAllUsersFailed());
-  }
+  const res = await axios.get(endpoint.user);
+  dispatch(getAllUsersSuccess(res.data));
 };
 
 export const deleteWarehouse = async (warehouseId, dispatch) => {
@@ -331,11 +318,9 @@ export const getAllCustomer = async (dispatch) => {
 };
 export const getAllProduct = async (dispatch) => {
   dispatch(getProductsStart());
-  const res = await axios.get(
-    endpoint.product
-  );
-  dispatch(getProductsSuccess(res.data))
-}
+  const res = await axios.get(endpoint.product);
+  dispatch(getProductsSuccess(res.data));
+};
 export const addProduct = async (formData) => {
   await axios.post(
     `https://warehousemanagement.onrender.com/api/product`,
@@ -434,7 +419,6 @@ export const getAllTransfer = async (dispatch) => {
   );
   dispatch(getAllTransferSuccess(res.data));
 };
-
 
 export const getWarehouseById = async (warehouseId) => {
   return await axios.get(

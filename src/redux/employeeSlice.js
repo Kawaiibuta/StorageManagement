@@ -90,7 +90,6 @@ const employeeSlice = createSlice({
       state.user.error = false;
       state.user.success = true;
       state.user.allUsers = action.payload;
-      // state.staff.message = action.payload;
     },
     getAllUsersFailed: (state) => {
       state.user.isFetching = false;

@@ -106,12 +106,6 @@ function ProductTransferForm({
   console.log("transferId", transferId);
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const user = useSelector((state) => state.auth.login?.currentUser);
-  const userWarehouseId = user.employeeId.warehouseId;
-
-  const allWarehouse = useSelector(
-    (state) => state.warehouse.warehouse?.allWarehouses
-  );
 
   const handleFinish = async (values) => {
     console.log(values);
@@ -119,7 +113,7 @@ function ProductTransferForm({
     try {
       const data = {
         type: "Product",
-        fromWarehouse: userWarehouseId,
+        fromWarehouse: 0,
         toWarehouse: values.warehouse,
         list: productList.map((product) => product.key),
       };
@@ -176,34 +170,6 @@ function ProductTransferForm({
                 onFinish={handleFinish}
                 layout="horizontal"
               >
-                {type === "view" ? null : (
-                  <Form.Item
-                    labelAlign="left"
-                    name="warehouse"
-                    label={<p> Destination Warehouse</p>}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select destination Warehouse!",
-                      },
-                    ]}
-                  >
-                    <Select
-                      options={
-                        allWarehouse
-                          ? allWarehouse
-                              .filter((wh) => wh._id !== userWarehouseId)
-                              .map((wh) => ({
-                                value: wh._id,
-                                label: wh.code + " - " + wh.name,
-                              }))
-                          : []
-                      }
-                      allowClear
-                      placeholder="Select Destination Warehouse"
-                    ></Select>
-                  </Form.Item>
-                )}
                 <Form.Item
                   {...(type === "view" ? tailLayoutTwoButton : tailLayout)}
                 >

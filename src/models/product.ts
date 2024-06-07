@@ -1,134 +1,30 @@
 // To parse this data:
 //
-//   import { Convert, Jewelry } from "./file";
+//   const Convert = require("./file");
 //
 //   const jewelry = Convert.toJewelry(json);
 //
 // These functions will throw an error if the JSON doesn't
 // match the expected interface, even if the JSON is valid.
 
-export interface Jewelry {
-    id:          number;
-    created_at:  Date;
-    updated_at:  Date;
-    created_by:  string;
-    updated_by:  string;
-    is_deleted:  boolean;
-    sku_code:    string;
-    name:        string;
-    description: string;
-    rating:      number;
-    category:    number;
-    coupon:      Coupon;
-    reviews:     Review[];
-    images:      Image[];
-    variants:    number[];
-    options:     Image[];
-    price:       number;
-    quantity:    number;
-}
-
-export interface Coupon {
-    id:                  number;
-    created_at:          Date;
-    updated_at:          Date;
-    created_by:          string;
-    updated_by:          string;
-    is_deleted:          boolean;
-    code:                string;
-    discount_percentage: number;
-    expiration_date:     Date;
-    applicable_items:    string[];
-}
-
-export interface Image {
-    id:            number;
-    created_at:    Date;
-    updated_at:    Date;
-    created_by:    string;
-    updated_by:    string;
-    is_deleted:    boolean;
-    url?:          string;
-    name?:         string;
-    optionValues?: Image[];
-    value?:        string;
-}
-
-export interface Review {
-    id:         number;
-    created_at: Date;
-    updated_at: Date;
-    created_by: string;
-    updated_by: string;
-    is_deleted: boolean;
-    user:       User;
-    text:       string;
-    images:     Image[];
-    rating:     number;
-}
-
-export interface User {
-    id:          number;
-    created_at:  Date;
-    updated_at:  Date;
-    created_by:  string;
-    updated_by:  string;
-    is_deleted:  boolean;
-    account_id:  string;
-    username:    string;
-    avatar:      Image;
-    status:      boolean;
-    information: Information;
-    employee:    number;
-    customer:    number;
-    is_employee: boolean;
-}
-
-export interface Information {
-    id:         number;
-    created_at: Date;
-    updated_at: Date;
-    created_by: string;
-    updated_by: string;
-    is_deleted: boolean;
-    name:       string;
-    birthday:   Date;
-    gender:     string;
-    contact:    Contact;
-}
-
-export interface Contact {
-    id:         number;
-    created_at: Date;
-    updated_at: Date;
-    created_by: string;
-    updated_by: string;
-    is_deleted: boolean;
-    email:      string;
-    phone:      string;
-    address:    string;
-}
-
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime
-export class Convert {
-    public static toJewelry(json: string): Jewelry {
-        return cast(JSON.parse(json), r("Jewelry"));
-    }
-
-    public static jewelryToJson(value: Jewelry): string {
-        return JSON.stringify(uncast(value, r("Jewelry")), null, 2);
-    }
+function toJewelry(json) {
+    return cast(JSON.parse(json), r("Jewelry"));
 }
 
-function invalidValue(typ: any, val: any, key: any, parent: any = ''): never {
+function jewelryToJson(value) {
+    return JSON.stringify(uncast(value, r("Jewelry")), null, 2);
+}
+
+function invalidValue(typ, val, key, parent = '') {
     const prettyTyp = prettyTypeName(typ);
     const parentText = parent ? ` on ${parent}` : '';
     const keyText = key ? ` for key "${key}"` : '';
     throw Error(`Invalid value${keyText}${parentText}. Expected ${prettyTyp} but got ${JSON.stringify(val)}`);
 }
 
-function prettyTypeName(typ: any): string {
+function prettyTypeName(typ) {
     if (Array.isArray(typ)) {
         if (typ.length === 2 && typ[0] === undefined) {
             return `an optional ${prettyTypeName(typ[1])}`;
@@ -142,31 +38,31 @@ function prettyTypeName(typ: any): string {
     }
 }
 
-function jsonToJSProps(typ: any): any {
+function jsonToJSProps(typ) {
     if (typ.jsonToJS === undefined) {
-        const map: any = {};
-        typ.props.forEach((p: any) => map[p.json] = { key: p.js, typ: p.typ });
+        const map = {};
+        typ.props.forEach((p) => map[p.json] = { key: p.js, typ: p.typ });
         typ.jsonToJS = map;
     }
     return typ.jsonToJS;
 }
 
-function jsToJSONProps(typ: any): any {
+function jsToJSONProps(typ) {
     if (typ.jsToJSON === undefined) {
-        const map: any = {};
-        typ.props.forEach((p: any) => map[p.js] = { key: p.json, typ: p.typ });
+        const map = {};
+        typ.props.forEach((p) => map[p.js] = { key: p.json, typ: p.typ });
         typ.jsToJSON = map;
     }
     return typ.jsToJSON;
 }
 
-function transform(val: any, typ: any, getProps: any, key: any = '', parent: any = ''): any {
-    function transformPrimitive(typ: string, val: any): any {
+function transform(val, typ, getProps, key = '', parent = '') {
+    function transformPrimitive(typ, val) {
         if (typeof typ === typeof val) return val;
         return invalidValue(typ, val, key, parent);
     }
 
-    function transformUnion(typs: any[], val: any): any {
+    function transformUnion(typs, val) {
         // val must validate against one typ in typs
         const l = typs.length;
         for (let i = 0; i < l; i++) {
@@ -178,18 +74,18 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
         return invalidValue(typs, val, key, parent);
     }
 
-    function transformEnum(cases: string[], val: any): any {
+    function transformEnum(cases, val) {
         if (cases.indexOf(val) !== -1) return val;
         return invalidValue(cases.map(a => { return l(a); }), val, key, parent);
     }
 
-    function transformArray(typ: any, val: any): any {
+    function transformArray(typ, val) {
         // val must be an array with no invalid elements
         if (!Array.isArray(val)) return invalidValue(l("array"), val, key, parent);
         return val.map(el => transform(el, typ, getProps));
     }
 
-    function transformDate(val: any): any {
+    function transformDate(val) {
         if (val === null) {
             return null;
         }
@@ -200,11 +96,11 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
         return d;
     }
 
-    function transformObject(props: { [k: string]: any }, additional: any, val: any): any {
+    function transformObject(props, additional, val) {
         if (val === null || typeof val !== "object" || Array.isArray(val)) {
             return invalidValue(l(ref || "object"), val, key, parent);
         }
-        const result: any = {};
+        const result = {};
         Object.getOwnPropertyNames(props).forEach(key => {
             const prop = props[key];
             const v = Object.prototype.hasOwnProperty.call(val, key) ? val[key] : undefined;
@@ -224,7 +120,7 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
         return invalidValue(typ, val, key, parent);
     }
     if (typ === false) return invalidValue(typ, val, key, parent);
-    let ref: any = undefined;
+    let ref = undefined;
     while (typeof typ === "object" && typ.ref !== undefined) {
         ref = typ.ref;
         typ = typeMap[typ.ref];
@@ -241,43 +137,46 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
     return transformPrimitive(typ, val);
 }
 
-function cast<T>(val: any, typ: any): T {
+function cast(val, typ) {
     return transform(val, typ, jsonToJSProps);
 }
 
-function uncast<T>(val: T, typ: any): any {
+function uncast(val, typ) {
     return transform(val, typ, jsToJSONProps);
 }
 
-function l(typ: any) {
+function l(typ) {
     return { literal: typ };
 }
 
-function a(typ: any) {
+function a(typ) {
     return { arrayItems: typ };
 }
 
-function u(...typs: any[]) {
+function u(...typs) {
     return { unionMembers: typs };
 }
 
-function o(props: any[], additional: any) {
+function o(props, additional) {
     return { props, additional };
 }
 
+function m(additional) {
+    return { props: [], additional };
+}
 
-function r(name: string) {
+function r(name) {
     return { ref: name };
 }
 
-const typeMap: any = {
+const typeMap = {
     "Jewelry": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdBy", typ: "" },
+        { json: "updated_by", js: "updatedBy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
         { json: "sku_code", js: "sku_code", typ: "" },
         { json: "name", js: "name", typ: "" },
         { json: "description", js: "description", typ: "" },
@@ -293,23 +192,23 @@ const typeMap: any = {
     ], false),
     "Coupon": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdBy", typ: "" },
+        { json: "updated_by", js: "updatedBy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
         { json: "code", js: "code", typ: "" },
-        { json: "discount_percentage", js: "discount_percentage", typ: 0 },
-        { json: "expiration_date", js: "expiration_date", typ: Date },
-        { json: "applicable_items", js: "applicable_items", typ: a("") },
+        { json: "discount_percentage", js: "discountPercentage", typ: 0 },
+        { json: "expiration_date", js: "expirationDate", typ: Date },
+        { json: "applicable_items", js: "applicableItems", typ: a("") },
     ], false),
     "Image": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdBy", typ: "" },
+        { json: "updated_by", js: "updatedBy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
         { json: "url", js: "url", typ: u(undefined, "") },
         { json: "name", js: "name", typ: u(undefined, "") },
         { json: "optionValues", js: "optionValues", typ: u(undefined, a(r("Image"))) },
@@ -317,11 +216,11 @@ const typeMap: any = {
     ], false),
     "Review": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdBy", typ: "" },
+        { json: "updated_by", js: "updatedBy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
         { json: "user", js: "user", typ: r("User") },
         { json: "text", js: "text", typ: "" },
         { json: "images", js: "images", typ: a(r("Image")) },
@@ -329,27 +228,27 @@ const typeMap: any = {
     ], false),
     "User": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
-        { json: "account_id", js: "account_id", typ: "" },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdBy", typ: "" },
+        { json: "updated_by", js: "updatedBy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
+        { json: "account_id", js: "accountId", typ: "" },
         { json: "username", js: "username", typ: "" },
         { json: "avatar", js: "avatar", typ: r("Image") },
         { json: "status", js: "status", typ: true },
         { json: "information", js: "information", typ: r("Information") },
         { json: "employee", js: "employee", typ: 0 },
         { json: "customer", js: "customer", typ: 0 },
-        { json: "is_employee", js: "is_employee", typ: true },
+        { json: "is_employee", js: "isEmployee", typ: true },
     ], false),
     "Information": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdBy", typ: "" },
+        { json: "updated_by", js: "updatedBy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
         { json: "name", js: "name", typ: "" },
         { json: "birthday", js: "birthday", typ: Date },
         { json: "gender", js: "gender", typ: "" },
@@ -357,13 +256,18 @@ const typeMap: any = {
     ], false),
     "Contact": o([
         { json: "id", js: "id", typ: 0 },
-        { json: "created_at", js: "created_at", typ: Date },
-        { json: "updated_at", js: "updated_at", typ: Date },
-        { json: "created_by", js: "created_by", typ: "" },
-        { json: "updated_by", js: "updated_by", typ: "" },
-        { json: "is_deleted", js: "is_deleted", typ: true },
+        { json: "created_at", js: "createdAt", typ: Date },
+        { json: "updated_at", js: "updatedAt", typ: Date },
+        { json: "created_by", js: "createdAy", typ: "" },
+        { json: "updated_by", js: "updatedAy", typ: "" },
+        { json: "is_deleted", js: "isDeleted", typ: true },
         { json: "email", js: "email", typ: "" },
         { json: "phone", js: "phone", typ: "" },
         { json: "address", js: "address", typ: "" },
     ], false),
+};
+
+module.exports = {
+    "jewelryToJson": jewelryToJson,
+    "toJewelry": toJewelry,
 };

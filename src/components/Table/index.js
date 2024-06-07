@@ -39,43 +39,17 @@ function CustomTable({
         },
       }}
     >
-      <Modal
-        className="Form"
-        style={{
-          top: marginTop,
+      <ProductModel
+        marginTop={marginTop}
+        selectedProduct={selectedProduct}
+        handleOk={handleOk}
+        handleCancel={() => {
+          if(handleCancel && handleCancel instanceof Function)
+          handleCancel();
+          setSelectedProduct(undefined)
         }}
-        title={
-          <p
-            style={{
-              marginLeft: "24px",
-              fontWeight: 500,
-              fontSize: 24,
-              padding: "16px 0px",
-            }}
-          >
-            {"Product " + selectedProduct + "'s detail: " }
-          </p>
-        }
-        closeIcon={
-          <CloseOutlined
-            style={{
-              fontSize: "25px",
-              paddingTop: "20px",
-              paddingRight: "20px",
-              color: "white",
-            }}
-          />
-        }
-        footer={null}
-        open={selectedProduct}
-        onOk={handleOk}
-        onCancel={() => {
-          if(handleCancel && handleCancel instanceof Function) handleCancel();
-          setSelectedProduct(null);
-        }}
-      >
-        {form}
-      </Modal>
+
+      ></ProductModel>
       <Table
         rowSelection={rowSelection}
         bordered
@@ -97,7 +71,9 @@ function CustomTable({
         }}
         onRow={(record, rowIndex) => {
           return {
-            onClick: (event) => {setSelectedProduct(dataSource[rowIndex].sku_code)}, // click row
+            onClick: (event) => {
+              setSelectedProduct(dataSource[rowIndex].sku_code);
+            }, // click row
             onDoubleClick: (event) => {}, // double click row
             onContextMenu: (event) => {}, // right button click row
             onMouseEnter: (event) => {}, // mouse enter row
@@ -108,5 +84,42 @@ function CustomTable({
     </ConfigProvider>
   );
 }
-
+function ProductModel({ marginTop, selectedProduct, handleOk, handleCancel }) {
+  return (
+    <Modal
+      className="Form"
+      style={{
+        top: marginTop,
+      }}
+      title={
+        <p
+          style={{
+            marginLeft: "24px",
+            fontWeight: 500,
+            fontSize: 24,
+            padding: "16px 0px",
+          }}
+        >
+          {"Product " + selectedProduct + "'s detail: "}
+        </p>
+      }
+      closeIcon={
+        <CloseOutlined
+          style={{
+            fontSize: "25px",
+            paddingTop: "20px",
+            paddingRight: "20px",
+            color: "white",
+          }}
+        />
+      }
+      footer={null}
+      open={selectedProduct}
+      onOk={handleOk}
+      onCancel={handleCancel}
+    >
+      
+    </Modal>
+  );
+}
 export default CustomTable;

@@ -24,13 +24,6 @@ function NewProductForm({
       span: 16,
     },
   };
-  const suppliersList = useSelector(
-    (state) => state.partner.supplier?.allSuppliers
-  );
-
-  const userWarehouseId = useSelector(
-    (state) => state.auth.login?.currentUser.employeeId.warehouseId
-  );
   const [fileList, setFileList] = useState([]);
 
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
@@ -49,7 +42,6 @@ function NewProductForm({
   const handleFinish = async (values) => {
     console.log(values);
     try {
-      console.log("whid", userWarehouseId);
       setIsLoading(true);
 
       const formData = new FormData();
@@ -58,7 +50,6 @@ function NewProductForm({
       formData.append("price", values.productPrice);
       formData.append("unit", values.productUnit);
       formData.append("specification", values.productSpecification);
-      formData.append("warehouseId", userWarehouseId);
       formData.append("supplierId", values.supplierCode);
       // Append the file to form data
       formData.append("image", values.productImage.file.originFileObj);
@@ -121,27 +112,6 @@ function NewProductForm({
               name="productMaxQuantity"
             >
               <InputNumber min={1} placeholder="Product Maximum Quantity" />
-            </Form.Item>
-            <Form.Item
-              labelAlign="left"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your supplier !",
-                },
-              ]}
-              label={<p>Supplier</p>}
-              name="supplierCode"
-            >
-              <Select
-                placeholder="Select Supplier"
-                options={suppliersList?.map((supplier) => {
-                  return {
-                    value: supplier._id,
-                    label: supplier.code + " - " + supplier.name,
-                  };
-                })}
-              ></Select>
             </Form.Item>
             <Form.Item
               labelAlign="left"
