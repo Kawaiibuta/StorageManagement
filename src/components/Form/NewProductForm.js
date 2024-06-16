@@ -3,7 +3,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Select, Form, Input, InputNumber, Upload, Space, message } from "antd";
 
 import { useSelector } from "react-redux";
-import { addProduct } from "../../redux/apiRequest";
+import { addProduct, setQuantityForVariant } from "../../redux/apiRequest";
 import CustomForm from "../CustomForm";
 import "./style.css";
 import SubmitButton from "../SubmitButton";
@@ -26,6 +26,10 @@ function NewProductForm({
   };
   const [fileList, setFileList] = useState([]);
 
+  const categoryList = useSelector(
+    (state) => state.product.category?.allCategory
+  );
+
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
   const uploadButton = (
     <div>
@@ -44,19 +48,65 @@ function NewProductForm({
     try {
       setIsLoading(true);
 
-      const formData = new FormData();
-      formData.append("name", values.productName);
-      formData.append("maximumQuantity", values.productMaxQuantity);
-      formData.append("price", values.productPrice);
-      formData.append("unit", values.productUnit);
-      formData.append("specification", values.productSpecification);
-      formData.append("supplierId", values.supplierCode);
-      // Append the file to form data
-      formData.append("image", values.productImage.file.originFileObj);
+      const options = [];
 
-      // Make the POST request with axios
-      await addProduct(formData);
-      // console.log(data);
+      if (values.productColor) {
+        options.push({
+          name: "Color",
+          values: values.productColor.map((color) => ({ value: color })),
+        });
+      }
+
+      if (values.productStoneColor) {
+        options.push({
+          name: "Color_Stone",
+          values: values.productStoneColor.map((stoneColor) => ({
+            value: stoneColor,
+          })),
+        });
+      }
+
+      if (values.productMetalColor) {
+        options.push({
+          name: "Metal_Color",
+          values: values.productMetalColor.map((metalColor) => ({
+            value: metalColor,
+          })),
+        });
+      }
+
+      const jewelry = {
+        name: values.productName,
+        description: values.productDescription,
+        category_id: values.productCategory,
+        price: values.productPrice,
+        options: options,
+      };
+
+      const formData = new FormData();
+      formData.append("jewelryItem", JSON.stringify(jewelry));
+      fileList.forEach((file) => {
+        formData.append("images", file.originFileObj);
+      });
+
+      const result = await addProduct(formData);
+      console.log("result add product " + result);
+
+      if (Array.isArray(result)) {
+        for (const id of result) {
+          try {
+            const product = await setQuantityForVariant(
+              id,
+              values.productQuantity / result.length
+            );
+            console.log(`Product details for ID ${id}:`, product);
+          } catch (getErr) {
+            console.error(`Error fetching product with ID ${id}:`, getErr);
+          }
+        }
+      } else {
+        console.error("Unexpected response format:", result);
+      }
 
       onUpdateData();
       form.resetFields();
@@ -73,7 +123,6 @@ function NewProductForm({
       );
     }
     setIsLoading(false);
-    // await addStaff(dispatch, data);
   };
   return (
     <>
@@ -105,14 +154,32 @@ function NewProductForm({
               rules={[
                 {
                   required: true,
-                  message: "Please input your product Maximum Quantity!",
+                  message: "Please input your product quantity!",
                 },
               ]}
-              label={<p>Maximun Quantity</p>}
-              name="productMaxQuantity"
+              label={<p>Quantity</p>}
+              name="productQuantity"
             >
-              <InputNumber min={1} placeholder="Product Maximum Quantity" />
+              <InputNumber min={1} placeholder="Product Quantity" />
             </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your product description!",
+                },
+              ]}
+              label={<p>Product Description</p>}
+              name="productDescription"
+            >
+              <Input.TextArea
+                showCount
+                maxLength={100}
+                placeholder="Product Description"
+              />
+            </Form.Item>
+
             <Form.Item
               labelAlign="left"
               rules={[
@@ -124,20 +191,28 @@ function NewProductForm({
               label={<p>Price</p>}
               name="productPrice"
             >
-              <InputNumber min={0} placeholder="Product Price" />
+              <InputNumber min={1000} placeholder="Product Price" />
             </Form.Item>
             <Form.Item
               labelAlign="left"
+              label={<p>&nbsp;Product Category</p>}
+              name="productCategory"
               rules={[
                 {
-                  required: true,
-                  message: "Please input your product unit!",
+                  required: false,
                 },
               ]}
-              label={<p>Unit</p>}
-              name="productUnit"
             >
-              <Input placeholder="Product Unit" />
+              <Select
+                allowClear
+                options={categoryList?.map((category) => {
+                  return {
+                    label: category.code + " - " + category.name,
+                    value: category.id,
+                  };
+                })}
+                placeholder="Select product category"
+              ></Select>
             </Form.Item>
             <Form.Item
               labelAlign="left"
@@ -150,13 +225,13 @@ function NewProductForm({
               ]}
             >
               <Upload
-                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                beforeUpload={() => false}
                 listType="picture-circle"
                 fileList={fileList}
                 onChange={handleChange}
-                maxCount={1}
+                multiple
               >
-                {uploadButton}
+                {fileList.length >= 8 ? null : uploadButton}
               </Upload>
             </Form.Item>
 
@@ -165,34 +240,62 @@ function NewProductForm({
               rules={[
                 {
                   required: true,
-                  message: "Please input your product specification!",
+                  message: "Please input your product colors!",
                 },
               ]}
-              label={<p>Specification</p>}
-              name="productSpecification"
-            >
-              <TextArea placeholder="Product Specification" rows={4} />
-            </Form.Item>
-            {/* <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input warehouse!",
-                },
-              ]}
-              label="Warehouse"
-              name="warehouseCode"
+              label={<p>Color</p>}
+              name="productColor"
             >
               <Select
-                placeholder="Select warehouse code"
-                options={warehouseList?.map((wh) => {
-                  return {
-                    value: wh._id,
-                    label: wh.code,
-                  };
-                })}
-              ></Select>
-            </Form.Item> */}
+                mode="multiple"
+                allowClear
+                placeholder="Select product colors"
+              >
+                <Select.Option value="Red">Red</Select.Option>
+                <Select.Option value="Blue">Blue</Select.Option>
+                <Select.Option value="Green">Green</Select.Option>
+                <Select.Option value="Yellow">Yellow</Select.Option>
+                <Select.Option value="Black">Black</Select.Option>
+                <Select.Option value="White">White</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              label={<p>Metal Color</p>}
+              name="productMetalColor"
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select product colors"
+              >
+                <Select.Option value="Red">Red</Select.Option>
+                <Select.Option value="Blue">Blue</Select.Option>
+                <Select.Option value="Green">Green</Select.Option>
+                <Select.Option value="Yellow">Yellow</Select.Option>
+                <Select.Option value="Black">Black</Select.Option>
+                <Select.Option value="White">White</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              labelAlign="left"
+              label={<p>Stone Color</p>}
+              name="productStoneColor"
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Select product stone colors"
+              >
+                <Select.Option value="Red">Red</Select.Option>
+                <Select.Option value="Blue">Blue</Select.Option>
+                <Select.Option value="Green">Green</Select.Option>
+                <Select.Option value="Yellow">Yellow</Select.Option>
+                <Select.Option value="Black">Black</Select.Option>
+                <Select.Option value="White">White</Select.Option>
+              </Select>
+            </Form.Item>
+
             <Form.Item {...tailLayout}>
               <Space>
                 <SubmitButton Form={Form} form={form} isLoading={isLoading}>

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Select, Form, Input, InputNumber, Upload, Space, message } from "antd";
-
 import { useSelector } from "react-redux";
 import { updateProduct } from "../../redux/apiRequest";
 import "./style.css";
 import SubmitButton from "../SubmitButton";
 
 const { TextArea } = Input;
+
+const tailLayout = {
+  wrapperCol: {
+    offset: 8,
+    span: 16,
+  },
+};
 
 function UpdateProductForm({
   onUpdateData,
@@ -16,230 +22,199 @@ function UpdateProductForm({
   formData,
 }) {
   const [form] = Form.useForm();
-  console.log("formdata", formData);
   const [isLoading, setIsLoading] = useState(false);
-  const tailLayout = {
-    wrapperCol: {
-      offset: 8,
-      span: 16,
-    },
-  };
-  const suppliersList = useSelector(
-    (state) => state.partner.supplier?.allSuppliers
-  );
+  const [fileList, setFileList] = useState([]);
 
-  const [fileList, setFileList] = useState([
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: formData.image,
-    },
-  ]);
+  const categoryList = useSelector(
+    (state) => state.product.category?.allCategory
+  );
+  console.log("formdat " + formData);
 
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
   const uploadButton = (
     <div>
       <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
+      <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleFinish = async (values) => {
     try {
       setIsLoading(true);
 
-      const formDt = new FormData();
-      formDt.append("name", values.productName);
-      formDt.append("maximumQuantity", values.productMaxQuantity);
-      formDt.append("price", values.productPrice);
-      formDt.append("unit", values.productUnit);
+      const jewelry = {
+        name: values.productName,
+        description: values.productDescription,
+        category_id: values.productCategory,
+        price: values.productPrice,
+        images: await Promise.all(
+          fileList.map(async (file) => {
+            if (file.originFileObj) {
+              return await getBase64(file.originFileObj);
+            }
+            return file.url; // Already uploaded image
+          })
+        ),
+      };
 
-      formDt.append("specification", values.productSpecification);
+      await updateProduct(formData.key, jewelry);
 
-      formDt.append(
-        "supplierId",
-        values.supplierCode.includes("-")
-          ? formData.supplier_id
-          : values.supplierCode
-      );
-      // Append the file to form data
-      if (values.productImage) {
-        formDt.append("image", values.productImage.file.originFileObj);
-      }
-      console.log(formDt);
-      console.log("values", values);
-
-      // Make the POST request with axios
-      await updateProduct(formData.key, formDt);
-      // console.log(data);
-      setIsLoading(false);
-
-      message.success("Update product success");
       onUpdateData();
       form.resetFields();
+      setFileList([]);
+      message.success("Update product success");
 
       handleOkButton();
     } catch (e) {
       console.log(e);
       message.error(
-        typeof e.response.data === "string"
+        typeof e.response?.data === "string"
           ? e.response.data
           : "Something went wrong!"
       );
     }
     setIsLoading(false);
-    // await addStaff(dispatch, data);
   };
 
   useEffect(() => {
     form.setFieldsValue({
       productName: formData.name,
-      productMaxQuantity: formData.maximum_quantity,
+      productDescription: formData.description,
+      productCategory: formData.category_id,
       productPrice: formData.price,
-      productUnit: formData.unit,
-      productSpecification: formData.specification,
-      warehouseCode: formData.warehouseCodeAndName,
-      supplierCode: formData.supplierCodeAndName,
+      productQuantity: formData.quantity,
     });
-    setFileList([
-      {
-        uid: "-1",
-        name: "image.png",
+    setFileList(
+      formData.images.map((image) => ({
+        uid: image.id,
+        name: image.id,
         status: "done",
-        url: formData.image,
-      },
-    ]);
+        url: image.url,
+      }))
+    );
   }, [formData, form]);
 
   return (
     <>
-      <div>
-        <Form
-          className="formLabel"
-          onFinish={handleFinish}
-          form={form}
-          labelCol={{ span: 10 }}
-          wrapperCol={{ span: 12 }}
-          layout="horizontal"
+      <Form
+        className="formLabel"
+        onFinish={handleFinish}
+        form={form}
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 12 }}
+        layout="horizontal"
+      >
+        <Form.Item
+          labelAlign="left"
+          rules={[
+            {
+              required: true,
+              message: "Please input your product name!",
+            },
+          ]}
+          label={<p>Product Name</p>}
+          name="productName"
         >
-          <Form.Item
-            labelAlign="left"
-            rules={[
-              {
-                required: true,
-                message: "Please input your product name!",
-              },
-            ]}
-            label={<p>Product Name</p>}
-            name="productName"
-          >
-            <Input placeholder="Product Name" />
-          </Form.Item>
-          <Form.Item
-            labelAlign="left"
-            rules={[
-              {
-                required: true,
-                message: "Please input your product Maximum Quantity!",
-              },
-            ]}
-            label={<p>Maximum Quantity</p>}
-            name="productMaxQuantity"
-          >
-            <InputNumber placeholder="Product Maximum Quantity" />
-          </Form.Item>
-          <Form.Item
-            labelAlign="left"
-            rules={[
-              {
-                required: true,
-                message: "Please input your supplier !",
-              },
-            ]}
-            label={<p>Supplier</p>}
-            name="supplierCode"
-          >
-            <Select
-              placeholder="Select Supplier"
-              options={suppliersList?.map((supplier) => {
-                return {
-                  value: supplier._id,
-                  label: supplier.code + " - " + supplier.name,
-                };
-              })}
-            ></Select>
-          </Form.Item>
-          <Form.Item
-            labelAlign="left"
-            rules={[
-              {
-                required: true,
-                message: "Please input your product price!",
-              },
-            ]}
-            label={<p>Price</p>}
-            name="productPrice"
-          >
-            <Input placeholder="Product Price" />
-          </Form.Item>
-          <Form.Item
-            labelAlign="left"
-            rules={[
-              {
-                required: true,
-                message: "Please input your product unit!",
-              },
-            ]}
-            label={<p>Unit</p>}
-            name="productUnit"
-          >
-            <Input placeholder="Product Unit" />
-          </Form.Item>
-          <Form.Item
-            labelAlign="left"
-            name="productImage"
-            label={<p>&nbsp;Product Image</p>}
-          >
-            <Upload
-              action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-              listType="picture-circle"
-              fileList={fileList}
-              onChange={handleChange}
-              maxCount={1}
-            >
-              {uploadButton}
-            </Upload>
-          </Form.Item>
+          <Input placeholder="Product Name" />
+        </Form.Item>
 
-          <Form.Item
-            labelAlign="left"
-            rules={[
-              {
-                required: true,
-                message: "Please input your product specification!",
-              },
-            ]}
-            label={<p>Specification</p>}
-            name="productSpecification"
-          >
-            <TextArea placeholder="Product Specification" rows={4} />
-          </Form.Item>
+        <Form.Item
+          labelAlign="left"
+          rules={[
+            {
+              required: true,
+              message: "Please input your product description!",
+            },
+          ]}
+          label={<p>Description</p>}
+          name="productDescription"
+        >
+          <TextArea placeholder="Product Description" />
+        </Form.Item>
 
-          <Form.Item {...tailLayout}>
-            <Space>
-              <SubmitButton Form={Form} form={form} isLoading={isLoading}>
-                Ok
-              </SubmitButton>
-            </Space>
-          </Form.Item>
-        </Form>
-      </div>
+        <Form.Item
+          labelAlign="left"
+          rules={[
+            {
+              required: true,
+              message: "Please input your product price!",
+            },
+          ]}
+          label={<p>Price</p>}
+          name="productPrice"
+        >
+          <InputNumber min={1000} placeholder="Product Price" />
+        </Form.Item>
+        <Form.Item
+          labelAlign="left"
+          rules={[
+            {
+              required: true,
+              message: "Please input your product quantity!",
+            },
+          ]}
+          label={<p>Quantity</p>}
+          name="productQuantity"
+        >
+          <InputNumber min={0} placeholder="Product Quantity" />
+        </Form.Item>
+        <Form.Item
+          labelAlign="left"
+          label={<p>&nbsp;Product Category</p>}
+          name="productCategory"
+          rules={[
+            {
+              required: true,
+              message: "Please select your product category!",
+            },
+          ]}
+        >
+          <Select
+            allowClear
+            options={categoryList?.map((category) => {
+              return {
+                label: category.code + " - " + category.name,
+                value: category.id,
+              };
+            })}
+            placeholder="Select product category"
+          ></Select>
+        </Form.Item>
+
+        <Form.Item
+          labelAlign="left"
+          name="productImage"
+          label={<p>&nbsp;Product Image</p>}
+        >
+          <Upload
+            action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+            listType="picture-circle"
+            fileList={fileList}
+            onChange={handleChange}
+            multiple
+          >
+            {uploadButton}
+          </Upload>
+        </Form.Item>
+
+        <Form.Item {...tailLayout}>
+          <Space>
+            <SubmitButton Form={Form} form={form} isLoading={isLoading}>
+              Ok
+            </SubmitButton>
+          </Space>
+        </Form.Item>
+      </Form>
     </>
   );
 }

@@ -166,12 +166,6 @@ const CustomButton = ({
             handleOkButton={handleOk}
             handleCancelButton={handleCancel}
           />
-          <ProductTransferForm
-            productList={productSelectionList}
-            handleCancelButton={handleCancelTransfer}
-            handleOkButton={handleOkTransfer}
-            isModalOpen={isModalTransferOpen}
-          />
         </>
       );
 

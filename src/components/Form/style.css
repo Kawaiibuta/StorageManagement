@@ -87,11 +87,11 @@
   flex-grow: 1;
 }
 
-:where(.css-dev-only-do-not-override-1w3obg2) .ant-modal .ant-modal-content {
+:where(.css-dev-only-do-not-override-fpdnhf) .ant-modal .ant-modal-content {
   padding: 0;
 }
 
-:where(.css-1w3obg2).ant-modal .ant-modal-content {
+:where(.css-dev-only-do-not-override-c170l0).ant-modal .ant-modal-content {
   padding: 0;
 }
 
@@ -99,7 +99,7 @@ p {
   font-weight: 500;
 }
 
-:where(.css-dev-only-do-not-override-1w3obg2).ant-card .ant-card-body {
+:where(.css-dev-only-do-not-override-fpdnhf).ant-card .ant-card-body {
   padding: 0 16px;
 }
 

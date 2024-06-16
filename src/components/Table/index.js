@@ -1,6 +1,6 @@
 import { ConfigProvider, Modal, Table } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { useState } from "react";
+
 import "./style.css";
 
 function CustomTable({
@@ -9,6 +9,7 @@ function CustomTable({
   isFetching,
   columns,
   dataSource,
+  isModalOpen,
   handleOk,
   handleCancel,
   title,
@@ -17,7 +18,6 @@ function CustomTable({
   rowSelection,
   button,
 }) {
-  const [selectedProduct, setSelectedProduct] = useState(null);
   return (
     <ConfigProvider
       theme={{
@@ -39,17 +39,40 @@ function CustomTable({
         },
       }}
     >
-      <ProductModel
-        marginTop={marginTop}
-        selectedProduct={selectedProduct}
-        handleOk={handleOk}
-        handleCancel={() => {
-          if(handleCancel && handleCancel instanceof Function)
-          handleCancel();
-          setSelectedProduct(undefined)
+      <Modal
+        className="Form"
+        style={{
+          top: marginTop,
         }}
-
-      ></ProductModel>
+        title={
+          <p
+            style={{
+              marginLeft: "24px",
+              fontWeight: 500,
+              fontSize: 24,
+              padding: "16px 0px",
+            }}
+          >
+            {title}
+          </p>
+        }
+        closeIcon={
+          <CloseOutlined
+            style={{
+              fontSize: "25px",
+              paddingTop: "20px",
+              paddingRight: "20px",
+              color: "white",
+            }}
+          />
+        }
+        footer={null}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        {form}
+      </Modal>
       <Table
         rowSelection={rowSelection}
         bordered
@@ -69,57 +92,9 @@ function CustomTable({
           x: scrollX,
           y: "55vh",
         }}
-        onRow={(record, rowIndex) => {
-          return {
-            onClick: (event) => {
-              setSelectedProduct(dataSource[rowIndex].sku_code);
-            }, // click row
-            onDoubleClick: (event) => {}, // double click row
-            onContextMenu: (event) => {}, // right button click row
-            onMouseEnter: (event) => {}, // mouse enter row
-            onMouseLeave: (event) => {}, // mouse leave row
-          };
-        }}
       />
     </ConfigProvider>
   );
 }
-function ProductModel({ marginTop, selectedProduct, handleOk, handleCancel }) {
-  return (
-    <Modal
-      className="Form"
-      style={{
-        top: marginTop,
-      }}
-      title={
-        <p
-          style={{
-            marginLeft: "24px",
-            fontWeight: 500,
-            fontSize: 24,
-            padding: "16px 0px",
-          }}
-        >
-          {"Product " + selectedProduct + "'s detail: "}
-        </p>
-      }
-      closeIcon={
-        <CloseOutlined
-          style={{
-            fontSize: "25px",
-            paddingTop: "20px",
-            paddingRight: "20px",
-            color: "white",
-          }}
-        />
-      }
-      footer={null}
-      open={selectedProduct}
-      onOk={handleOk}
-      onCancel={handleCancel}
-    >
-      
-    </Modal>
-  );
-}
+
 export default CustomTable;

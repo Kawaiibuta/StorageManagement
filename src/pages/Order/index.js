@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useRef, useState } from "react";
-import TabView from "../../components/Button Header/TabView";
+import TabView from "../../components/Button Header/TabView.js";
 import {
   Button,
   ConfigProvider,
@@ -25,15 +25,12 @@ import { CloseOutlined, SearchOutlined } from "@ant-design/icons";
 import { PiEyeBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteOrder,
   deleteTransaction,
-  getAllInbound,
-  getAllPartnersIncludeDelete,
-  getAllProduct,
-  getAllSupplier,
-  getAllWarehouses,
+  getAllOrder,
   updateStatus,
 } from "../../redux/apiRequest.js";
-import InBoundForm from "../../components/Form/InBoundForm.js";
+// import InBoundForm from "../../components/Form/InBoundForm.js";
 import asnIcon from "../../assets/images/asn_icon.png";
 import asnIconActive from "../../assets/images/asn_icon_active.png";
 import orderInboundIcon from "../../assets/images/oder_inbound_icon.png";
@@ -47,6 +44,7 @@ import dayjs from "dayjs";
 import InBoundBill from "../../components/Form/InBoundBill.js";
 import { useReactToPrint } from "react-to-print";
 import Highlighter from "react-highlight-words";
+import InBoundForm from "../../components/Form/InBoundForm.js";
 
 const PrintButton = ({ record }) => {
   const componentRef = useRef();
@@ -74,7 +72,7 @@ const PrintButton = ({ record }) => {
   );
 };
 
-function InBound() {
+function OrderPage() {
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdateData, setIsUpdateData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,12 +82,7 @@ function InBound() {
   const [hoveredTab, setHoveredTab] = useState(null);
   const dispatch = useDispatch();
 
-  const inboundsList = useSelector(
-    (state) => state.product.inbound?.allInBounds
-  );
-
-  const user = useSelector((state) => state.auth.login?.currentUser);
-  const userWarehouseId = user.employeeId?.warehouseId;
+  const ordersList = useSelector((state) => state.product.order?.allOrder);
 
   //search function
   const [searchText, setSearchText] = useState("");
@@ -225,10 +218,8 @@ function InBound() {
   const handleEditStatus = async (key) => {
     console.log("key", key);
     try {
+      await updateStatus(key, "Delivered");
       console.log("updatestatus");
-      await updateStatus(key, {
-        status: "Done",
-      });
       onUpdateData();
       message.success("Update inbound status success!");
     } catch (e) {
@@ -239,7 +230,7 @@ function InBound() {
   const handleDelete = async (key) => {
     console.log("key", key);
     try {
-      await deleteTransaction(key);
+      await deleteOrder(key);
 
       onUpdateData();
       message.success("Delete inbound success");
@@ -258,36 +249,17 @@ function InBound() {
     setIsUpdateData(!isUpdateData);
   }
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsFetching(true);
-      try {
-        await getAllInbound(dispatch, userWarehouseId);
-        getAllWarehouses(dispatch);
-        getAllSupplier(dispatch);
-        getAllPartnersIncludeDelete(dispatch);
-        getAllProduct(dispatch);
-      } catch (e) {
-        console.log(e);
-      }
-      setIsFetching(false);
-    }
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, isUpdateData]);
-
   const inbound_columns = [
     {
       title: "ASN",
-      dataIndex: "ASN",
-      key: "ASN",
+      dataIndex: "asn",
+      key: "asn",
       width: 120,
-      ...getColumnSearchProps("ASN"),
+      ...getColumnSearchProps("id"),
       render: (text) => <p style={{ color: "#1677ff" }}>{text}</p>,
     },
     {
       title: "Status",
-
       dataIndex: "status",
       key: "status",
       width: 80,
@@ -296,42 +268,37 @@ function InBound() {
       onFilter: (value, record) => record.status.indexOf(value) === 0,
       render: (status) => {
         let color;
-        if (status === "Order") color = "geekblue";
-        else if (status === "Done") color = "green";
+        if (status === "Ordering") color = "geekblue";
+        else if (status === "PAID") color = "cyan";
+        else color = "green";
         return <Tag color={color}>{status.toUpperCase()}</Tag>;
       },
     },
-    {
-      title: "Supplier",
-      dataIndex: "supplierCodeAndName",
-      key: "supplierCodeAndName",
-      ...getColumnSearchProps("supplierCodeAndName"),
-      width: 200,
-    },
+
     {
       title: "Total Value",
-      dataIndex: "total_value",
-      key: "total_value",
+      dataIndex: "total_price",
+      key: "total_price",
       width: 150,
     },
     {
-      title: "Creator",
-      dataIndex: "creator",
-      key: "creator",
+      title: "Customer",
+      dataIndex: "customer",
+      key: "customer",
       ...getColumnSearchProps("creator"),
       width: 200,
     },
 
     {
       title: "Create Time",
-      dataIndex: "create_time",
-      key: "create_time",
+      dataIndex: "created_at",
+      key: "created_at",
       width: 200,
     },
     {
       title: "Update Time",
-      dataIndex: "update_time",
-      key: "update_time",
+      dataIndex: "updated_at",
+      key: "updated_at",
       width: 200,
     },
 
@@ -345,20 +312,21 @@ function InBound() {
           <>
             <Tooltip key="view" title="View">
               <a
+                style={{ marginRight: 10 }}
                 onClick={() => {
-                  showModalView(record);
+                  edit(record);
                 }}
               >
                 {<PiEyeBold size={24} color="#85dcea" />}
               </a>
             </Tooltip>
-            <a>
+            <a style={{ marginRight: 10 }}>
               {
                 <RiCheckboxLine
-                  color={record.status === "Done" ? "gray" : ""}
+                  color={record.status === "Delivered" ? "gray" : ""}
                   size={24}
                   onClick={
-                    record.status === "Done"
+                    record.status === "Delivered"
                       ? null
                       : () => handleEditStatus(record.key)
                   }
@@ -370,24 +338,14 @@ function InBound() {
                 setFormData(record);
               }}
             >
-              <PrintButton key={record._id} record={formData} />
+              {/* <PrintButton key={record._id} record={formData} /> */}
             </a>
 
-            <Tooltip title="Edit" key="edit">
-              <a onClick={record.status === "Done" ? null : () => edit(record)}>
-                {
-                  <RiEditBoxLine
-                    size={24}
-                    color={record.status === "Done" ? "gray" : "purple"}
-                  />
-                }
-              </a>
-            </Tooltip>
             <Tooltip title="Delete" key="delete">
               <Popconfirm
                 title="Sure to delete?"
                 onConfirm={
-                  record.status === "Done"
+                  record.status === "Delivered"
                     ? null
                     : () => handleDelete(record.key)
                 }
@@ -396,7 +354,7 @@ function InBound() {
                   {
                     <RiDeleteBin6Line
                       size={24}
-                      color={record.status === "Done" ? "gray" : "red"}
+                      color={record.status === "Delivered" ? "gray" : "red"}
                     />
                   }
                 </a>
@@ -415,7 +373,7 @@ function InBound() {
         width: "100%",
       }}
     >
-      <ToolBar onUpdateData={onUpdateData} type={2} page={"inbound"}></ToolBar>
+      {/* <ToolBa r onUpdateData={onUpdateData} type={2} page={"inbound"}></ToolBar> */}
       <InBoundForm
         isModalOpen={isModalOpen}
         handleCancelButton={handleCancel}
@@ -423,42 +381,6 @@ function InBound() {
         onUpdateData={onUpdateData}
         formData={formData}
       />
-      <ConfigProvider
-        theme={{
-          components: {
-            Modal: {
-              titleFontSize: 24,
-              headerBg: "rgba(156, 188, 235, 1)",
-              paddingLG: 0,
-              padding: 0,
-            },
-          },
-        }}
-      >
-        <Modal
-          style={{
-            top: 20,
-          }}
-          title=" &nbsp;"
-          width={700}
-          footer={null}
-          open={isModalViewOpen}
-          onOk={handleOkView}
-          onCancel={handleCancelView}
-          closeIcon={
-            <CloseOutlined
-              style={{
-                fontSize: "25px",
-                paddingTop: "10px",
-                paddingRight: "20px",
-                color: "white",
-              }}
-            />
-          }
-        >
-          <ExportButtonForInBound formData={formData} />
-        </Modal>
-      </ConfigProvider>
 
       <CustomTable
         isFetching={isFetching}
@@ -466,27 +388,25 @@ function InBound() {
         title="Update Outbound"
         scrollX={1800}
         columns={inbound_columns}
-        dataSource={inboundsList?.map((inbound) => {
-          return {
-            key: inbound._id,
-            ASN: inbound.code,
-            status: inbound.status,
-            supplier: inbound.partnerId.code,
-            supplierId: inbound.partnerId._id,
-            supplierCodeAndName:
-              inbound.partnerId.code + " - " + inbound.partnerId.name,
-            supplierName: inbound.partnerId.name,
-            total_value: Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(inbound.total),
-            creator: inbound.employeeId.code + " - " + inbound.employeeId.name,
-            creatorName: inbound.employeeId.name,
-            trans_details: inbound.transactionDetails,
-            create_time: dayjs(inbound.createdAt).format("DD-MM-YYYY HH:mm:ss"),
-            update_time: dayjs(inbound.updatedAt).format("DD-MM-YYYY HH:mm:ss"),
-          };
-        })}
+        dataSource={ordersList
+          ?.filter((order) => order.is_deleted === false)
+          .map((order) => {
+            return {
+              key: order.id,
+              asn: order.code,
+              status: order.status,
+              is_deleted: order.is_deleted,
+              customer: order.customer,
+              total_price: Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "VND",
+              }).format(order.total_price),
+              total_price_without_format: order.total_price,
+              created_at: dayjs(order.created_at).format("DD-MM-YYYY HH:mm:ss"),
+              updated_at: dayjs(order.updated_at).format("DD-MM-YYYY HH:mm:ss"),
+              orderDetail: order.orderDetail,
+            };
+          })}
         onUpdateData={onUpdateData}
       />
     </div>
@@ -496,6 +416,21 @@ function InBound() {
     console.log(key);
     setCurrentTab(key);
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      setIsFetching(true);
+      try {
+        await getAllOrder(dispatch);
+      } catch (e) {
+        console.log(e);
+      }
+      setIsFetching(false);
+    }
+    fetchData();
+  }, [dispatch, isUpdateData]);
+
+  console.log("orderlist" + ordersList);
 
   return (
     <div style={{ margin: "0px 16px" }}>
@@ -527,63 +462,9 @@ function InBound() {
         >
           {all}
         </TabPane>
-        <TabPane
-          tab={
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-              onMouseEnter={() => setHoveredTab("2")}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <img
-                src={
-                  currentTab === "2" || hoveredTab === "2"
-                    ? orderInboundIconActive
-                    : orderInboundIcon
-                }
-                alt=""
-                style={{ width: "30px", height: "30px" }}
-              />
-              ORDER
-            </span>
-          }
-          key="2"
-        >
-          {all}
-        </TabPane>
-        <TabPane
-          tab={
-            <span
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-              onMouseEnter={() => setHoveredTab("3")}
-              onMouseLeave={() => setHoveredTab(null)}
-            >
-              <img
-                src={
-                  currentTab === "3" || hoveredTab === "3"
-                    ? receiveListIconActive
-                    : receiveListIcon
-                }
-                alt="goodslist"
-                style={{ width: "30px", height: "30px" }}
-              />
-              DONE
-            </span>
-          }
-          key="3"
-        >
-          {all}
-        </TabPane>
       </Tabs>
     </div>
   );
 }
 
-export default InBound;
+export default OrderPage;

@@ -34,15 +34,20 @@ export default function SideMenu({ collapsed }) {
     //   label: "Dashboard",
     // },
     {
+      key: "/order",
+      icon: <MdSpeakerNotes />,
+      label: "Order",
+    },
+    {
       key: "/inventory",
       icon: <MdOutlineMultilineChart />,
       label: "Inventory",
     },
-    {
-      key: "/staff",
-      icon: <MdAssignmentInd />,
-      label: "Staff",
-    },
+    // {
+    //   key: "/staff",
+    //   icon: <MdAssignmentInd />,
+    //   label: "Staff",
+    // },
 
     // isAdmin
     //   ? null

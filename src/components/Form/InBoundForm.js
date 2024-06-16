@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Select, Form, InputNumber, Button, Space, message } from "antd";
+import {
+  Select,
+  Form,
+  InputNumber,
+  Button,
+  Space,
+  message,
+  Image,
+  List,
+  Avatar,
+  Typography,
+} from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { addTransaction, updateTransaction } from "../../redux/apiRequest";
 import CustomForm from "../CustomForm";
 import SubmitButton from "../SubmitButton";
 import "./style.css";
+
+const { Title } = Typography;
 
 const tailLayout = {
   wrapperCol: {
@@ -21,14 +34,8 @@ function InBoundForm({
   handleCancelButton,
   formData,
 }) {
-  console.log("formdata", formData);
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const user = useSelector((state) => state.auth.login?.currentUser);
-  const userWarehouseId = user.employeeId?.warehouseId;
-  const suppliersList = useSelector(
-    (state) => state.partner.supplier?.allSuppliers
-  );
   const goodsList = useSelector(
     (state) => state.product.goodsList?.allProducts
   );
@@ -37,7 +44,6 @@ function InBoundForm({
 
   const calculateTotal = (products) => {
     totalProducts = 0;
-    console.log("products", products);
     return products.map((product) => {
       let total = 0;
       let goods = goodsList?.find((good) => good._id === product.productId);
@@ -52,7 +58,6 @@ function InBoundForm({
   };
 
   const handleFinish = async (values) => {
-    console.log(values);
     setIsLoading(true);
 
     try {
@@ -60,13 +65,10 @@ function InBoundForm({
         const details = calculateTotal(values.products);
         const data = {
           type: "Inbound",
-          employeeId: user.employeeId,
           partnerId: values.supplier,
-          warehouseId: userWarehouseId,
           details: details,
           total: totalProducts,
         };
-        console.log("data", data);
 
         await addTransaction(data);
 
@@ -81,7 +83,6 @@ function InBoundForm({
           total: totalProducts,
           partnerId: partner_id,
         };
-        console.log("data", data);
         await updateTransaction(formData.key, data);
         message.success("Update Inbound success");
       }
@@ -89,11 +90,11 @@ function InBoundForm({
       onUpdateData();
     } catch (e) {
       message.error(
-        typeof e.response.data === "string"
+        typeof e.response?.data === "string"
           ? e.response.data
           : "Something went wrong!"
       );
-      console.log(e);
+      console.error(e);
     }
     setIsLoading(false);
   };
@@ -101,135 +102,88 @@ function InBoundForm({
   useEffect(() => {
     if (formData) {
       form.setFieldsValue({
-        supplier: formData.supplierCodeAndName,
-        products: formData.trans_details.map((e) => ({
-          key: e._id,
-          id: e._id,
+        products: formData.orderDetail.map((e) => ({
+          key: e.id,
+          id: e.id,
           action: "update",
-          productId: e.productId,
+          productId: e.variant.name,
           quantity: e.quantity,
+          image: e.variant.images[0].url,
+          total_price: e.total_price,
         })),
       });
     }
   }, [formData, form]);
 
   return (
-    <>
-      <CustomForm
-        form={
-          <Form
-            style={{ marginRight: "16px" }}
-            labelAlign="left"
-            className="formLabel"
-            form={form}
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            onFinish={handleFinish}
-            layout="horizontal"
-          >
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your product name!",
-                },
-              ]}
-              label={<p>Supplier</p>}
-              name="supplier"
-            >
-              <Select
-                placeholder="Select Supplier"
-                options={suppliersList?.map((sup) => {
-                  return {
-                    value: sup._id,
-                    label: sup.code + " - " + sup.name,
-                  };
-                })}
-              ></Select>
-            </Form.Item>
-
-            <Form.Item label={<p>&nbsp; Products</p>}>
-              <Form.List name={["products"]}>
-                {(subFields, subOpt) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      rowGap: 16,
-                    }}
-                  >
-                    {subFields.map((subField) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginBottom: 8,
-                        }}
-                        key={subField.key}
-                      >
-                        <Form.Item
-                          noStyle
-                          rules={[
-                            {
-                              required: true,
-                              message: "Missing SKU Code",
-                            },
-                          ]}
-                          name={[subField.name, "productId"]}
-                        >
-                          <Select
-                            placeholder="SKU Code"
-                            options={goodsList.map((goods) => {
-                              return {
-                                value: goods._id,
-                                label: goods.skuCode + " - " + goods.name,
-                              };
-                            })}
-                          />
-                        </Form.Item>
-                        <div style={{ width: "10px" }} />
-                        <Form.Item
-                          noStyle
-                          rules={[
-                            {
-                              required: true,
-                              message: "Missing quantity",
-                            },
-                          ]}
-                          name={[subField.name, "quantity"]}
-                        >
-                          <InputNumber min={1} placeholder="Quantity" />
-                        </Form.Item>
-                        <CloseOutlined
-                          style={{ marginLeft: 8 }}
-                          onClick={() => {
-                            subOpt.remove(subField.name);
-                          }}
-                        />
-                      </div>
-                    ))}
-                    <Button type="dashed" onClick={() => subOpt.add()} block>
-                      + Add Sub Item
-                    </Button>
-                  </div>
-                )}
-              </Form.List>
-            </Form.Item>
-            <Form.Item {...tailLayout}>
-              <Space>
-                <SubmitButton Form={Form} form={form} isLoading={isLoading}>
-                  Ok
-                </SubmitButton>
-              </Space>
-            </Form.Item>
-          </Form>
-        }
-        handleCancelButton={handleCancelButton}
-        isModalOpen={isModalOpen}
-        marginTop={20}
-        title="New Inbound"
-      />
-    </>
+    <CustomForm
+      form={
+        <Form
+          style={{ marginRight: "16px" }}
+          labelAlign="left"
+          className="formLabel"
+          form={form}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
+          onFinish={handleFinish}
+          layout="horizontal"
+        >
+          <Form.Item label={<p>&nbsp; Products</p>}>
+            <Form.List name="products">
+              {(subFields, subOpt) => (
+                <div>
+                  {subFields.map((subField, index) => (
+                    <div style={{ marginBottom: 8 }} key={subField.key}>
+                      <List
+                        itemLayout="horizontal"
+                        dataSource={[subField]}
+                        renderItem={(item) => (
+                          <List.Item>
+                            <List.Item.Meta
+                              avatar={
+                                <Avatar
+                                  src={form.getFieldValue([
+                                    "products",
+                                    index,
+                                    "image",
+                                  ])}
+                                />
+                              }
+                              title={
+                                <span>
+                                  {form.getFieldValue([
+                                    "products",
+                                    index,
+                                    "productId",
+                                  ])}
+                                </span>
+                              }
+                              description={`Quantity: ${form.getFieldValue([
+                                "products",
+                                index,
+                                "quantity",
+                              ])} | Price: ${form.getFieldValue([
+                                "products",
+                                index,
+                                "total_price",
+                              ])}`}
+                            />
+                          </List.Item>
+                        )}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Form.List>
+          </Form.Item>
+        </Form>
+      }
+      handleCancelButton={handleCancelButton}
+      isModalOpen={isModalOpen}
+      marginTop={20}
+      title="Order Detail"
+    />
   );
 }
 

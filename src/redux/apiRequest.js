@@ -47,8 +47,12 @@ import {
   getSuppliersSuccess,
 } from "./partnerSlice";
 import {
+  getCategoryStart,
+  getCategorySuccess,
   getInboundsStart,
   getInboundsSuccess,
+  getOrdersStart,
+  getOrdersSuccess,
   getOutboundsStart,
   getOutboundsSuccess,
   getProductsIncludeDeleteStart,
@@ -58,6 +62,67 @@ import {
 } from "./productSlice";
 import { endpoint } from "../constraint/endpoints";
 
+export const updateProduct = async (productId, formData) => {
+  await axios.put(`${endpoint.product}/${productId}`, formData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const getAllProduct = async (dispatch) => {
+  dispatch(getProductsStart());
+  const res = await axios.get(endpoint.product);
+  dispatch(getProductsSuccess(res.data));
+};
+export const getAllOrder = async (dispatch) => {
+  dispatch(getOrdersStart());
+  const res = await axios.get(endpoint.order);
+  dispatch(getOrdersSuccess(res.data));
+};
+
+export const updateStatus = async (transactionId, status) => {
+  console.log("transactionid " + transactionId + " status " + status);
+  await axios.put(`${endpoint.order}/${transactionId}/status`, status, {
+    headers: {
+      "Content-Type": "text/plain",
+    },
+  });
+};
+
+export const deleteOrder = async (transactionId) => {
+  await axios.delete(`${endpoint.order}/${transactionId}`);
+};
+
+export const getCategory = async (dispatch) => {
+  dispatch(getCategoryStart());
+  const res = await axios.get(endpoint.category);
+  dispatch(getCategorySuccess(res.data));
+};
+
+export const addProduct = async (formData) => {
+  const res = await axios.post(endpoint.product, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  const productId = res.data.id;
+  console.log("productId " + productId);
+
+  await axios.post(`${endpoint.variant}/create_variants_for_item/${productId}`);
+  const resProduct = await axios.get(`${endpoint.product}/${productId}`);
+  return resProduct.data.variants;
+};
+
+export const setQuantityForVariant = async (variantId, quantity) => {
+  await axios.put(`${endpoint.variant}/${variantId}`, { quantity: quantity });
+};
+
+export const deleteProduct = async (productId) => {
+  await axios.delete(`${endpoint.product}/${productId}`);
+};
+//not use---------------------------------------------------------------------------------
 export const loginUser = async (user, dispatch) => {
   dispatch(loginStart());
 
@@ -316,40 +381,6 @@ export const getAllCustomer = async (dispatch) => {
   );
   dispatch(getCustomersSuccess(res.data));
 };
-export const getAllProduct = async (dispatch) => {
-  dispatch(getProductsStart());
-  const res = await axios.get(endpoint.product);
-  dispatch(getProductsSuccess(res.data));
-};
-export const addProduct = async (formData) => {
-  await axios.post(
-    `https://warehousemanagement.onrender.com/api/product`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-};
-
-export const updateProduct = async (productId, formData) => {
-  await axios.put(
-    `https://warehousemanagement.onrender.com/api/product/${productId}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-};
-
-export const deleteProduct = async (productId) => {
-  await axios.delete(
-    `https://warehousemanagement.onrender.com/api/product/${productId}`
-  );
-};
 
 export const addTransaction = async (transactionData) => {
   await axios.post(
@@ -429,13 +460,6 @@ export const getWarehouseById = async (warehouseId) => {
 export const getTransactionById = async (warehouseId) => {
   return await axios.get(
     `https://warehousemanagement.onrender.com/api/transaction/byWarehouse/${warehouseId}`
-  );
-};
-
-export const updateStatus = async (transactionId, status) => {
-  await axios.put(
-    `https://warehousemanagement.onrender.com/api/transaction/status/${transactionId}`,
-    status
   );
 };
 

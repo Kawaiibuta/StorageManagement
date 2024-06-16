@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getCategory } from "./apiRequest";
 
 const productSlice = createSlice({
   name: "product",
@@ -9,12 +10,20 @@ const productSlice = createSlice({
       isFetching: false,
       allOutbounds: null,
     },
+    category: {
+      allCategory: null,
+      isFetching: false,
+    },
     outbound: {
       allOutbounds: null,
       isFetching: false,
     },
     inbound: {
       allInBounds: null,
+      isFetching: false,
+    },
+    order: {
+      allOrder: null,
       isFetching: false,
     },
   },
@@ -25,6 +34,14 @@ const productSlice = createSlice({
     getProductsSuccess: (state, action) => {
       state.goodsList.isFetching = false;
       state.goodsList.allProducts = action.payload;
+    },
+
+    getCategoryStart: (state) => {
+      state.category.isFetching = true;
+    },
+    getCategorySuccess: (state, action) => {
+      state.category.allCategory = action.payload;
+      state.category.isFetching = false;
     },
     getOutboundsStart: (state) => {
       state.outbound.isFetching = true;
@@ -47,6 +64,13 @@ const productSlice = createSlice({
       state.goodsList.isFetching = false;
       state.goodsList.allProductsIncludeDelete = action.payload;
     },
+    getOrdersStart: (state) => {
+      state.order.isFetching = true;
+    },
+    getOrdersSuccess: (state, action) => {
+      state.order.isFetching = false;
+      state.order.allOrder = action.payload;
+    },
   },
 });
 
@@ -59,6 +83,10 @@ export const {
   getInboundsSuccess,
   getProductsIncludeDeleteStart,
   getProductsIncludeDeleteSuccess,
+  getOrdersStart,
+  getOrdersSuccess,
+  getCategoryStart,
+  getCategorySuccess,
 } = productSlice.actions;
 
 export default productSlice.reducer;

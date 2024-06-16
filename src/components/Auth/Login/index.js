@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../../redux/apiRequest";
 import { useNavigate } from "react-router-dom";
+import FirebaseAuthService from "../../../services/firebaseservice";
 
 const onFinish = (values) => {
   console.log("Success:", values);
@@ -31,7 +32,8 @@ function Login() {
       password: password,
     };
     try {
-      await loginUser(newUser, dispatch);
+      await FirebaseAuthService.signIn(username, password);
+      message.success("Login successful!");
       navigate("/");
     } catch (e) {
       console.log(e);
